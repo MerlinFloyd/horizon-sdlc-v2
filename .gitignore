@@ -1,0 +1,102 @@
+# .gitignore for Node.js, TypeScript, Docker, Python, Java, and Go projects
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.*
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+/dist/
+/build/
+/out/
+*.js
+*.js.map
+*.d.ts
+
+# Docker
+*.tar
+Dockerfile*
+.dockerignore
+/docker-compose*.yml
+/.docker/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+venv/
+env/
+ENV/
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+*.log
+*.javadoc
+/.idea/
+/.settings/
+/.classpath
+/.project
+/.factorypath
+/target/
+/bin/
+
+# Go
+/bin/
+/pkg/
+*.exe
+*.test
+*.out
+*.log
+*.mod
+*.sum
+
+# VSCode
+.vscode/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+
+# Horizon SDLC Specific
+.ai/config/auth.json
+.ai/config/*.secret
+.ai/config/*.key
+.ai/config/*.env
+.opencode/
+
+# Misc
+*.swp
+*.swo
+*.tmp
+*.bak
+*.old
+*.orig
+
+# Ignore coverage and test output
+coverage/
+*.lcov
+
+# Ignore by language
+# --- End of .gitignore ---

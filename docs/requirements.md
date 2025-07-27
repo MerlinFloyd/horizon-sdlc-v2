@@ -1,4 +1,4 @@
-# AI Project Bootstrap Tool - Requirements Document
+# Horizon SDLC - Requirements Document
 
 ## 1. Project Overview
 
@@ -19,7 +19,7 @@ Inspiration also from:
 - https://github.com/buildermethods/agent-os
 
 ### 1.4 Repository Purpose
-This repository serves as the foundation for our AI Project Bootstrap Tool and contains standardized configurations, templates, and agent definitions that will be used to bootstrap new projects across multiple languages and use cases. The bootstrapper performs one-time project setup and deploys these assets to OpenCode for ongoing development assistance.
+This repository serves as the foundation for our Horizon SDLC and contains standardized configurations, templates, and agent definitions that will be used to bootstrap new projects across multiple languages and use cases. Horizon SDLC performs one-time project setup and deploys these assets to OpenCode for ongoing development assistance.
 
 ### 1.5 Scope Boundaries
 - **Bootstrapper Scope**: Initial and iterative project setup, configuration generation, OpenCode container deployment, workspace asset management
@@ -534,7 +534,7 @@ GitHub Actions Integration:
   - Configuration validation before container restart
   - Proper handling of both `.opencode` and `.ai` directory mounts
 
-## 8. Bootstrap Tool Functional Requirements
+## 8. Horizon SDLC Functional Requirements
 
 ### 8.1 DevContainer Setup Generation
 - [ ] **DevContainer Configuration**: Generate `.devcontainer/devcontainer.json` with:
@@ -734,7 +734,7 @@ enum AgentMode {
 
 ### 10.1 Docker Distribution
 - [ ] **Container Image**: Single Docker image containing:
-  - Bootstrap tool executable
+  - Horizon SDLC executable
   - Language-specific project templates (JSON format)
   - Configuration schemas (JSON schemas)
   - Documentation templates
@@ -750,7 +750,7 @@ enum AgentMode {
   - `setup.sh` for Unix/Linux/macOS
   - `setup.cmd` for Windows
   - Scripts handle Docker image pulling and initial setup
-- [ ] **Build Scripts**: Provide build scripts for bootstrapper:
+- [ ] **Build Scripts**: Provide build scripts for Horizon SDLC:
   - `build.sh` for Unix/Linux/macOS
   - `build.cmd` for Windows
   - Scripts accept OPENROUTER_API_KEY as parameter
@@ -758,11 +758,11 @@ enum AgentMode {
   - Deploy OpenCode container with MCP servers pre-installed
 - [ ] **CLI Invocation**: Simple command structure:
   ```bash
-  # Pull and run bootstrap tool
+  # Pull and run Horizon SDLC
   ./setup.sh
-  
+
   # Or direct Docker usage
-  docker run -it -v $(pwd):/workspace ai-bootstrap
+  docker run -it -v $(pwd):/workspace horizon-sdlc
   ```
 
 ### 10.3 Workflow Integration
@@ -789,7 +789,7 @@ enum AgentMode {
 - [ ] MCP server integration specifications for OpenCode container
 - [ ] Validation rules and compliance checks
 
-### Phase 3: Bootstrap Tool Development (Weeks 5-7)
+### Phase 3: Horizon SDLC Development (Weeks 5-7)
 - [ ] TypeScript project structure and CLI framework
 - [ ] Interactive setup wizard implementation
 - [ ] DevContainer and VSCode configuration generation
@@ -826,7 +826,7 @@ enum AgentMode {
 - [ ] GitHub Actions workflow templates for automated code analysis, review, and generation
 - [ ] Security configurations and best practices for GitHub Actions integration
 
-### 12.2 Bootstrap Tool
+### 12.2 Horizon SDLC
 - [ ] TypeScript-based CLI tool with interactive wizard
 - [ ] Docker container with all templates and configurations
 - [ ] OpenCode container deployment and management capabilities
