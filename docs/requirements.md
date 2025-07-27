@@ -3,12 +3,13 @@
 ## 1. Project Overview
 
 ### 1.1 Vision Statement
-Build a TypeScript-based project bootstrapping tool that automates complete project setup with AI-powered development assistance, distributed as a Docker container for universal deployment across repositories.
+Build a TypeScript-based project bootstrapping tool that automates one-time project setup and deploys OpenCode AI development assistance in a containerized environment for ongoing development support, distributed as a Docker container for universal deployment across repositories.
 
 ### 1.2 Core Objectives
-- **Automation**: Eliminate manual project setup overhead
-- **AI Integration**: Embed intelligent development assistance throughout SDLC
+- **Automation**: Eliminate manual project setup overhead through one-time bootstrapping
+- **AI Integration**: Deploy OpenCode AI assistance infrastructure for ongoing development support
 - **Portability**: Docker-based distribution for universal deployment
+- **Clean Handoff**: Seamless transition from bootstrap setup to OpenCode-managed development
 
 ### 1.3 Architectural Inspiration
 Based on https://github.com/SuperClaude-Org/SuperClaude_Framework architecture and functional patterns.
@@ -18,7 +19,12 @@ Inspiration also from:
 - https://github.com/buildermethods/agent-os
 
 ### 1.4 Repository Purpose
-This repository serves as the foundation for our AI Project Bootstrap Tool and contains standardized configurations, templates, and agent definitions that will be used to bootstrap new projects across multiple languages and use cases.
+This repository serves as the foundation for our AI Project Bootstrap Tool and contains standardized configurations, templates, and agent definitions that will be used to bootstrap new projects across multiple languages and use cases. The bootstrapper performs one-time project setup and deploys these assets to OpenCode for ongoing development assistance.
+
+### 1.5 Scope Boundaries
+- **Bootstrapper Scope**: Initial and iterative project setup, configuration generation, OpenCode container deployment, workspace asset management
+- **OpenCode Scope**: Ongoing development assistance, code generation, workflow management, continuous project support
+- **Shared Assets**: Templates, standards, configurations, and prompts deployed in workspace and mounted into OpenCode container for ongoing use and modification
 
 ## 2. Repository Structure Requirements
 
@@ -73,11 +79,17 @@ Each mode has specific responsibilities and operates at different SDLC phases:
 
 ### 4.2 Agent Configuration Requirements
 Establish uniform global rules for all OpenCode agents:
-- [ ] **MCP Server Integration** - Mandatory use of available MCP servers:
-  - Context7 - Context management and retrieval
+- [ ] **MCP Server Integration** - Pre-installed in OpenCode container:
+  - Context7 - Context management and retrieval with GitHub integration support
   - Playwright - Browser automation and testing
   - ShadCN UI MCP (https://github.com/Jpisnice/shadcn-ui-mcp-server) - UI component generation
   - Sequential Thinking - Structured problem-solving workflows
+  - GitHub MCP - Repository management and integration
+- [ ] **GitHub Integration** - Context7 MCP server configured for:
+  - Repository access and documentation retrieval
+  - Real-time code documentation for project-specific libraries
+  - Integration with project's GitHub repository for context-aware assistance
+  - Support for both public and private repository access
 - [ ] **Context Awareness** - Agents must read and incorporate architecture documents, tech-stack documentation and best practices specifications
 - [ ] **Consistent Behavior** - All agents follow the same base configuration and operational patterns
 
@@ -100,137 +112,280 @@ For each supported language (TypeScript, Go, Python, Java), create comprehensive
 - [ ] Include automated validation tools (JSON schema-based validation)
 - [ ] Document exceptions and edge cases (JSON-structured documentation)
 
-## 6. Structured Workflow Implementation
+## 6. Workflow Template Installation
 
-### 6.1 Four-Phase Development Workflow
-Create a structured development process with pre-configured prompts:
+### 6.1 Development Workflow Templates
+Install structured development process templates and configurations for OpenCode usage:
 
-#### Phase 1: Product Requirements Document (PRD) Phase
-- [ ] **Product Owner Mode Agent** creates comprehensive PRD
-- [ ] **Incorporates**: Target languages, frameworks, product requirements, business use cases, user personas
-- [ ] **Output**: Complete PRD document with clear specifications
+#### Phase 1: Product Requirements Document (PRD) Template
+- [ ] **Template Installation**: Install PRD template for OpenCode Product Owner mode
+- [ ] **Configuration**: Target languages, frameworks, product requirements, business use cases, user personas
+- [ ] **Prompt Templates**: Pre-configured prompts for comprehensive PRD creation
 
-#### Phase 2: Technical Architecture Phase
-- [ ] **Architect Mode Agent** develops technical specifications
-- [ ] **Integrates**: Enterprise requirements, architectural standards, PRD requirements
-- [ ] **Output**: Technical specifications document with system design
+#### Phase 2: Technical Architecture Template
+- [ ] **Template Installation**: Install architecture template for OpenCode Architect mode
+- [ ] **Configuration**: Enterprise requirements, architectural standards, integration patterns
+- [ ] **Prompt Templates**: Pre-configured prompts for technical specification development
 
-#### Phase 3: Feature Breakdown Phase
-- [ ] **Technical specifications** decomposed into independent, implementable features
-- [ ] **Each feature includes**: 
-  - Functional requirements
-  - Testing requirements
-  - Logging specifications
-  - CI/CD considerations
-  - Observability requirements
-  - **Documentation requirements**:
-    - Technical documentation (API docs, architecture decisions)
-    - Business documentation (user guides, feature specifications, acceptance criteria)
-    - Integration documentation (setup guides, configuration examples)
-- [ ] **Features assigned** to appropriate backend or frontend dev agents
-- [ ] **Documentation assignments** distributed to:
-  - Technical Writer agents for technical documentation
-  - Product Document Writer agents for business-facing documentation
-  - Implementation agents responsible for inline code documentation
+#### Phase 3: Feature Breakdown Template
+- [ ] **Template Installation**: Install feature decomposition templates for OpenCode
+- [ ] **Configuration Templates**:
+  - Functional requirements structure
+  - Testing requirements framework
+  - Logging specifications template
+  - CI/CD considerations checklist
+  - Observability requirements template
+  - Documentation requirements framework
+- [ ] **Agent Assignment Templates**: Backend and frontend development role templates
 
-#### Phase 4: User Story Prompt (USP) Implementation Phase
-- [ ] **Features broken down** into actionable User Story Prompts
-- [ ] **Each USP contains**:
-  - Agent role definition
-  - Clear implementation goal
-  - Step-by-step instructions
-  - Language-specific examples from coding standards
-  - Compliance rules
-  - **Documentation deliverables**:
-    - Only write code comments if absolutely necessary, we prefer that the code be simple enough to be self-documenting
-    - API documentation updates (OpenAPI/Swagger specs)
-    - README updates for new features
-    - User-facing documentation for new functionality
-- [ ] **USPs follow** prompt engineering best practices for maximum agent effectiveness
-- [ ] **USPs follow** test-driven development approaches so that tests are written first and then the implementation is added
-- [ ] **Documentation USPs** created alongside implementation USPs:
-  - Technical documentation USPs for complex features
-  - Business documentation USPs for user-facing features
-  - Integration documentation USPs for setup and configuration changes
+#### Phase 4: User Story Prompt (USP) Template
+- [ ] **Template Installation**: Install USP templates for OpenCode implementation agents
+- [ ] **Template Components**:
+  - Agent role definition templates
+  - Implementation goal structures
+  - Step-by-step instruction frameworks
+  - Language-specific example libraries
+  - Compliance rule templates
+  - Documentation deliverable templates
+- [ ] **Best Practice Templates**: Prompt engineering and test-driven development frameworks
 
-### 6.2 Workflow Prompt Templates
-- [ ] Create standardized prompt templates for each phase (JSON format for token efficiency)
-- [ ] Include validation checkpoints between phases (JSON schema validation)
-- [ ] Establish handoff procedures between agent modes (JSON workflow definitions)
-- [ ] Document escalation paths for complex decisions (JSON decision trees)
+### 6.2 Template Installation Requirements
+- [ ] Package standardized prompt templates for OpenCode consumption (JSON format for token efficiency)
+- [ ] Include validation checkpoint templates (JSON schema validation)
+- [ ] Install handoff procedure templates for agent mode transitions (JSON workflow definitions)
+- [ ] Provide escalation path templates for complex decisions (JSON decision trees)
 
-## 7. Bootstrap Tool Functional Requirements
+## 7. OpenCode Integration Requirements
 
-### 7.1 DevContainer Setup Generation
+### 7.1 Container Architecture
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Host System                             │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐    ┌─────────────────────────────────┐ │
+│  │   Bootstrapper  │───▶│         OpenCode Container      │ │
+│  │   (Temporary)   │    │                                 │ │
+│  └─────────────────┘    │  ┌─────────────────────────────┐ │ │
+│                         │  │      MCP Servers            │ │ │
+│  ┌─────────────────┐    │  │  • Context7 (GitHub)        │ │ │
+│  │    Project      │◀───┼──│  • Playwright               │ │ │
+│  │   Workspace     │    │  │  • ShadCN UI                │ │ │
+│  │   ├── .opencode │◀───┼──│  • Sequential Thinking      │ │ │
+│  │   │   ├── config│    │  │  • GitHub MCP               │ │ │
+│  │   │   ├── templates   │  └─────────────────────────────┘ │ │
+│  │   │   ├── prompts│    │                                 │ │
+│  │   │   └── standards   │  Volume Mounts:                 │ │
+│  │   └── src/      │    │  /workspace -> Project Root     │ │
+│  └─────────────────┘    │  /opencode-config -> .opencode  │ │
+│                         └─────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 7.2 OpenCode Container Deployment
+- [ ] **Container Orchestration**: Deploy OpenCode in isolated container with:
+  - Project workspace mounted as volume (/workspace -> project directory)
+  - OpenCode assets directory mounted (/workspace/.opencode -> container /opencode-config)
+  - MCP servers pre-installed and configured
+  - Project-specific environment variables
+  - Network access for development tools
+  - Resource allocation and limits
+- [ ] **Volume Mounting Strategy**:
+  - Workspace root mounted for project access
+  - .opencode directory mounted for configuration, templates, and prompts
+  - OpenCode settings and authentication files accessible from workspace
+  - User-modifiable assets available for real-time updates
+- [ ] **Container Lifecycle Management**:
+  - Container start, stop, restart capabilities
+  - Health checks for OpenCode and MCP servers
+  - Automatic restart on failure
+  - Graceful shutdown procedures
+
+### 7.3 Workspace Asset Management
+- [ ] **Asset Deployment to Workspace**: Deploy all project assets to .opencode directory:
+  - Language-specific coding standards and templates
+  - Workflow prompt templates and configurations
+  - Architectural guidelines and validation rules
+  - Project-specific context and metadata
+  - OpenCode configuration files (opencode.json, auth settings)
+- [ ] **Asset Structure in Workspace**:
+  ```
+  .opencode/
+  ├── config/
+  │   ├── opencode.json
+  │   ├── auth.json
+  │   └── mcp-servers.json
+  ├── templates/
+  │   ├── typescript/
+  │   ├── go/
+  │   ├── python/
+  │   └── java/
+  ├── prompts/
+  │   ├── workflow/
+  │   ├── coding-standards/
+  │   └── agent-modes/
+  └── standards/
+      ├── architectural/
+      ├── testing/
+      └── documentation/
+  ```
+- [ ] **User Modification Support**:
+  - All assets editable by user in workspace
+  - Changes reflected in OpenCode container via volume mounts
+  - Version control integration for asset tracking
+  - Validation tools for asset integrity
+
+### 7.4 Handoff and Validation Process
+- [ ] **Deployment Validation**: Ensure successful OpenCode deployment:
+  - Verify OpenCode container operational status
+  - Validate all MCP servers functional and responsive
+  - Confirm workspace assets properly mounted and accessible
+  - Test basic OpenCode functionality with project
+  - Validate GitHub integration and Context7 compatibility
+- [ ] **Handoff Completion**:
+  - Generate handoff report with deployment status
+  - Clean up bootstrapper temporary resources
+  - Provide OpenCode access instructions to user
+  - Document asset modification procedures for user
+  - Log successful completion or failure details
+
+### 7.5 Project Lifecycle Support
+- [ ] **Iterative Setup Support**: Support multiple bootstrap runs:
+  - Add new languages and frameworks to existing projects
+  - Remove unused language configurations
+  - Update templates and standards without losing customizations
+  - Merge new assets with existing user modifications
+- [ ] **Asset Management**:
+  - Version control integration for .opencode directory
+  - Asset validation and integrity checking
+  - Conflict resolution for asset updates
+  - User modification preservation during updates
+- [ ] **Container Management**:
+  - OpenCode container restart after configuration changes
+  - Volume remounting for asset updates
+  - Configuration validation before container restart
+
+## 8. Bootstrap Tool Functional Requirements
+
+### 8.1 DevContainer Setup Generation
 - [ ] **DevContainer Configuration**: Generate `.devcontainer/devcontainer.json` with:
   - Base image selection based on project type
   - Required development tools and runtimes
   - Port forwarding configuration
   - Volume mounts for development workflow
+  - OpenCode container integration setup
 - [ ] **VSCode Integration**: Create `.vscode/settings.json` with:
   - Project-specific editor settings
   - Formatter and linter configurations
   - Debug configurations
+  - OpenCode integration settings
 - [ ] **Extension Management**: Generate `.vscode/extensions.json` with:
   - Required extensions list for project type
   - Recommended extensions for enhanced development
+  - OpenCode-compatible extensions
 
-### 7.2 Project Structure Generation
+### 8.2 Project Structure Generation
 - [ ] **Folder Structure**: Create default directory layout based on:
   - Project type and language selection
   - Architectural standards compliance
   - Industry standard conventions
+  - OpenCode integration requirements
 - [ ] **Configuration Files**: Generate appropriate config files:
   - Build configurations (tsconfig.json, go.mod, requirements.txt, pom.xml)
   - Package management and dependency files
   - Quality tools (eslint, prettier, jest, golangci-lint configs)
-- [ ] **DevContainer Configuration**: Generate `.devcontainer/devcontainer.json` for selected language
-- [ ] **AI Agent Templates**: Install language-specific templates and coding standards (JSON format)
-- [ ] **OpenCode Agent Setup**: Configure AI agent with project-context-aware prompts
+- [ ] **OpenCode Workspace Assets**: Deploy assets to .opencode directory:
+  - Language-specific templates and coding standards
+  - Project-context-aware prompts and configurations
+  - Workflow templates and validation rules
+  - OpenCode configuration files (opencode.json, auth.json)
+- [ ] **Git Integration**:
+  - Initialize git repository if needed
+  - Generate .gitignore with OpenCode secrets exclusion
+  - Exclude .opencode/config/auth.json and other sensitive files
+  - Include .opencode/templates/ and .opencode/prompts/ for version control
 
-### 7.3 Development Standards Integration
-- [ ] **AI Agent Templates**: Install project-specific:
-  - Language-specific coding standards libraries (JSON format)
-  - Architectural pattern templates (JSON format)
-  - Workflow prompt templates (JSON format)
-- [ ] **OpenCode Configuration**: Deploy AI agent with:
+### 8.3 Development Standards Integration
+- [ ] **Workspace Asset Deployment**: Deploy project-specific assets to .opencode directory:
+  - Language-specific coding standards libraries
+  - Architectural pattern templates
+  - Workflow prompt templates
+  - Development rules and guidelines
+- [ ] **OpenCode Configuration**: Generate OpenCode-specific configurations:
   - Project-context-aware prompts
   - Language-specific coding standards
-  - Development workflow integration
-- [ ] **Development Rules**: Install project-specific:
-  - Coding standards and style guides
-  - Git workflow guidelines
-  - Code review checklists
-- [ ] **Architecture Documentation**: Generate templates for:
-  - System architecture documents
-  - API documentation structure
-  - Technical decision records (ADRs)
+  - Development workflow templates
+  - Validation rules and compliance checks
+  - MCP server configurations for project context
+- [ ] **Documentation Template Installation**: Generate templates for OpenCode use:
+  - System architecture document templates
+  - API documentation structure templates
+  - Code review checklist templates
+  - User guide templates
 
-### 7.4 AI Agent Integration
-- [ ] **OpenCode AI Agent**: Configure and deploy AI agent with:
-  - Project-context-aware prompts
+### 8.4 OpenCode Deployment and Integration
+- [ ] **OpenCode Container Deployment**: Deploy and configure OpenCode with:
+  - Project workspace volume mounting (/workspace)
+  - OpenCode assets volume mounting (/workspace/.opencode -> /opencode-config)
+  - MCP servers pre-installed and configured
+  - GitHub integration enabled for Context7 compatibility
   - Development workflow integration
   - Code generation capabilities
-- [ ] **Custom Prompts**: Install project-specific prompt libraries for:
-  - Code generation patterns
-  - Documentation assistance
-  - Testing strategies
-  - Architecture guidance
+- [ ] **Volume Mount Configuration**: Configure container mounts for:
+  - Real-time access to user-modifiable assets
+  - OpenCode configuration files in workspace
+  - Template and prompt updates without container restart
+  - Project context and metadata access
+- [ ] **Deployment Validation**: Verify successful OpenCode integration:
+  - Container health checks
+  - MCP server functionality validation (including GitHub integration)
+  - Workspace asset mounting verification
+  - Context7 GitHub integration testing
+  - Basic functionality testing
 
-### 7.5 CLI Interface
+### 8.5 CLI Interface
 - [ ] **Interactive Setup Wizard**: Guided project configuration through:
-  - Language and framework selection
+  - Language and framework selection (multi-select supported)
   - Project type selection
   - Feature selection (testing, CI/CD, etc.)
-  - AI capabilities configuration
+  - OpenCode capabilities configuration
+  - Container deployment options
+- [ ] **Iterative Setup Support**: Allow multiple bootstrap runs:
+  - Detect existing .opencode directory and project configuration
+  - Add new languages/frameworks to existing setup
+  - Remove unused language configurations
+  - Preserve user modifications during updates
+  - Merge new templates with existing customizations
 - [ ] **Batch Mode**: Configuration file-driven automation
 - [ ] **Template Management**: Manage project templates and configurations
 
-## 8. Technical Requirements
+### 8.6 Error Handling and Recovery
+- [ ] **Comprehensive Error Handling**: Handle all setup phases gracefully:
+  - Project structure generation failures
+  - OpenCode container deployment failures
+  - Workspace asset deployment errors
+  - MCP server integration failures
+  - Volume mounting and permission issues
+- [ ] **Recovery Mechanisms**: Provide recovery options for partial failures:
+  - Rollback capabilities for failed deployments
+  - Retry mechanisms for transient failures
+  - Manual intervention options for complex issues
+  - Asset conflict resolution during iterative setup
+- [ ] **Diagnostic Tools**: Support troubleshooting and debugging:
+  - Detailed logging for all operations
+  - Health check utilities for deployed components
+  - Configuration validation tools
+  - User-friendly error messages and resolution guidance
+  - Volume mount verification utilities
+- [ ] **Offline Operation**: Support limited functionality without internet:
+  - Local template and configuration caching
+  - Offline project structure generation
+  - Graceful degradation when external services unavailable
 
-### 8.1 Bootstrap Tool Architecture
+## 9. Technical Requirements
 
-#### 8.1.1 Core Components
+### 9.1 Bootstrap Tool Architecture
+
+#### 9.1.1 Core Components
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    CLI Interface                            │
@@ -248,14 +403,15 @@ Create a structured development process with pre-configured prompts:
 └─────────────────┴───────────────┴───────────────┴─────────────────┘
 ```
 
-#### 8.1.2 Technology Stack
+#### 9.1.2 Technology Stack
 - **Core**: TypeScript 5.x, Node.js 20+
 - **CLI**: Commander.js, Inquirer.js for interactive wizard
 - **File Operations**: fs-extra, yaml, mustache/handlebars for templating
-- **Docker**: Multi-stage builds, Alpine base images
+- **Docker**: Multi-stage builds, Alpine base images, container orchestration
 - **Testing**: Jest, integration tests for generated projects
+- **Container Management**: Docker SDK for container deployment and management
 
-### 8.2 Data Models
+### 9.2 Data Models
 ```typescript
 enum SupportedLanguage {
   TYPESCRIPT = 'typescript',
@@ -279,9 +435,9 @@ enum AgentMode {
 }
 ```
 
-## 9. Distribution and Usage
+## 10. Distribution and Usage
 
-### 9.1 Docker Distribution
+### 10.1 Docker Distribution
 - [ ] **Container Image**: Single Docker image containing:
   - Bootstrap tool executable
   - Language-specific project templates (JSON format)
@@ -294,7 +450,7 @@ enum AgentMode {
   - GitHub Container Registry
   - Semantic versioning for releases
 
-### 9.2 Installation and Usage
+### 10.2 Installation and Usage
 - [ ] **Setup Script**: Provide installation scripts:
   - `setup.sh` for Unix/Linux/macOS
   - `setup.cmd` for Windows
@@ -308,25 +464,28 @@ enum AgentMode {
   docker run -it -v $(pwd):/workspace ai-bootstrap
   ```
 
-### 9.3 Workflow Integration
+### 10.3 Workflow Integration
 - [ ] **Target Repository Setup**: Tool operates on target directories:
   - Mounts target repository as volume
   - Generates all configuration files in target location
   - Initializes git repository if needed
   - Commits initial setup with descriptive message
+  - Deploys and configures OpenCode container
+  - Transfers all project assets to OpenCode
+  - Validates successful handoff to OpenCode
 
-## 10. Implementation Phases
+## 11. Implementation Phases
 
 ### Phase 1: Foundation Setup (Weeks 1-2)
 - [ ] Repository structure and organization
 - [ ] Language-specific project templates
 - [ ] Architectural standards documentation
-- [ ] Agent mode definitions and responsibilities
+- [ ] Agent mode definitions and responsibilities for OpenCode
 
 ### Phase 2: Standards and Workflows (Weeks 3-4)
 - [ ] Coding standards libraries for each language
-- [ ] Structured workflow prompt templates
-- [ ] MCP server integration specifications
+- [ ] Workflow prompt templates for OpenCode installation
+- [ ] MCP server integration specifications for OpenCode container
 - [ ] Validation rules and compliance checks
 
 ### Phase 3: Bootstrap Tool Development (Weeks 5-7)
@@ -335,79 +494,98 @@ enum AgentMode {
 - [ ] DevContainer and VSCode configuration generation
 - [ ] Project structure generation engine
 - [ ] Template system implementation
+- [ ] Asset packaging and transfer mechanisms
 
-### Phase 4: AI Integration (Weeks 8-9)
-- [ ] OpenCode agent integration
-- [ ] Custom prompt installation
-- [ ] AI capability configuration
-- [ ] MCP server setup automation
+### Phase 4: OpenCode Integration (Weeks 8-9)
+- [ ] OpenCode container deployment automation
+- [ ] Asset transfer and configuration system
+- [ ] MCP server integration within OpenCode container
+- [ ] Handoff and validation process implementation
+- [ ] Error handling and recovery mechanisms
 
 ### Phase 5: Distribution and Testing (Weeks 10-11)
 - [ ] Docker image optimization and multi-arch builds
 - [ ] Setup scripts for all platforms
-- [ ] Integration testing with various project types
+- [ ] Integration testing with OpenCode deployment
+- [ ] End-to-end testing of bootstrap-to-OpenCode workflow
 - [ ] Documentation and examples
 
-## 11. Deliverables Required
+## 12. Deliverables Required
 
-### 11.1 Repository Content
-- [ ] Complete project templates for TypeScript, Go, Python, and Java (JSON format)
-- [ ] Documented architectural standards with practical examples (JSON schemas and examples)
-- [ ] Agent mode definitions with clear responsibilities and workflows (JSON configuration)
-- [ ] Coding standards libraries with language-specific examples (JSON format)
-- [ ] Workflow prompt templates for each development phase (JSON templates)
-- [ ] OpenCode configuration files and operational rules (JSON format)
-- [ ] Integration specifications for MCP servers (JSON configuration)
+### 12.1 Repository Content
+- [ ] Complete project templates for TypeScript, Go, Python, and Java
+- [ ] Documented architectural standards with practical examples
+- [ ] Agent mode definitions for OpenCode with clear responsibilities and workflows
+- [ ] Coding standards libraries with language-specific examples
+- [ ] Workflow prompt templates for OpenCode installation
+- [ ] OpenCode configuration files and operational rules
+- [ ] MCP server integration specifications for OpenCode container
 
-### 11.2 Bootstrap Tool
+### 12.2 Bootstrap Tool
 - [ ] TypeScript-based CLI tool with interactive wizard
 - [ ] Docker container with all templates and configurations
+- [ ] OpenCode container deployment and management capabilities
+- [ ] Asset transfer and configuration system
 - [ ] Setup scripts for cross-platform installation
 - [ ] Comprehensive documentation and usage examples
 
-## 12. Success Criteria
+## 13. Success Criteria
 
-### 12.1 Functional Success
-- [ ] **Complete Setup**: Single command creates fully configured development environment
-- [ ] **AI Integration**: OpenCode agent operational with project-specific context
+### 13.1 Functional Success
+- [ ] **Complete Setup**: Single command creates fully configured development environment with OpenCode deployed
+- [ ] **OpenCode Integration**: OpenCode container operational with workspace assets mounted and all MCP servers functional
 - [ ] **DevContainer Ready**: Immediate development capability in any Docker-compatible environment
 - [ ] **Standards Compliance**: Generated projects follow established architectural principles
-- [ ] **Workflow Integration**: Structured development process with AI-guided phases
+- [ ] **Seamless Handoff**: Successful transition from bootstrapper to OpenCode with all assets accessible via volume mounts
+- [ ] **Asset Accessibility**: All templates, standards, and configurations available in workspace and modifiable by user
+- [ ] **Iterative Setup**: Support for multiple bootstrap runs to add/remove languages and frameworks
+- [ ] **GitHub Integration**: Context7 MCP server properly configured for GitHub repository access
 
-### 12.2 Technical Success
+### 13.2 Technical Success
 - [ ] **Cross-Platform**: Works on Windows, macOS, and Linux
 - [ ] **Multi-Language Templates**: Provides templates and standards for TypeScript, Go, Python, and Java projects
-- [ ] **Performance**: Complete project setup in under 2 minutes
-- [ ] **Reliability**: 95% success rate across different project configurations
-- [ ] **Maintainability**: Clear separation of concerns and extensible architecture
+- [ ] **Performance**: Complete project setup and OpenCode deployment in under 5 minutes
+- [ ] **Reliability**: 95% success rate across different project configurations and OpenCode deployments
+- [ ] **Maintainability**: Clear separation of concerns between bootstrapper and OpenCode
+- [ ] **Container Management**: Reliable OpenCode container deployment and lifecycle management
+- [ ] **Volume Mount Reliability**: Consistent workspace asset mounting and real-time updates
+- [ ] **Iterative Capability**: Successful addition/removal of languages without data loss
+- [ ] **Git Integration**: Proper .gitignore configuration excluding OpenCode secrets
 
-## 13. Dependencies and Prerequisites
+## 14. Dependencies and Prerequisites
 
-### 13.1 External Dependencies
-- Docker runtime on target system
+### 14.1 External Dependencies
+- Docker runtime on target system with container orchestration capabilities
 - Git for repository initialization
 - Internet connectivity for image pulling and package installation
+- Sufficient system resources for running OpenCode container alongside development environment
 
-### 13.2 Internal Prerequisites
-- OpenCode AI agent Docker image (must be built first)
-- MCP server configurations and integrations
+### 14.2 Internal Prerequisites
+- OpenCode AI agent Docker image with MCP servers pre-installed (must be built first)
+- MCP server configurations and integrations (Context7 with GitHub support, Playwright, ShadCN UI, Sequential Thinking, GitHub MCP)
 - Documented development standards and templates
 - Tested project templates for each supported language
-- Validated workflow prompt templates
+- Validated workflow prompt templates for OpenCode consumption
+- Container orchestration and deployment scripts
+- Volume mounting and permission management utilities
 
-## 14. Risk Mitigation
+## 15. Risk Mitigation
 
-### 14.1 Technical Risks
+### 15.1 Technical Risks
 - **Docker Compatibility**: Test across Docker Desktop, Podman, and cloud environments
 - **Template Complexity**: Start with simple templates, gradually add complexity
-- **AI Agent Reliability**: Implement fallback modes for offline operation
+- **OpenCode Container Reliability**: Implement health checks, restart policies, and fallback modes
 - **Multi-Language Templates**: Ensure consistent template quality across all supported languages
+- **Container Orchestration**: Test container deployment across different Docker environments
+- **Asset Transfer Reliability**: Implement validation and retry mechanisms for asset transfer
 
-### 14.2 Operational Risks
+### 15.2 Operational Risks
 - **Setup Script Reliability**: Extensive testing across platforms and environments
-- **Version Management**: Clear versioning strategy for tool, templates, and AI agent
+- **Version Management**: Clear versioning strategy for bootstrapper, OpenCode, templates, and MCP servers
 - **User Experience**: Comprehensive error handling and helpful error messages
-- **Workflow Adoption**: Clear documentation and examples for structured development process
+- **OpenCode Integration**: Clear documentation for OpenCode usage and troubleshooting
+- **Container Resource Management**: Monitor and manage resource usage for OpenCode container
+- **Handoff Process**: Ensure reliable transition from bootstrapper to OpenCode with proper validation
 
 
 
