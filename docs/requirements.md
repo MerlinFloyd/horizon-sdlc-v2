@@ -161,7 +161,56 @@ Install structured development process templates and configurations for OpenCode
 
 ## 7. OpenCode Integration Requirements
 
-### 7.1 Container Architecture
+### 7.1 OpenCode Configuration Specifications
+
+#### 7.1.1 Environment Variable Configuration
+- [ ] **Provider Authentication**: Use environment variable substitution for sensitive data:
+  - `{env:OPENROUTER_API_KEY}` for OpenRouter provider authentication
+  - `{env:GITHUB_TOKEN}` for GitHub MCP server access
+  - Environment variables passed to Docker container during build and runtime
+  - Bootstrapper build scripts accept authentication keys as command-line parameters
+
+#### 7.1.2 Provider and Model Configuration
+- [ ] **OpenRouter Provider Setup**:
+  - Configure provider as "openrouter" in opencode.json
+  - Set default model to "anthropic/claude-sonnet-4-20250514" (Claude Sonnet 4)
+  - Use environment variable substitution for API key security
+  - Configure provider-specific options and fallback settings
+
+#### 7.1.3 MCP Server Configuration
+- [ ] **MCP Server Integration** using latest OpenCode MCP configuration format:
+  - **Context7 MCP Server**: Documentation retrieval and context management
+    - Type: "local", Command: ["context7-mcp-server"], Enabled: true
+  - **GitHub MCP Server**: Repository management and GitHub API integration
+    - Type: "local", Command: ["github-mcp-server"], Enabled: true
+    - Environment: GITHUB_TOKEN from environment variables
+  - **Playwright MCP Server**: Browser automation and testing capabilities
+    - Type: "local", Command: ["playwright-mcp-server"], Enabled: true
+  - **ShadCN UI MCP Server**: UI component generation and management
+    - Type: "local", Command: ["shadcn-ui-mcp-server"], Enabled: true
+  - **Sequential Thinking MCP Server**: Structured problem-solving workflows
+    - Type: "local", Command: ["sequential-thinking-mcp-server"], Enabled: true
+
+#### 7.1.4 Agent Mode Configuration for Workflow Phases
+- [ ] **Workflow Phase Agents**: Configure specialized agent modes for SDLC phases:
+  - **PRD Mode**: Technical Product Owner agent for requirements gathering
+    - Model: Claude Sonnet 4, Tools: read-only analysis, documentation generation
+  - **Technical Architecture Mode**: Architect agent for system design
+    - Model: Claude Sonnet 4, Tools: design tools, documentation, analysis
+  - **Feature Breakdown Mode**: Developer agents for feature decomposition
+    - Model: Claude Sonnet 4, Tools: full development capabilities
+  - **USP Generation Mode**: Implementation agents for user story creation
+    - Model: Claude Sonnet 4, Tools: implementation and testing capabilities
+
+#### 7.1.5 Global AGENTS.md Configuration
+- [ ] **Global Agent Rules**: Deploy AGENTS.md file in OpenCode container with:
+  - **Context Awareness Rules**: Instructions to read standards and templates from .ai directory
+  - **MCP Server Usage Guidelines**: When and how to invoke specific MCP servers
+  - **Standards Reference Rules**: Lazy loading of external file references from .ai directory
+  - **Workflow Phase Instructions**: Guidelines for different development phases
+  - **Template and Prompt Integration**: Instructions for using .ai directory assets
+
+### 7.2 Container Architecture
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Host System                             │
@@ -195,6 +244,11 @@ Install structured development process templates and configurations for OpenCode
   - Project-specific environment variables
   - Network access for development tools
   - Resource allocation and limits
+- [ ] **Environment Variable Configuration**: Use environment variables for sensitive information:
+  - OPENROUTER_API_KEY for provider authentication
+  - GITHUB_TOKEN for GitHub MCP server access
+  - Environment variable substitution in opencode.json using {env:VARIABLE_NAME} syntax
+  - Bootstrapper accepts auth key as parameter for Docker build process
 - [ ] **Volume Mounting Strategy**:
   - Workspace root mounted for project access
   - `.opencode` directory mounted for OpenCode's data and configuration
@@ -218,11 +272,19 @@ Install structured development process templates and configurations for OpenCode
 - [ ] **Asset Structure in Workspace**:
   ```
   .opencode/                    # OpenCode's data directory
-  ├── opencode.json            # Main OpenCode configuration incl. mcp server configs
+  ├── opencode.json            # Main OpenCode configuration with:
+  │                            #   - Environment variable substitution
+  │                            #   - OpenRouter provider (claude sonnet 4)
+  │                            #   - MCP server configurations
+  │                            #   - Agent modes for workflow phases
+  │                            #   - GitHub integration as default
   ├── commands/                # Custom commands
   └── themes/                  # Custom themes
 
   .ai/                         # User-modifiable AI assets
+  ├── config/
+  │   ├── auth.json           # AI provider API keys (gitignored)
+  │   └── mcp-servers.json    # MCP server configurations
   ├── templates/
   │   ├── typescript/
   │   ├── go/
@@ -236,6 +298,12 @@ Install structured development process templates and configurations for OpenCode
       ├── architectural/
       ├── testing/
       └── documentation/
+
+  AGENTS.md                    # Global agent configuration file in container:
+                               #   - Standards and templates from .ai directory
+                               #   - MCP server invocation rules
+                               #   - Context awareness instructions
+                               #   - Workflow phase guidelines
   ```
 - [ ] **User Modification Support**:
   - All AI assets in `.ai` directory editable by user
@@ -307,7 +375,11 @@ Install structured development process templates and configurations for OpenCode
   - Quality tools (eslint, prettier, jest, golangci-lint configs)
 - [ ] **OpenCode Configuration**: Deploy OpenCode configuration:
   - Generate `opencode.json` in project root with proper data directory configuration
-  - Configure MCP servers and AI providers
+  - Configure provider as OpenRouter with Claude Sonnet 4 model
+  - Use environment variable substitution for sensitive data: {env:OPENROUTER_API_KEY}
+  - Configure MCP servers (Context7, GitHub MCP, Playwright, ShadCN UI, Sequential Thinking)
+  - Set up agent modes for workflow phases (PRD, Technical Architecture, Feature Breakdown, USP)
+  - Configure GitHub as default integration
   - Set up project-specific OpenCode settings
 - [ ] **AI Workspace Assets**: Deploy assets to `.ai` directory:
   - Language-specific templates and coding standards
@@ -477,6 +549,12 @@ enum AgentMode {
   - `setup.sh` for Unix/Linux/macOS
   - `setup.cmd` for Windows
   - Scripts handle Docker image pulling and initial setup
+- [ ] **Build Scripts**: Provide build scripts for bootstrapper:
+  - `build.sh` for Unix/Linux/macOS
+  - `build.cmd` for Windows
+  - Scripts accept OPENROUTER_API_KEY as parameter
+  - Build Docker container with environment variables
+  - Deploy OpenCode container with MCP servers pre-installed
 - [ ] **CLI Invocation**: Simple command structure:
   ```bash
   # Pull and run bootstrap tool
@@ -585,11 +663,15 @@ enum AgentMode {
 ### 14.2 Internal Prerequisites
 - OpenCode AI agent Docker image with MCP servers pre-installed (must be built first)
 - MCP server configurations and integrations (Context7, GitHub MCP, Playwright, ShadCN UI, Sequential Thinking)
+- Global AGENTS.md file with comprehensive agent rules and MCP server usage guidelines
+- Environment variable configuration for OpenRouter provider (Claude Sonnet 4)
+- Agent mode definitions for workflow phases (PRD, Technical Architecture, Feature Breakdown, USP)
 - Documented development standards and templates
 - Tested project templates for each supported language
 - Validated workflow prompt templates for OpenCode consumption
 - Container orchestration and deployment scripts
 - Volume mounting and permission management utilities
+- Build scripts (build.sh, build.cmd) that accept authentication keys as parameters
 
 ## 15. Risk Mitigation
 
