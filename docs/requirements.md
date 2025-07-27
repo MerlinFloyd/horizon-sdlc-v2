@@ -80,15 +80,19 @@ Each mode has specific responsibilities and operates at different SDLC phases:
 ### 4.2 Agent Configuration Requirements
 Establish uniform global rules for all OpenCode agents:
 - [ ] **MCP Server Integration** - Pre-installed in OpenCode container:
-  - Context7 - Context management and retrieval with GitHub integration support
+  - Context7 - Documentation retrieval and context management for libraries and frameworks
   - Playwright - Browser automation and testing
   - ShadCN UI MCP (https://github.com/Jpisnice/shadcn-ui-mcp-server) - UI component generation
   - Sequential Thinking - Structured problem-solving workflows
-  - GitHub MCP - Repository management and integration
-- [ ] **GitHub Integration** - Context7 MCP server configured for:
-  - Repository access and documentation retrieval
+  - GitHub MCP - Repository management and GitHub API integration
+- [ ] **Context7 Configuration** - Context7 MCP server configured for:
+  - Library documentation retrieval from various sources
   - Real-time code documentation for project-specific libraries
-  - Integration with project's GitHub repository for context-aware assistance
+  - Support for both public and private library documentation
+- [ ] **GitHub MCP Configuration** - GitHub MCP server configured for:
+  - Repository access and file operations
+  - Issue and pull request management
+  - GitHub API integration for project-specific repository operations
   - Support for both public and private repository access
 - [ ] **Context Awareness** - Agents must read and incorporate architecture documents, tech-stack documentation and best practices specifications
 - [ ] **Consistent Behavior** - All agents follow the same base configuration and operational patterns
@@ -167,7 +171,7 @@ Install structured development process templates and configurations for OpenCode
 │  │   (Temporary)   │       │                                 │ │
 │  └─────────────────┘       │  ┌─────────────────────────────┐ │ │
 │                            │  │      MCP Servers            │ │ │
-│  ┌─────────────────┐       │  │  • Context7 (GitHub)        │ │ │
+│  ┌─────────────────┐       │  │  • Context7                 │ │ │
 │  │    Project      │◀─────┼──│  • Playwright               │ │ │
 │  │   Workspace     │       │  │  • ShadCN UI                │ │ │
 │  │   ├── .ai       │◀─────┼──│  • Sequential Thinking      │ │ │
@@ -248,7 +252,8 @@ Install structured development process templates and configurations for OpenCode
   - Validate all MCP servers functional and responsive
   - Confirm workspace assets properly mounted and accessible (`.opencode` and `.ai` directories)
   - Test basic OpenCode functionality with project
-  - Validate GitHub integration and Context7 compatibility
+  - Validate Context7 MCP server functionality and documentation retrieval
+  - Validate GitHub MCP server functionality and repository access
   - Verify OpenCode can read configuration from `opencode.json`
 - [ ] **Handoff Completion**:
   - Generate handoff report with deployment status
@@ -343,8 +348,7 @@ Install structured development process templates and configurations for OpenCode
   - Project workspace volume mounting (/workspace)
   - OpenCode data directory mounting (/workspace/.opencode -> /.opencode)
   - AI assets directory mounting (/workspace/.ai -> /.ai)
-  - MCP servers pre-installed and configured
-  - GitHub integration enabled for Context7 compatibility
+  - MCP servers pre-installed and configured (Context7, GitHub MCP, Playwright, etc.)
   - Development workflow integration
   - Code generation capabilities
 - [ ] **Volume Mount Configuration**: Configure container mounts for:
@@ -354,9 +358,12 @@ Install structured development process templates and configurations for OpenCode
   - Project context and metadata access
 - [ ] **Deployment Validation**: Verify successful OpenCode integration:
   - Container health checks
-  - MCP server functionality validation (including GitHub integration)
+  - Individual MCP server functionality validation:
+    - Context7 documentation retrieval testing
+    - GitHub MCP repository access testing
+    - Playwright browser automation testing
+    - Sequential Thinking workflow testing
   - Workspace asset mounting verification (both `.opencode` and `.ai`)
-  - Context7 GitHub integration testing
   - OpenCode configuration file accessibility
   - Basic functionality testing
 
@@ -557,7 +564,7 @@ enum AgentMode {
 - [ ] **Seamless Handoff**: Successful transition from bootstrapper to OpenCode with all assets accessible via volume mounts
 - [ ] **Asset Accessibility**: All templates, standards, and configurations available in workspace and modifiable by user
 - [ ] **Iterative Setup**: Support for multiple bootstrap runs to add/remove languages and frameworks
-- [ ] **GitHub Integration**: Context7 MCP server properly configured for GitHub repository access
+- [ ] **MCP Server Integration**: Both Context7 and GitHub MCP servers properly configured and functional
 
 ### 13.2 Technical Success
 - [ ] **Cross-Platform**: Works on Windows, macOS, and Linux
@@ -580,7 +587,7 @@ enum AgentMode {
 
 ### 14.2 Internal Prerequisites
 - OpenCode AI agent Docker image with MCP servers pre-installed (must be built first)
-- MCP server configurations and integrations (Context7 with GitHub support, Playwright, ShadCN UI, Sequential Thinking, GitHub MCP)
+- MCP server configurations and integrations (Context7, GitHub MCP, Playwright, ShadCN UI, Sequential Thinking)
 - Documented development standards and templates
 - Tested project templates for each supported language
 - Validated workflow prompt templates for OpenCode consumption
