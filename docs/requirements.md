@@ -210,7 +210,171 @@ Install structured development process templates and configurations for OpenCode
   - **Workflow Phase Instructions**: Guidelines for different development phases
   - **Template and Prompt Integration**: Instructions for using .ai directory assets
 
-### 7.2 Container Architecture
+### 7.2 GitHub Agent Mode for CI/CD Integration
+
+#### 7.2.1 GitHub Actions Runner Compatibility
+- [ ] **GitHub Agent Mode Configuration**: Specialized OpenCode configuration for GitHub Actions execution:
+  - Non-interactive mode operation with `opencode run` command for automation
+  - Headless container execution without TUI requirements
+  - Optimized resource allocation for GitHub Actions runner constraints
+  - Support for GitHub Actions environment variables and secrets
+  - Integration with GitHub CLI (`gh`) for repository operations
+
+#### 7.2.2 Authentication and Permissions
+- [ ] **GitHub Actions Authentication**: Configure secure authentication for CI/CD workflows:
+  - **GITHUB_TOKEN**: Use GitHub Actions built-in token for repository access
+    - Automatic token provision by GitHub Actions
+    - Scoped permissions based on workflow requirements
+    - Token expiration and rotation handling
+  - **Provider API Keys**: Secure handling of AI provider authentication
+    - OPENROUTER_API_KEY stored as GitHub repository secret
+    - Environment variable substitution in container: `{env:OPENROUTER_API_KEY}`
+    - Secure secret injection into OpenCode container
+  - **MCP Server Authentication**: GitHub MCP server configuration for Actions
+    - Use GITHUB_TOKEN for GitHub API access within MCP server
+    - Repository-scoped permissions for file operations
+    - Pull request and issue management capabilities
+
+#### 7.2.3 Container Configuration for GitHub Actions
+- [ ] **GitHub Actions Container Modifications**: Adapt OpenCode container for CI/CD constraints:
+  - **Headless Operation**: Remove interactive components and TUI dependencies
+    - Disable permission dialogs and interactive prompts
+    - Use `--allowedTools` and `--excludedTools` flags for tool restriction
+    - Configure automatic permission grants for CI/CD operations
+  - **Resource Optimization**: Optimize for GitHub Actions runner limitations
+    - Reduced memory footprint for standard GitHub runners (7GB limit)
+    - Efficient CPU usage within 2-core runner constraints
+    - Fast startup time to minimize workflow execution duration
+  - **Environment Setup**: Configure container for GitHub Actions environment
+    - Install required clipboard utilities for headless operation (xvfb, xclip)
+    - Set DISPLAY environment variable for virtual framebuffer
+    - Configure workspace mounting for GitHub Actions workspace
+
+#### 7.2.4 MCP Server Configuration for CI/CD
+- [ ] **CI/CD-Optimized MCP Servers**: Configure MCP servers for automated workflows:
+  - **GitHub MCP Server**: Enhanced configuration for CI/CD operations
+    - Repository file operations with GITHUB_TOKEN authentication
+    - Pull request creation and management automation
+    - Issue tracking and project management integration
+    - Commit and branch operations within workflow context
+  - **Context7 MCP Server**: Documentation retrieval for automated analysis
+    - Library and framework documentation access
+    - Code context analysis for automated reviews
+    - Integration with external documentation sources
+  - **Sequential Thinking MCP Server**: Structured problem-solving for CI/CD
+    - Automated code analysis workflows
+    - Multi-step validation and testing procedures
+    - Decision tree execution for complex CI/CD logic
+  - **Playwright MCP Server**: Automated testing capabilities
+    - End-to-end testing in CI/CD pipelines
+    - Browser automation for web application testing
+    - Screenshot and visual regression testing
+  - **Restricted MCP Configuration**: Disable or limit MCP servers for security
+    - Remove write-heavy MCP servers in read-only CI/CD contexts
+    - Configure MCP servers with minimal required permissions
+    - Implement MCP server timeout and resource limits
+
+#### 7.2.5 Workflow Integration Patterns
+- [ ] **GitHub Actions Workflow Examples**: Provide workflow templates for common CI/CD scenarios:
+  - **Code Review Automation**: Automated code analysis and review generation
+    ```yaml
+    - name: OpenCode Code Review
+      run: |
+        opencode run "Analyze the changes in this PR and provide a comprehensive code review focusing on security, performance, and best practices" \
+          --allowedTools=view,read,glob,bash \
+          --excludedTools=write,edit
+    ```
+  - **Documentation Generation**: Automated documentation updates
+    ```yaml
+    - name: Generate Documentation
+      run: |
+        opencode run "Update the README.md and API documentation based on recent code changes" \
+          --allowedTools=view,read,write,edit,glob
+    ```
+  - **Test Generation**: Automated test case creation
+    ```yaml
+    - name: Generate Tests
+      run: |
+        opencode run "Generate comprehensive unit tests for the modified files in this PR" \
+          --allowedTools=view,read,write,glob,bash
+    ```
+  - **Security Analysis**: Automated security vulnerability assessment
+    ```yaml
+    - name: Security Analysis
+      run: |
+        opencode run "Perform a security analysis of the codebase focusing on authentication, authorization, and data validation" \
+          --allowedTools=view,read,glob,bash \
+          --excludedTools=write,edit
+    ```
+
+#### 7.2.6 Security Considerations and Best Practices
+- [ ] **GitHub Actions Security**: Implement security best practices for CI/CD integration:
+  - **Secret Management**: Secure handling of sensitive information
+    - Store AI provider API keys as GitHub repository secrets
+    - Use GitHub Actions built-in GITHUB_TOKEN for repository operations
+    - Implement secret rotation and expiration policies
+    - Avoid logging sensitive information in workflow outputs
+  - **Permission Scoping**: Minimal required permissions for GitHub Actions
+    - Repository read/write permissions based on workflow requirements
+    - Pull request and issue management permissions for automation
+    - Package registry access for dependency management
+    - Actions and workflow permissions for CI/CD operations
+  - **Container Security**: Secure container execution in GitHub Actions
+    - Use official OpenCode container images with security updates
+    - Implement container scanning for vulnerabilities
+    - Configure resource limits and timeout constraints
+    - Use read-only file systems where possible
+  - **Audit and Monitoring**: Track and monitor GitHub Agent operations
+    - Log all OpenCode operations and decisions in workflow outputs
+    - Implement audit trails for automated code changes
+    - Monitor resource usage and performance metrics
+    - Set up alerts for failed or suspicious operations
+
+#### 7.2.7 Workflow File Templates and Integration
+- [ ] **Required OpenCode Workflow**: Deploy mandatory `.github/workflows/opencode.yml` file:
+  ```yaml
+  name: opencode
+
+  on:
+    issue_comment:
+      types: [created]
+
+  jobs:
+    opencode:
+      if: |
+        contains(github.event.comment.body, '/oc') ||
+        contains(github.event.comment.body, '/opencode')
+      runs-on: ubuntu-latest
+      permissions:
+        id-token: write
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 1
+
+        - name: Run opencode
+          uses: sst/opencode/github@latest
+          env:
+            ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          with:
+            model: anthropic/claude-sonnet-4-20250514
+            # share: true
+  ```
+- [ ] **Additional Workflow Templates**: Provide optional GitHub Actions workflows:
+  - **Pull Request Analysis Workflow**: Comprehensive PR review and analysis
+  - **Continuous Documentation Workflow**: Automated documentation maintenance
+  - **Security Scanning Workflow**: Regular security analysis and reporting
+  - **Test Generation Workflow**: Automated test case creation and validation
+  - **Code Quality Workflow**: Automated code quality assessment and improvement
+- [ ] **Integration Patterns**: Common patterns for OpenCode integration
+  - **Conditional Execution**: Run OpenCode based on file changes or PR labels
+  - **Multi-Stage Workflows**: Combine OpenCode with other CI/CD tools
+  - **Parallel Execution**: Run multiple OpenCode tasks concurrently
+  - **Result Aggregation**: Combine outputs from multiple OpenCode operations
+  - **Failure Handling**: Graceful error handling and recovery mechanisms
+
+### 7.3 Container Architecture
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Host System                             │
@@ -235,7 +399,29 @@ Install structured development process templates and configurations for OpenCode
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 7.2 OpenCode Container Deployment
+GitHub Actions Integration:
+┌─────────────────────────────────────────────────────────────┐
+│                GitHub Actions Runner                       │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │         OpenCode GitHub Agent Container             │ │
+│  │                                                         │ │
+│  │  ┌─────────────────────────────────────────────────────┐ │ │
+│  │  │      Headless MCP Servers                       │ │ │
+│  │  │  • GitHub MCP (GITHUB_TOKEN auth)               │ │ │
+│  │  │  • Context7 (Documentation)                     │ │ │
+│  │  │  • Sequential Thinking (Automation)             │ │ │
+│  │  │  • Playwright (Testing)                         │ │ │
+│  │  └─────────────────────────────────────────────────────┘ │ │
+│  │                                                         │ │
+│  │  Environment Variables:                                 │ │
+│  │  • GITHUB_TOKEN (auto-provided)                        │ │
+│  │  • OPENROUTER_API_KEY (from secrets)                   │ │
+│  │  • DISPLAY=:99.0 (virtual framebuffer)                 │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+### 7.4 OpenCode Container Deployment
 - [ ] **Container Orchestration**: Deploy OpenCode in isolated container with:
   - Project workspace mounted as volume (/workspace -> project directory)
   - OpenCode data directory mounted (/workspace/.opencode -> container /.opencode)
@@ -298,6 +484,10 @@ Install structured development process templates and configurations for OpenCode
       ├── architectural/
       ├── testing/
       └── documentation/
+
+  .github/                     # GitHub Actions integration
+  └── workflows/
+      └── opencode.yml        # Required OpenCode workflow for issue comment triggers
 
   AGENTS.md                    # Global agent configuration file in container:
                                #   - Standards and templates from .ai directory
@@ -373,6 +563,11 @@ Install structured development process templates and configurations for OpenCode
   - Build configurations (tsconfig.json, go.mod, requirements.txt, pom.xml)
   - Package management and dependency files
   - Quality tools (eslint, prettier, jest, golangci-lint configs)
+- [ ] **GitHub Actions Setup**: Deploy GitHub Actions workflow files:
+  - Create `.github/workflows/` directory structure
+  - Deploy mandatory `opencode.yml` workflow for issue comment triggers
+  - Configure workflow with proper permissions and environment variables
+  - Set up integration with official `sst/opencode/github@latest` action
 - [ ] **OpenCode Configuration**: Deploy OpenCode configuration:
   - Generate `opencode.json` in project root with proper data directory configuration
   - Configure provider as OpenRouter with Claude Sonnet 4 model
@@ -392,6 +587,12 @@ Install structured development process templates and configurations for OpenCode
   - Exclude `.ai/config/auth.json` and other sensitive files
   - Include `.ai/templates/`, `.ai/prompts/`, and `.ai/standards/` for version control
   - Include `opencode.json` and `.opencode/` directory for version control
+- [ ] **GitHub Actions Integration**:
+  - Deploy `.github/workflows/opencode.yml` workflow file for GitHub Actions integration
+  - Configure workflow to trigger on issue comments containing `/oc` or `/opencode`
+  - Set up proper permissions (id-token: write) for GitHub Actions
+  - Configure environment variables for AI provider authentication
+  - Use official `sst/opencode/github@latest` action for execution
 
 ### 8.3 Development Standards Integration
 - [ ] **AI Asset Deployment**: Deploy project-specific assets to `.ai` directory:
@@ -620,6 +821,10 @@ enum AgentMode {
 - [ ] Workflow prompt templates for OpenCode installation
 - [ ] OpenCode configuration files and operational rules
 - [ ] MCP server integration specifications for OpenCode container
+- [ ] GitHub Agent mode configuration for CI/CD integration
+- [ ] Required `.github/workflows/opencode.yml` workflow file for issue comment triggers
+- [ ] GitHub Actions workflow templates for automated code analysis, review, and generation
+- [ ] Security configurations and best practices for GitHub Actions integration
 
 ### 12.2 Bootstrap Tool
 - [ ] TypeScript-based CLI tool with interactive wizard
@@ -640,6 +845,9 @@ enum AgentMode {
 - [ ] **Asset Accessibility**: All templates, standards, and configurations available in workspace and modifiable by user
 - [ ] **Iterative Setup**: Support for multiple bootstrap runs to add/remove languages and frameworks
 - [ ] **MCP Server Integration**: Both Context7 and GitHub MCP servers properly configured and functional
+- [ ] **GitHub Agent Mode**: OpenCode successfully operates in GitHub Actions workflows with full automation capabilities
+- [ ] **CI/CD Integration**: Automated code analysis, review, and generation workflows function reliably in GitHub Actions
+- [ ] **Security Compliance**: GitHub Actions integration follows security best practices with proper secret management
 
 ### 13.2 Technical Success
 - [ ] **Cross-Platform**: Works on Windows, macOS, and Linux
@@ -651,6 +859,9 @@ enum AgentMode {
 - [ ] **Volume Mount Reliability**: Consistent workspace asset mounting and real-time updates
 - [ ] **Iterative Capability**: Successful addition/removal of languages without data loss
 - [ ] **Git Integration**: Proper .gitignore configuration excluding AI secrets
+- [ ] **GitHub Actions Compatibility**: Reliable execution within GitHub Actions runner constraints (7GB memory, 2-core CPU)
+- [ ] **Headless Operation**: Successful non-interactive operation in CI/CD environments
+- [ ] **Authentication Security**: Secure handling of GitHub tokens and AI provider API keys in automated workflows
 
 ## 14. Dependencies and Prerequisites
 
@@ -666,6 +877,9 @@ enum AgentMode {
 - Global AGENTS.md file with comprehensive agent rules and MCP server usage guidelines
 - Environment variable configuration for OpenRouter provider (Claude Sonnet 4)
 - Agent mode definitions for workflow phases (PRD, Technical Architecture, Feature Breakdown, USP)
+- GitHub Agent mode configuration for CI/CD integration with headless operation capabilities
+- GitHub Actions workflow templates for automated code analysis, review, testing, and documentation
+- Security configurations for GitHub Actions integration including secret management and permission scoping
 - Documented development standards and templates
 - Tested project templates for each supported language
 - Validated workflow prompt templates for OpenCode consumption
