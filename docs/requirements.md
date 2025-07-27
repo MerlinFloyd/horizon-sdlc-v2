@@ -24,7 +24,7 @@ This repository serves as the foundation for our AI Project Bootstrap Tool and c
 ### 1.5 Scope Boundaries
 - **Bootstrapper Scope**: Initial and iterative project setup, configuration generation, OpenCode container deployment, workspace asset management
 - **OpenCode Scope**: Ongoing development assistance, code generation, workflow management, continuous project support
-- **Shared Assets**: Templates, standards, configurations, and prompts deployed in workspace and mounted into OpenCode container for ongoing use and modification
+- **Shared Assets**: Templates, standards, configurations, and prompts deployed in `.ai` workspace directory and mounted into OpenCode container for ongoing use and modification
 
 ## 2. Repository Structure Requirements
 
@@ -162,37 +162,40 @@ Install structured development process templates and configurations for OpenCode
 ┌─────────────────────────────────────────────────────────────┐
 │                    Host System                             │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐    ┌─────────────────────────────────┐ │
-│  │   Bootstrapper  │───▶│         OpenCode Container      │ │
-│  │   (Temporary)   │    │                                 │ │
-│  └─────────────────┘    │  ┌─────────────────────────────┐ │ │
-│                         │  │      MCP Servers            │ │ │
-│  ┌─────────────────┐    │  │  • Context7 (GitHub)        │ │ │
-│  │    Project      │◀───┼──│  • Playwright               │ │ │
-│  │   Workspace     │    │  │  • ShadCN UI                │ │ │
-│  │   ├── .opencode │◀───┼──│  • Sequential Thinking      │ │ │
-│  │   │   ├── config│    │  │  • GitHub MCP               │ │ │
-│  │   │   ├── templates   │  └─────────────────────────────┘ │ │
-│  │   │   ├── prompts│    │                                 │ │
-│  │   │   └── standards   │  Volume Mounts:                 │ │
-│  │   └── src/      │    │  /workspace -> Project Root     │ │
-│  └─────────────────┘    │  /opencode-config -> .opencode  │ │
-│                         └─────────────────────────────────┘ │
+│  ┌─────────────────┐       ┌─────────────────────────────────┐ │
+│  │   Bootstrapper  │─────▶│         OpenCode Container      │ │
+│  │   (Temporary)   │       │                                 │ │
+│  └─────────────────┘       │  ┌─────────────────────────────┐ │ │
+│                            │  │      MCP Servers            │ │ │
+│  ┌─────────────────┐       │  │  • Context7 (GitHub)        │ │ │
+│  │    Project      │◀─────┼──│  • Playwright               │ │ │
+│  │   Workspace     │       │  │  • ShadCN UI                │ │ │
+│  │   ├── .ai       │◀─────┼──│  • Sequential Thinking      │ │ │
+│  │   │   ├── config│       │  │  • GitHub MCP               │ │ │
+│  │   │   ├── templates     │  └─────────────────────────────┘ │ │
+│  │   │   ├── prompts│      │                                 │ │
+│  │   │   └── standards     │  Volume Mounts:                 │ │
+│  │   ├── .opencode │       │  /workspace -> Project Root     │ │
+│  │   │   └── opencode.json │  /.opencode -> OpenCode Data │ │
+│  │   └── src/      │       │  /.ai -> AI Assets              │ │
+│  └─────────────────┘       └─────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### 7.2 OpenCode Container Deployment
 - [ ] **Container Orchestration**: Deploy OpenCode in isolated container with:
   - Project workspace mounted as volume (/workspace -> project directory)
-  - OpenCode assets directory mounted (/workspace/.opencode -> container /opencode-config)
+  - OpenCode data directory mounted (/workspace/.opencode -> container /.opencode)
+  - AI assets directory mounted (/workspace/.ai -> container /.ai)
   - MCP servers pre-installed and configured
   - Project-specific environment variables
   - Network access for development tools
   - Resource allocation and limits
 - [ ] **Volume Mounting Strategy**:
   - Workspace root mounted for project access
-  - .opencode directory mounted for configuration, templates, and prompts
-  - OpenCode settings and authentication files accessible from workspace
+  - `.opencode` directory mounted for OpenCode's data and configuration
+  - `.ai` directory mounted for user-modifiable templates, prompts, and standards
+  - OpenCode configuration file (`opencode.json`) accessible from workspace
   - User-modifiable assets available for real-time updates
 - [ ] **Container Lifecycle Management**:
   - Container start, stop, restart capabilities
@@ -201,19 +204,24 @@ Install structured development process templates and configurations for OpenCode
   - Graceful shutdown procedures
 
 ### 7.3 Workspace Asset Management
-- [ ] **Asset Deployment to Workspace**: Deploy all project assets to .opencode directory:
+- [ ] **Asset Deployment to Workspace**: Deploy project assets to separate directories:
+  - OpenCode configuration and data in `.opencode` directory
+  - User-modifiable AI assets in `.ai` directory
   - Language-specific coding standards and templates
   - Workflow prompt templates and configurations
   - Architectural guidelines and validation rules
   - Project-specific context and metadata
-  - OpenCode configuration files (opencode.json, auth settings)
 - [ ] **Asset Structure in Workspace**:
   ```
-  .opencode/
+  .opencode/                    # OpenCode's data directory
+  ├── opencode.json            # Main OpenCode configuration
+  ├── commands/                # Custom commands
+  └── themes/                  # Custom themes
+
+  .ai/                         # User-modifiable AI assets
   ├── config/
-  │   ├── opencode.json
-  │   ├── auth.json
-  │   └── mcp-servers.json
+  │   ├── auth.json           # AI provider API keys (gitignored)
+  │   └── mcp-servers.json    # MCP server configurations
   ├── templates/
   │   ├── typescript/
   │   ├── go/
@@ -229,7 +237,7 @@ Install structured development process templates and configurations for OpenCode
       └── documentation/
   ```
 - [ ] **User Modification Support**:
-  - All assets editable by user in workspace
+  - All AI assets in `.ai` directory editable by user
   - Changes reflected in OpenCode container via volume mounts
   - Version control integration for asset tracking
   - Validation tools for asset integrity
@@ -238,14 +246,15 @@ Install structured development process templates and configurations for OpenCode
 - [ ] **Deployment Validation**: Ensure successful OpenCode deployment:
   - Verify OpenCode container operational status
   - Validate all MCP servers functional and responsive
-  - Confirm workspace assets properly mounted and accessible
+  - Confirm workspace assets properly mounted and accessible (`.opencode` and `.ai` directories)
   - Test basic OpenCode functionality with project
   - Validate GitHub integration and Context7 compatibility
+  - Verify OpenCode can read configuration from `opencode.json`
 - [ ] **Handoff Completion**:
   - Generate handoff report with deployment status
   - Clean up bootstrapper temporary resources
   - Provide OpenCode access instructions to user
-  - Document asset modification procedures for user
+  - Document asset modification procedures for user (`.ai` directory)
   - Log successful completion or failure details
 
 ### 7.5 Project Lifecycle Support
@@ -253,9 +262,9 @@ Install structured development process templates and configurations for OpenCode
   - Add new languages and frameworks to existing projects
   - Remove unused language configurations
   - Update templates and standards without losing customizations
-  - Merge new assets with existing user modifications
+  - Merge new assets with existing user modifications in `.ai` directory
 - [ ] **Asset Management**:
-  - Version control integration for .opencode directory
+  - Version control integration for `.ai` directory (excluding sensitive config)
   - Asset validation and integrity checking
   - Conflict resolution for asset updates
   - User modification preservation during updates
@@ -263,6 +272,7 @@ Install structured development process templates and configurations for OpenCode
   - OpenCode container restart after configuration changes
   - Volume remounting for asset updates
   - Configuration validation before container restart
+  - Proper handling of both `.opencode` and `.ai` directory mounts
 
 ## 8. Bootstrap Tool Functional Requirements
 
@@ -293,30 +303,36 @@ Install structured development process templates and configurations for OpenCode
   - Build configurations (tsconfig.json, go.mod, requirements.txt, pom.xml)
   - Package management and dependency files
   - Quality tools (eslint, prettier, jest, golangci-lint configs)
-- [ ] **OpenCode Workspace Assets**: Deploy assets to .opencode directory:
+- [ ] **OpenCode Configuration**: Deploy OpenCode configuration:
+  - Generate `opencode.json` in project root with proper data directory configuration
+  - Configure MCP servers and AI providers
+  - Set up project-specific OpenCode settings
+- [ ] **AI Workspace Assets**: Deploy assets to `.ai` directory:
   - Language-specific templates and coding standards
   - Project-context-aware prompts and configurations
   - Workflow templates and validation rules
-  - OpenCode configuration files (opencode.json, auth.json)
+  - AI provider authentication configuration
 - [ ] **Git Integration**:
   - Initialize git repository if needed
-  - Generate .gitignore with OpenCode secrets exclusion
-  - Exclude .opencode/config/auth.json and other sensitive files
-  - Include .opencode/templates/ and .opencode/prompts/ for version control
+  - Generate .gitignore with AI secrets exclusion
+  - Exclude `.ai/config/auth.json` and other sensitive files
+  - Include `.ai/templates/`, `.ai/prompts/`, and `.ai/standards/` for version control
+  - Include `opencode.json` and `.opencode/` directory for version control
 
 ### 8.3 Development Standards Integration
-- [ ] **Workspace Asset Deployment**: Deploy project-specific assets to .opencode directory:
+- [ ] **AI Asset Deployment**: Deploy project-specific assets to `.ai` directory:
   - Language-specific coding standards libraries
   - Architectural pattern templates
   - Workflow prompt templates
   - Development rules and guidelines
 - [ ] **OpenCode Configuration**: Generate OpenCode-specific configurations:
-  - Project-context-aware prompts
-  - Language-specific coding standards
-  - Development workflow templates
+  - Main `opencode.json` configuration file in project root
+  - Project-context-aware prompts in `.ai/prompts/`
+  - Language-specific coding standards in `.ai/standards/`
+  - Development workflow templates in `.ai/templates/`
   - Validation rules and compliance checks
   - MCP server configurations for project context
-- [ ] **Documentation Template Installation**: Generate templates for OpenCode use:
+- [ ] **Documentation Template Installation**: Generate templates in `.ai` directory:
   - System architecture document templates
   - API documentation structure templates
   - Code review checklist templates
@@ -325,21 +341,23 @@ Install structured development process templates and configurations for OpenCode
 ### 8.4 OpenCode Deployment and Integration
 - [ ] **OpenCode Container Deployment**: Deploy and configure OpenCode with:
   - Project workspace volume mounting (/workspace)
-  - OpenCode assets volume mounting (/workspace/.opencode -> /opencode-config)
+  - OpenCode data directory mounting (/workspace/.opencode -> /.opencode)
+  - AI assets directory mounting (/workspace/.ai -> /.ai)
   - MCP servers pre-installed and configured
   - GitHub integration enabled for Context7 compatibility
   - Development workflow integration
   - Code generation capabilities
 - [ ] **Volume Mount Configuration**: Configure container mounts for:
-  - Real-time access to user-modifiable assets
-  - OpenCode configuration files in workspace
+  - Real-time access to user-modifiable AI assets in `.ai` directory
+  - OpenCode configuration and data access via `.opencode` directory
   - Template and prompt updates without container restart
   - Project context and metadata access
 - [ ] **Deployment Validation**: Verify successful OpenCode integration:
   - Container health checks
   - MCP server functionality validation (including GitHub integration)
-  - Workspace asset mounting verification
+  - Workspace asset mounting verification (both `.opencode` and `.ai`)
   - Context7 GitHub integration testing
+  - OpenCode configuration file accessibility
   - Basic functionality testing
 
 ### 8.5 CLI Interface
@@ -350,11 +368,11 @@ Install structured development process templates and configurations for OpenCode
   - OpenCode capabilities configuration
   - Container deployment options
 - [ ] **Iterative Setup Support**: Allow multiple bootstrap runs:
-  - Detect existing .opencode directory and project configuration
+  - Detect existing `.ai` directory and project configuration
   - Add new languages/frameworks to existing setup
   - Remove unused language configurations
   - Preserve user modifications during updates
-  - Merge new templates with existing customizations
+  - Merge new templates with existing customizations in `.ai` directory
 - [ ] **Batch Mode**: Configuration file-driven automation
 - [ ] **Template Management**: Manage project templates and configurations
 
@@ -550,7 +568,7 @@ enum AgentMode {
 - [ ] **Container Management**: Reliable OpenCode container deployment and lifecycle management
 - [ ] **Volume Mount Reliability**: Consistent workspace asset mounting and real-time updates
 - [ ] **Iterative Capability**: Successful addition/removal of languages without data loss
-- [ ] **Git Integration**: Proper .gitignore configuration excluding OpenCode secrets
+- [ ] **Git Integration**: Proper .gitignore configuration excluding AI secrets
 
 ## 14. Dependencies and Prerequisites
 
