@@ -218,14 +218,11 @@ Install structured development process templates and configurations for OpenCode
 - [ ] **Asset Structure in Workspace**:
   ```
   .opencode/                    # OpenCode's data directory
-  ├── opencode.json            # Main OpenCode configuration
+  ├── opencode.json            # Main OpenCode configuration incl. mcp server configs
   ├── commands/                # Custom commands
   └── themes/                  # Custom themes
 
   .ai/                         # User-modifiable AI assets
-  ├── config/
-  │   ├── auth.json           # AI provider API keys (gitignored)
-  │   └── mcp-servers.json    # MCP server configurations
   ├── templates/
   │   ├── typescript/
   │   ├── go/
