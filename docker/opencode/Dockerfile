@@ -63,9 +63,23 @@ RUN npm install -g @modelcontextprotocol/server-sequential-thinking@latest
 RUN npm install -g @jpisnice/shadcn-ui-mcp-server@latest
 
 # Create OpenCode configuration directory and copy files
-RUN mkdir -p $OPENCODE_CONFIG_DIR
+RUN mkdir -p $OPENCODE_CONFIG_DIR $OPENCODE_CONFIG_DIR/agent $AI_ASSETS_DIR/prompts
 COPY config/opencode.json.template $OPENCODE_CONFIG_DIR/opencode.json
 COPY config/AGENTS.md $OPENCODE_CONFIG_DIR/AGENTS.md
+
+# Copy agent Markdown files to global agent directory
+COPY config/agent/ $OPENCODE_CONFIG_DIR/agent/
+
+# Copy prompt files to AI assets directory
+COPY config/prompts/ $AI_ASSETS_DIR/prompts/
+
+# Set proper permissions for OpenCode to read configuration files
+RUN chmod -R 644 $OPENCODE_CONFIG_DIR/ && \
+    chmod -R 644 $AI_ASSETS_DIR/ && \
+    chmod 755 $OPENCODE_CONFIG_DIR && \
+    chmod 755 $OPENCODE_CONFIG_DIR/agent && \
+    chmod 755 $AI_ASSETS_DIR && \
+    chmod 755 $AI_ASSETS_DIR/prompts
 
 # Copy scripts
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
