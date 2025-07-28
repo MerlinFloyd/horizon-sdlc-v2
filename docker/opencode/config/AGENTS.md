@@ -20,10 +20,6 @@ The `/workspace/.ai` directory contains user-modifiable assets that agents must 
 │   ├── go/                 # Go project templates
 │   ├── python/             # Python project templates
 │   └── java/               # Java project templates
-├── prompts/
-│   ├── workflow/           # Workflow-specific prompts
-│   ├── coding-standards/   # Coding standard prompts
-│   └── agent-modes/        # Agent mode specific prompts
 └── standards/
     ├── architectural/      # Architectural guidelines
     ├── testing/           # Testing standards
