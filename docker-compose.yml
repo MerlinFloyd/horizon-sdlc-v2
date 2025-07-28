@@ -1,12 +1,6 @@
 services:
   opencode:
-    build:
-      context: ./docker/opencode
-      dockerfile: Dockerfile
-      args:
-        - NODE_VERSION=20
-        - OPENCODE_VERSION=latest
-    image: horizon-sdlc/opencode:latest
+    image: ghcr.io/${GITHUB_REPOSITORY:-your-username/your-repo}/opencode:${IMAGE_TAG:-latest}
     container_name: horizon-opencode
     
     # Environment variables
@@ -110,3 +104,4 @@ volumes:
   ai_assets:
     driver: local
     name: horizon-ai-assets
+

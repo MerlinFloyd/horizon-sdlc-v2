@@ -10,6 +10,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DOCKER_CONTEXT="$PROJECT_ROOT/docker/opencode"
 
+# Set GitHub Container Registry as default
+DOCKER_REGISTRY="${DOCKER_REGISTRY:-ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')}"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -358,3 +361,4 @@ main() {
 
 # Run main function with all arguments
 main "$@"
+
