@@ -20,7 +20,6 @@ services:
       # Container configuration
       - NODE_ENV=production
       - WORKSPACE_DIR=/workspace
-      - OPENCODE_DATA_DIR=/.opencode
       - AI_ASSETS_DIR=/.ai
       
       # MCP Server configuration
@@ -37,16 +36,6 @@ services:
       - type: bind
         source: .
         target: /workspace
-
-      # Mount .opencode directory for OpenCode data persistence
-      - type: bind
-        source: ./.opencode
-        target: /.opencode
-
-      # Mount .ai directory for AI assets
-      - type: bind
-        source: ./.ai
-        target: /.ai
       
       # Optional: Mount Docker socket for container management (if needed)
       # - /var/run/docker.sock:/var/run/docker.sock:ro

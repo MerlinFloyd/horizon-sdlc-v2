@@ -6,21 +6,18 @@ This document defines global rules and guidelines for all OpenCode agents operat
 ## Context Awareness Rules
 
 ### 1. Standards and Templates Integration
-- **ALWAYS** read and reference standards from the `.ai/standards/` directory before making code changes
-- **ALWAYS** use templates from the `.ai/templates/` directory for consistent project structure
-- **ALWAYS** follow coding standards specific to the project's language(s) found in `.ai/standards/`
-- **LAZY LOAD** external file references from the `.ai` directory as needed during operations
+- **ALWAYS** read and reference standards from the `/workspace/.ai/standards/` directory before making code changes
+- **ALWAYS** use templates from the `/workspace/.ai/templates/` directory for consistent project structure
+- **ALWAYS** follow coding standards specific to the project's language(s) found in `/workspace/.ai/standards/`
+- **LAZY LOAD** external file references from the `/workspace/.ai` directory as needed during operations
 
 ### 2. AI Assets Directory Structure
-The `.ai` directory contains user-modifiable assets that agents must reference:
+The `/workspace/.ai` directory contains user-modifiable assets that agents must reference:
 ```
-.ai/
-├── config/
-│   ├── auth.json           # AI provider API keys (gitignored)
-│   └── mcp-servers.json    # MCP server configurations
+/workspace/.ai/
 ├── templates/
 │   ├── typescript/         # TypeScript project templates
-│   ├── go/                 # Go project templates  
+│   ├── go/                 # Go project templates
 │   ├── python/             # Python project templates
 │   └── java/               # Java project templates
 ├── prompts/
@@ -81,46 +78,46 @@ The `.ai` directory contains user-modifiable assets that agents must reference:
 - **Agent Mode**: Technical Product Owner
 - **Focus**: Requirements gathering and documentation
 - **Tools**: Read-only analysis, documentation generation
-- **Standards**: Reference `.ai/prompts/workflow/prd-templates.json`
+- **Standards**: Reference `/workspace/.ai/prompts/workflow/prd-templates.json`
 - **MCP Usage**: Context7 for research, GitHub for repository context
 
 ### Phase 2: Technical Architecture
 - **Agent Mode**: Technical Architect  
 - **Focus**: System design and technical specifications
 - **Tools**: Design tools, documentation, analysis
-- **Standards**: Reference `.ai/standards/architectural/` guidelines
+- **Standards**: Reference `/workspace/.ai/standards/architectural/` guidelines
 - **MCP Usage**: Context7 for architectural patterns, Sequential Thinking for planning
 
 ### Phase 3: Feature Breakdown
 - **Agent Mode**: Feature Developer
 - **Focus**: Feature decomposition and development planning
 - **Tools**: Full development capabilities
-- **Standards**: Reference `.ai/standards/` for language-specific guidelines
+- **Standards**: Reference `/workspace/.ai/standards/` for language-specific guidelines
 - **MCP Usage**: All MCP servers as needed for comprehensive development
 
 ### Phase 4: USP (User Story Prompt) Generation
 - **Agent Mode**: Implementation Agent
 - **Focus**: User story creation and implementation
 - **Tools**: Implementation and testing capabilities
-- **Standards**: Reference `.ai/templates/` for consistent implementation
+- **Standards**: Reference `/workspace/.ai/templates/` for consistent implementation
 - **MCP Usage**: GitHub for repository operations, testing MCPs for validation
 
 ## Template and Prompt Integration
 
 ### 1. Template Usage Rules
-- **ALWAYS** check `.ai/templates/` for existing templates before creating new files
+- **ALWAYS** check `/workspace/.ai/templates/` for existing templates before creating new files
 - **MODIFY** templates to fit project-specific requirements while maintaining structure
 - **PRESERVE** template patterns and architectural decisions
 - **VALIDATE** generated code against templates for consistency
 
 ### 2. Prompt Template Integration
-- **REFERENCE** `.ai/prompts/` for workflow-specific guidance
+- **REFERENCE** `/workspace/.ai/prompts/` for workflow-specific guidance
 - **ADAPT** prompts to current project context and requirements
 - **MAINTAIN** consistency with established prompt patterns
 - **UPDATE** prompts based on project evolution and learning
 
 ### 3. Standards Reference Rules
-- **READ** applicable standards from `.ai/standards/` before code generation
+- **READ** applicable standards from `/workspace/.ai/standards/` before code generation
 - **APPLY** language-specific coding standards consistently
 - **ENFORCE** architectural principles defined in standards
 - **DOCUMENT** deviations from standards with clear justification
@@ -134,7 +131,7 @@ The `.ai` directory contains user-modifiable assets that agents must reference:
 - **CONTINUE** operations with degraded functionality when possible
 
 ### 2. Asset Loading Failures
-- **VALIDATE** `.ai` directory structure before operations
+- **VALIDATE** `/workspace/.ai` directory structure before operations
 - **GRACEFUL** degradation when templates or standards are missing
 - **NOTIFY** users of missing critical assets
 - **PROVIDE** default behaviors when custom assets are unavailable
@@ -155,7 +152,7 @@ The `.ai` directory contains user-modifiable assets that agents must reference:
 
 ### 2. Code Generation Security
 - **VALIDATE** generated code for security vulnerabilities
-- **FOLLOW** secure coding practices from `.ai/standards/`
+- **FOLLOW** secure coding practices from `/workspace/.ai/standards/`
 - **IMPLEMENT** proper input validation and sanitization
 - **REVIEW** dependencies for known security issues
 

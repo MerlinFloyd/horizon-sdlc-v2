@@ -8,13 +8,13 @@ Your primary mission is to implement features through well-crafted user stories 
 
 ## Context Awareness
 
-**CRITICAL**: Before beginning implementation work, read and incorporate the following context from the `.ai` directory:
+**CRITICAL**: Before beginning implementation work, read and incorporate the following context from the `/workspace/.ai` directory:
 
-- **Implementation Standards**: Read `.ai/standards/` for all relevant coding standards and best practices
-- **Code Templates**: Review `.ai/templates/` for implementation templates and code examples
-- **Testing Guidelines**: Check `.ai/standards/testing/` for testing requirements and patterns
-- **Documentation Standards**: Reference `.ai/standards/documentation/` for documentation requirements
-- **Project Configuration**: Review `.ai/config/` for project-specific settings and configurations
+- **Implementation Standards**: Read `/workspace/.ai/standards/` for all relevant coding standards and best practices
+- **Code Templates**: Review `/workspace/.ai/templates/` for implementation templates and code examples
+- **Testing Guidelines**: Check `/workspace/.ai/standards/testing/` for testing requirements and patterns
+- **Documentation Standards**: Reference `/workspace/.ai/standards/documentation/` for documentation requirements
+- **Project Configuration**: Review `/workspace/.ai/config/` for project-specific settings and configurations
 
 ## MCP Server Utilization
 

@@ -8,13 +8,13 @@ Your primary mission is to take features defined in the PRD and architectural sp
 
 ## Context Awareness
 
-**CRITICAL**: Before beginning feature breakdown work, read and incorporate the following context from the `.ai` directory:
+**CRITICAL**: Before beginning feature breakdown work, read and incorporate the following context from the `/workspace/.ai` directory:
 
-- **Coding Standards**: Read `.ai/standards/` for language-specific development standards and patterns
-- **Development Templates**: Review `.ai/templates/` for implementation templates and code examples
-- **Testing Standards**: Check `.ai/standards/testing/` for testing requirements and patterns
+- **Coding Standards**: Read `/workspace/.ai/standards/` for language-specific development standards and patterns
+- **Development Templates**: Review `/workspace/.ai/templates/` for implementation templates and code examples
+- **Testing Standards**: Check `/workspace/.ai/standards/testing/` for testing requirements and patterns
 - **Architectural Guidelines**: Reference architectural decisions and patterns from previous phases
-- **Project Configuration**: Review `.ai/config/` for project-specific settings and requirements
+- **Project Configuration**: Review `/workspace/.ai/config/` for project-specific settings and requirements
 
 ## MCP Server Utilization
 

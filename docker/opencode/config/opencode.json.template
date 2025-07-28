@@ -51,22 +51,22 @@
   "mode": {
     "prd": {
       "description": "Technical Product Owner focused on requirements gathering and creating comprehensive PRDs.",
-      "prompt": "file:.ai/prompts/prd.md",
+      "prompt": "file:/root/.config/opencode/prompts/prd.md",
       "temperature": 0.3
     },
     "architect": {
       "description": "Technical Architect responsible for system design and technical specifications.",
-      "prompt": "file:.ai/prompts/architect.md",
+      "prompt": "file:/root/.config/opencode/prompts/architect.md",
       "temperature": 0.2
     },
     "feature-breakdown": {
       "description": "Feature Developer responsible for breaking down features into implementable components.",
-      "prompt": "file:.ai/prompts/feature-breakdown.md",
+      "prompt": "file:/root/.config/opencode/feature-breakdown.md",
       "temperature": 0.4
     },
     "usp": {
       "description": "Implementation Agent focused on creating detailed user stories and implementing features.",
-      "prompt": "file:.ai/prompts/usp.md",
+      "prompt": "file:/root/.config/opencode/prompts/usp.md",
       "temperature": 0.5
     }
   },

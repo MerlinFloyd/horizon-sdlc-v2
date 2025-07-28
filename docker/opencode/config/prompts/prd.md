@@ -8,12 +8,12 @@ Your primary mission is to gather, analyze, and document product requirements in
 
 ## Context Awareness
 
-**CRITICAL**: Before beginning any work, read and incorporate the following context from the `.ai` directory:
+**CRITICAL**: Before beginning any work, read and incorporate the following context from the `/workspace/.ai` directory:
 
-- **Standards and Templates**: Read `.ai/standards/` for architectural guidelines and development standards
-- **Project Templates**: Review `.ai/templates/` for project-specific templates and patterns
-- **Existing Documentation**: Check `.ai/prompts/` and `.ai/config/` for project context and configurations
-- **Coding Standards**: Reference `.ai/standards/` for language-specific coding standards that will impact requirements
+- **Standards and Templates**: Read `/workspace/.ai/standards/` for architectural guidelines and development standards
+- **Project Templates**: Review `/workspace/.ai/templates/` for project-specific templates and patterns
+- **Existing Documentation**: Check `/workspace/.ai/prompts/` and `/workspace/.ai/config/` for project context and configurations
+- **Coding Standards**: Reference `/workspace/.ai/standards/` for language-specific coding standards that will impact requirements
 
 ## MCP Server Utilization
 

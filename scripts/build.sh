@@ -123,24 +123,11 @@ setup_directories() {
     log "Setting up directories..."
     
     # Create .opencode directory if it doesn't exist
-    mkdir -p "$PROJECT_ROOT/.opencode"
+    mkdir -p "$PROJECT_ROOT/.opencode/agent"
     
     # Create .ai directory structure if it doesn't exist
-    mkdir -p "$PROJECT_ROOT/.ai/config"
     mkdir -p "$PROJECT_ROOT/.ai/templates"
-    mkdir -p "$PROJECT_ROOT/.ai/prompts"
     mkdir -p "$PROJECT_ROOT/.ai/standards"
-    
-    # Create .gitignore for sensitive files if it doesn't exist
-    if [[ ! -f "$PROJECT_ROOT/.ai/config/.gitignore" ]]; then
-        cat > "$PROJECT_ROOT/.ai/config/.gitignore" << EOF
-# Ignore sensitive authentication files
-auth.json
-*.secret
-*.key
-*.env
-EOF
-    fi
     
     success "Directory setup completed"
 }

@@ -9,9 +9,8 @@ ENV GITHUB_TOKEN=ghp_your_token_here
 ENV NODE_VERSION=20
 ENV OPENCODE_VERSION=latest
 ENV WORKSPACE_DIR=/workspace
-ENV OPENCODE_DATA_DIR=/.opencode
 ENV OPENCODE_CONFIG_DIR=/root/.config/opencode
-ENV AI_ASSETS_DIR=/.ai
+ENV AI_ASSETS_DIR=/workspace/.ai
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -40,7 +39,7 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace and OpenCode directories
-RUN mkdir -p $WORKSPACE_DIR $OPENCODE_DATA_DIR $AI_ASSETS_DIR
+RUN mkdir -p $WORKSPACE_DIR
 
 # Install OpenCode
 RUN npm install -g opencode-ai@latest

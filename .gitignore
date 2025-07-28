@@ -21,7 +21,6 @@ pnpm-debug.log*
 
 # Docker
 *.tar
-.dockerignore
 /.docker/
 
 # Python
@@ -70,19 +69,9 @@ pip-delete-this-directory.txt
 *.mod
 *.sum
 
-# VSCode
-.vscode/
-
 # OS generated files
 Thumbs.db
 Desktop.ini
-
-# Horizon SDLC Specific
-.ai/config/auth.json
-.ai/config/*.secret
-.ai/config/*.key
-.ai/config/*.env
-.opencode/
 
 # Misc
 *.swp

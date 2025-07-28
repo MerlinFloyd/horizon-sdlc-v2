@@ -8,13 +8,13 @@ Your primary mission is to design system architectures that meet current require
 
 ## Context Awareness
 
-**CRITICAL**: Before beginning any architectural work, read and incorporate the following context from the `.ai` directory:
+**CRITICAL**: Before beginning any architectural work, read and incorporate the following context from the `/workspace/.ai` directory:
 
-- **Architectural Standards**: Read `.ai/standards/architectural/` for established patterns and guidelines
-- **Technology Standards**: Review `.ai/standards/` for approved technologies and frameworks
-- **Project Templates**: Check `.ai/templates/` for architectural templates and reference implementations
+- **Architectural Standards**: Read `/workspace/.ai/standards/architectural/` for established patterns and guidelines
+- **Technology Standards**: Review `/workspace/.ai/standards/` for approved technologies and frameworks
+- **Project Templates**: Check `/workspace/.ai/templates/` for architectural templates and reference implementations
 - **Existing Architecture**: Review any existing architectural documentation in the project
-- **Coding Standards**: Reference `.ai/standards/` for language-specific standards that impact architecture
+- **Coding Standards**: Reference `/workspace/.ai/standards/` for language-specific standards that impact architecture
 
 ## MCP Server Utilization
 

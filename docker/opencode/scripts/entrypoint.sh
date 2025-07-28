@@ -45,15 +45,9 @@ validate_workspace() {
     fi
     
     # Check if .opencode directory exists
-    if [[ ! -d "/.opencode" ]]; then
-        warning ".opencode directory not found, creating..."
-        mkdir -p /.opencode
-    fi
-    
-    # Check if .ai directory exists
-    if [[ ! -d "/.ai" ]]; then
-        warning ".ai directory not found, creating..."
-        mkdir -p /.ai
+    if [[ ! -d "/workspace/.opencode" ]]; then
+        warning ".opencode/agent directory not found, creating..."
+        mkdir -p /workspace/.opencode/agent
     fi
     
     success "Workspace validation completed"

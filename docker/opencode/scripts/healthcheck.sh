@@ -205,7 +205,7 @@ check_opencode() {
     fi
     
     # Check OpenCode data directory
-    if ! check_directory "/.opencode" "OpenCode data directory" "true"; then
+    if ! check_directory "/workspace/.opencode" "OpenCode data directory" "true"; then
         opencode_ok=false
     fi
     
@@ -253,13 +253,8 @@ check_workspace() {
         workspace_ok=false
     fi
     
-    # Check AI assets directory
-    if ! check_directory "/.ai" "AI assets directory" "true"; then
-        workspace_ok=false
-    fi
-    
     # Check AGENTS.md file
-    if ! check_file "/.ai/AGENTS.md" "Global agents configuration" "false"; then
+    if ! check_file "/root/.config/opencode/AGENTS.md" "Global agents configuration" "false"; then
         # This is not critical, just a warning
         true
     fi
