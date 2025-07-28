@@ -23,5 +23,5 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         with:
-          model: openrouter/anthropic/claude-sonnet-4
+          model: openrouter/anthropic/claude-4-sonnet-20250522
           # share: true
