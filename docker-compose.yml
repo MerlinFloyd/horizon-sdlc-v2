@@ -20,7 +20,6 @@ services:
       # Container configuration
       - NODE_ENV=production
       - WORKSPACE_DIR=/workspace
-      - AI_ASSETS_DIR=/.ai
       
       # MCP Server configuration
       - MCP_SERVER_TIMEOUT=30000
