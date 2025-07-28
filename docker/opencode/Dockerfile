@@ -1,0 +1,92 @@
+# OpenCode Container with MCP Servers
+# Based on Ubuntu 22.04 with Node.js 20+ for OpenCode and MCP server compatibility
+
+FROM ubuntu:22.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV GITHUB_TOKEN=ghp_your_token_here
+ENV NODE_VERSION=20
+ENV OPENCODE_VERSION=latest
+ENV WORKSPACE_DIR=/workspace
+ENV OPENCODE_DATA_DIR=/.opencode
+ENV OPENCODE_CONFIG_DIR=/root/.config/opencode
+ENV AI_ASSETS_DIR=/.ai
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    build-essential \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Docker CLI (for potential container management)
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y docker-ce-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create workspace and OpenCode directories
+RUN mkdir -p $WORKSPACE_DIR $OPENCODE_DATA_DIR $AI_ASSETS_DIR
+
+# Install OpenCode
+RUN npm install -g opencode-ai@latest
+
+# Install MCP Servers
+
+# 1. Install Context7 MCP Server
+# Note: Using remote MCP server instead of local installation
+
+# 2. Install GitHub MCP Server
+# Note: Using remote MCP server instead of local installation
+
+# 3. Install Playwright MCP Server
+RUN npm install -g @playwright/mcp@latest
+
+# 4. Install Sequential Thinking MCP Server
+RUN npm install -g @modelcontextprotocol/server-sequential-thinking@latest
+
+# 5. Install ShadCN UI MCP Server
+RUN npm install -g @jpisnice/shadcn-ui-mcp-server@latest
+
+# Create OpenCode configuration directory and copy files
+RUN mkdir -p $OPENCODE_CONFIG_DIR
+COPY config/opencode.json.template $OPENCODE_CONFIG_DIR/opencode.json
+COPY config/AGENTS.md $OPENCODE_CONFIG_DIR/AGENTS.md
+
+# Copy scripts
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set working directory
+WORKDIR $WORKSPACE_DIR
+
+# Health check script
+COPY scripts/healthcheck.sh /usr/local/bin/healthcheck.sh
+RUN chmod +x /usr/local/bin/healthcheck.sh
+
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD /usr/local/bin/healthcheck.sh
+
+# Expose OpenCode default port (if applicable)
+EXPOSE 3000
+
+# Set entrypoint
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Default command
+CMD ["opencode"]

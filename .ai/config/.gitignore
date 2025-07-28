@@ -1,0 +1,5 @@
+# Ignore sensitive authentication files
+auth.json
+*.secret
+*.key
+*.env

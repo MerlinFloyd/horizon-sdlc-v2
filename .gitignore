@@ -21,9 +21,7 @@ pnpm-debug.log*
 
 # Docker
 *.tar
-Dockerfile*
 .dockerignore
-/docker-compose*.yml
 /.docker/
 
 # Python

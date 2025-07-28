@@ -1,0 +1,69 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "opencode",
+  "model": "anthropic/claude-3-5-sonnet-20241022",
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://context7.ai/mcp",
+      "enabled": false
+    },
+    "github": {
+      "type": "remote",
+      "url": "https://github-mcp.opencode.ai",
+      "enabled": false,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
+      }
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "@playwright/mcp"],
+      "enabled": true
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "command": ["npx", "@modelcontextprotocol/server-sequential-thinking"],
+      "enabled": true
+    },
+    "shadcn-ui": {
+      "type": "local",
+      "command": ["npx", "@jpisnice/shadcn-ui-mcp-server"],
+      "enabled": true
+    }
+  },
+  "agent": {
+    "prd": {
+      "description": "Technical Product Owner focused on requirements gathering and creating comprehensive Product Requirements Documents (PRDs). Read standards and templates from the .ai directory for context.",
+      "prompt": "You are a Technical Product Owner focused on requirements gathering and creating comprehensive Product Requirements Documents (PRDs). Read standards and templates from the .ai directory for context.",
+      "temperature": 0.3
+    },
+    "architect": {
+      "description": "Technical Architect responsible for system design and technical specifications. Reference architectural standards from the .ai directory and ensure compliance with established patterns.",
+      "prompt": "You are a Technical Architect responsible for system design and technical specifications. Reference architectural standards from the .ai directory and ensure compliance with established patterns.",
+      "temperature": 0.2
+    },
+    "feature-breakdown": {
+      "description": "Feature Developer responsible for breaking down features into implementable components. Use coding standards from the .ai directory and follow established development patterns.",
+      "prompt": "You are a Feature Developer responsible for breaking down features into implementable components. Use coding standards from the .ai directory and follow established development patterns.",
+      "temperature": 0.4
+    },
+    "usp": {
+      "description": "Implementation Agent focused on creating detailed user stories and implementing features. Reference templates and standards from the .ai directory for consistency.",
+      "prompt": "You are an Implementation Agent focused on creating detailed user stories and implementing features. Reference templates and standards from the .ai directory for consistency.",
+      "temperature": 0.5
+    }
+  },
+  "provider": {
+    "anthropic": {
+      "models": {
+        "claude-3-5-sonnet-20241022": {},
+        "claude-3-5-haiku-20241022": {},
+        "claude-3-opus-20240229": {}
+      },
+      "options": {
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      }
+    }
+  }
+}

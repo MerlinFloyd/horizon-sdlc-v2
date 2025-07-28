@@ -154,15 +154,10 @@ docker/
 
 ```
 scripts/
-├── build/                     # Build scripts
-│   ├── build.sh              # Unix/Linux/macOS build script
-│   ├── build.cmd             # Windows build script
-│   ├── docker-build.sh       # Docker image build script
-└── setup/                     # Setup and installation scripts
-    ├── setup.sh              # Unix/Linux/macOS setup script
-    ├── setup.cmd             # Windows setup script
+├── build.sh                  # Build script for Docker image and deployment
+├── verify.sh                 # Installation verification script
+└── setup/                     # Setup and installation scripts (future)
     ├── install-deps.sh       # Dependency installation
-    ├── verify-install.sh     # Installation verification
     ├── setup-dev-env.sh      # Development environment setup
     └── check-prerequisites.sh # Prerequisites verification
 ```

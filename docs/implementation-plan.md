@@ -530,8 +530,8 @@ Week 7-8: Distribution
 - **Dependencies**: Phase 6 complete
 - **Human Interaction**: 🔴 **CRITICAL** - API key handling validation for build scripts
 - **Deliverables**:
-  - Cross-platform build scripts (build.sh, build.cmd) per requirements.md
-  - Setup and installation scripts (setup.sh, setup.cmd)
+  - Cross-platform build scripts (build.sh) per requirements.md
+  - Setup and installation scripts (setup.sh)
   - Multi-stage Docker builds with optimization
   - Multi-architecture container support
   - Distribution package preparation

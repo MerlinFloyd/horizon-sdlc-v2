@@ -747,12 +747,10 @@ enum AgentMode {
 
 ### 10.2 Installation and Usage
 - [ ] **Setup Script**: Provide installation scripts:
-  - `setup.sh` for Unix/Linux/macOS
-  - `setup.cmd` for Windows
+  - `setup.sh` for Unix/Linux/macOS/Windows (via bash)
   - Scripts handle Docker image pulling and initial setup
 - [ ] **Build Scripts**: Provide build scripts for Horizon SDLC:
-  - `build.sh` for Unix/Linux/macOS
-  - `build.cmd` for Windows
+  - `build.sh` for Unix/Linux/macOS/Windows (via bash)
   - Scripts accept OPENROUTER_API_KEY as parameter
   - Build Docker container with environment variables
   - Deploy OpenCode container with MCP servers pre-installed
@@ -885,7 +883,7 @@ enum AgentMode {
 - Validated workflow prompt templates for OpenCode consumption
 - Container orchestration and deployment scripts
 - Volume mounting and permission management utilities
-- Build scripts (build.sh, build.cmd) that accept authentication keys as parameters
+- Build scripts (build.sh) that accept authentication keys as parameters
 
 ## 15. Risk Mitigation
 

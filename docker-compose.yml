@@ -1,0 +1,124 @@
+services:
+  opencode:
+    build:
+      context: ./docker/opencode
+      dockerfile: Dockerfile
+      args:
+        - NODE_VERSION=20
+        - OPENCODE_VERSION=latest
+    image: horizon-sdlc/opencode:latest
+    container_name: horizon-opencode
+    
+    # Environment variables
+    environment:
+      # Required: AI Provider API Key
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+
+      # Optional: GitHub integration
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      
+      # Container configuration
+      - NODE_ENV=production
+      - WORKSPACE_DIR=/workspace
+      - OPENCODE_DATA_DIR=/.opencode
+      - AI_ASSETS_DIR=/.ai
+      
+      # MCP Server configuration
+      - MCP_SERVER_TIMEOUT=30000
+      - MCP_SERVER_RETRIES=3
+      
+      # Security settings
+      - SECURE_MODE=true
+      - LOG_LEVEL=info
+    
+    # Volume mounts
+    volumes:
+      # Mount current workspace to container workspace
+      - type: bind
+        source: .
+        target: /workspace
+
+      # Mount .opencode directory for OpenCode data persistence
+      - type: bind
+        source: ./.opencode
+        target: /.opencode
+
+      # Mount .ai directory for AI assets
+      - type: bind
+        source: ./.ai
+        target: /.ai
+      
+      # Optional: Mount Docker socket for container management (if needed)
+      # - /var/run/docker.sock:/var/run/docker.sock:ro
+    
+    # Port mappings (if OpenCode exposes any ports)
+    ports:
+      - "3000:3000"  # OpenCode web interface (if available)
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Network configuration
+    networks:
+      - opencode-network
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    
+    # User configuration (run as non-root if possible)
+    # user: "1000:1000"  # Uncomment and adjust if needed
+    
+    # Working directory
+    working_dir: /workspace
+    
+    # Interactive mode for development
+    stdin_open: true
+    tty: true
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Networks
+networks:
+  opencode-network:
+    driver: bridge
+    name: horizon-opencode-network
+
+# Volumes (for persistent data if needed)
+volumes:
+  # Uncomment if using additional services
+  # postgres_data:
+  #   driver: local
+  
+  # OpenCode data volume (alternative to bind mount)
+  opencode_data:
+    driver: local
+    name: horizon-opencode-data
+  
+  # AI assets volume (alternative to bind mount)
+  ai_assets:
+    driver: local
+    name: horizon-ai-assets
