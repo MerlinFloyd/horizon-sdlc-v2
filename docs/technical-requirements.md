@@ -908,7 +908,7 @@ export class TestUtils {
   static createMockOpenCodeConfig(): OpenCodeConfig {
     return {
       provider: 'openrouter',
-      model: 'anthropic/claude-sonnet-4-20250514',
+      model: 'anthropic/claude-sonnet-4',
       apiKey: '{env:TEST_API_KEY}',
       dataDirectory: '.opencode',
       mcpServers: {},

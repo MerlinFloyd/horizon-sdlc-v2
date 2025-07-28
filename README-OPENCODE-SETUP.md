@@ -21,6 +21,18 @@ This guide helps you quickly set up the OpenCode development environment with al
 ./scripts/build.sh --api-key "your-api-key" --github-token "your-github-token"
 ```
 
+**Advanced Build Options:**
+```bash
+# Build without cache
+./scripts/build.sh --api-key "your-key" --no-cache
+
+# Build and push to registry
+./scripts/build.sh --api-key "your-key" --push --registry "your-registry.com"
+
+# Custom image tag
+./scripts/build.sh --api-key "your-key" --tag "v1.0.0"
+```
+
 ### 2. Verify Installation
 ```bash
 ./scripts/verify.sh
@@ -39,14 +51,14 @@ docker-compose exec opencode opencode "Analyze the current project structure"
 
 ### OpenCode Container Includes:
 - ✅ OpenCode AI development assistant
-- ✅ Context7 MCP server (documentation retrieval)
-- ✅ GitHub MCP server (repository management)
-- ✅ Playwright MCP server (browser automation)
-- ✅ ShadCN UI MCP server (UI component generation)
-- ✅ Sequential Thinking MCP server (problem-solving workflows)
-- ✅ Virtual display for headless operations
+- ✅ Context7 MCP server (remote documentation retrieval)
+- ✅ GitHub MCP server (remote repository management)
+- ✅ Playwright MCP server (local browser automation)
+- ✅ ShadCN UI MCP server (local UI component generation)
+- ✅ Sequential Thinking MCP server (local problem-solving workflows)
 - ✅ Proper workspace mounting
 - ✅ Environment variable configuration
+- ✅ Security hardening and resource limits
 
 ### Directory Structure Created:
 ```
@@ -75,6 +87,15 @@ docker-compose up -d
 
 # Stop container
 docker-compose down
+
+# View container status
+docker-compose ps
+
+# View container logs
+docker-compose logs -f opencode
+
+# Restart container
+docker-compose restart opencode
 
 # Restart container
 docker-compose restart opencode
@@ -119,14 +140,14 @@ The verification script tests:
 # ✓ Container is healthy
 # ✓ OpenCode is installed
 # ✓ OpenCode configuration is valid
-# ✓ MCP Server: Context7 is responding
-# ✓ MCP Server: GitHub MCP is responding
-# ✓ MCP Server: Playwright is responding
-# ✓ MCP Server: ShadCN UI is responding
-# ✓ MCP Server: Sequential Thinking is responding
+# ✓ MCP Server: Context7 is installed as npm package (remote)
+# ✓ MCP Server: GitHub MCP is installed as npm package (remote)
+# ✓ MCP Server: Playwright is responding (local)
+# ✓ MCP Server: ShadCN UI is responding (local)
+# ✓ MCP Server: Sequential Thinking is responding (local)
 # ✓ Workspace is properly mounted
-# ✓ AI assets are properly mounted
 # ✓ Environment variables are configured
+# ✓ Internal health check passed
 
 # ✓ OpenCode basic functionality works
 # ✓ All tests passed! OpenCode container is fully functional.
@@ -150,18 +171,22 @@ docker-compose down && docker-compose up -d --build
 
 **MCP servers not responding:**
 ```bash
-# Test individual servers
-docker-compose exec opencode context7-mcp-server --version
-docker-compose exec opencode github-mcp-server --version
+# Test local MCP servers
+docker-compose exec opencode npx @playwright/mcp --version
+docker-compose exec opencode npx @modelcontextprotocol/server-sequential-thinking --version
+docker-compose exec opencode npx @jpisnice/shadcn-ui-mcp-server --version
+
+# Check remote MCP server configuration
+docker-compose exec opencode cat /root/.config/opencode/opencode.json | grep -A 10 "mcp"
 ```
 
 **API key issues:**
 ```bash
 # Check environment in container
-docker-compose exec opencode printenv | grep API_KEY
+docker-compose exec opencode printenv | grep OPENROUTER_API_KEY
 
 # Verify configuration
-docker-compose exec opencode cat /.opencode/opencode.json
+docker-compose exec opencode cat /root/.config/opencode/opencode.json
 ```
 
 ## 📚 Next Steps
@@ -178,13 +203,33 @@ docker-compose exec opencode cat /.opencode/opencode.json
 - Sensitive files are automatically excluded from version control
 - MCP servers operate with minimal required permissions
 
+## 🔄 GitHub Actions Integration
+
+The project includes GitHub Actions workflow for OpenCode integration:
+
+### Setup GitHub Actions
+1. **Add Repository Secrets**:
+   - `OPENROUTER_API_KEY`: Your OpenRouter API key for OpenCode
+
+2. **Trigger OpenCode**:
+   - Comment `/oc` or `/opencode` on any issue
+   - GitHub Actions will run OpenCode with Claude Sonnet 4
+
+### Workflow Configuration
+- **File**: `.github/workflows/opencode.yml`
+- **Trigger**: Issue comments containing `/oc` or `/opencode`
+- **Model**: `anthropic/claude-sonnet-4`
+- **Provider**: OpenRouter (via `OPENROUTER_API_KEY`)
+- **Permissions**: `id-token: write` for secure authentication
+
 ## 📖 Additional Resources
 
 - **Detailed Setup Guide**: `docs/opencode-container-setup.md`
 - **Container Architecture**: See Docker Compose configuration
-- **MCP Server Configs**: `docker/opencode/config/mcp-servers/`
+- **OpenCode Configuration**: `docker/opencode/config/opencode.json.template`
 - **Build Scripts**: `scripts/build.sh`
 - **Verification Script**: `scripts/verify.sh`
+- **GitHub Actions**: `.github/workflows/opencode.yml`
 
 ## 🆘 Getting Help
 

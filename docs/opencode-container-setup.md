@@ -60,7 +60,7 @@ docker-compose logs -f opencode
 
 2. **Set up environment variables** (optional):
    ```bash
-   export ANTHROPIC_API_KEY="your-api-key"
+   export OPENROUTER_API_KEY="your-api-key"
    export GITHUB_TOKEN="your-github-token"
    ```
 
@@ -75,7 +75,7 @@ The build script accepts the following options:
 
 | Option | Description | Required |
 |--------|-------------|----------|
-| `-k, --api-key` | ANTHROPIC_API_KEY for AI provider | Yes |
+| `-k, --api-key` | OPENROUTER_API_KEY for AI provider | Yes |
 | `-g, --github-token` | GitHub token for MCP integration | No |
 | `-t, --tag` | Docker image tag (default: latest) | No |
 | `-n, --no-cache` | Build without Docker cache | No |
@@ -129,13 +129,45 @@ The verification script tests:
 
 ### MCP Servers Configuration
 
-| Server | Command | Purpose |
-|--------|---------|---------|
-| Context7 | `context7-mcp-server` | Documentation retrieval |
-| GitHub MCP | `github-mcp-server` | Repository management |
-| Playwright | `playwright-mcp-server` | Browser automation |
-| ShadCN UI | `shadcn-ui-mcp-server` | UI component generation |
-| Sequential Thinking | `sequential-thinking-mcp-server` | Problem-solving workflows |
+| Server | Type | Command/URL | Purpose |
+|--------|------|-------------|---------|
+| Context7 | Remote | `https://context7.ai/mcp` | Documentation retrieval |
+| GitHub MCP | Remote | `https://github-mcp.opencode.ai` | Repository management |
+| Playwright | Local | `npx @playwright/mcp` | Browser automation |
+| ShadCN UI | Local | `npx @jpisnice/shadcn-ui-mcp-server` | UI component generation |
+| Sequential Thinking | Local | `npx @modelcontextprotocol/server-sequential-thinking` | Problem-solving workflows |
+
+**Note**: Remote MCP servers (Context7, GitHub) are disabled by default and require configuration to enable.
+
+## OpenCode Configuration
+
+### Workflow Modes
+OpenCode is configured with specialized workflow modes for different development phases:
+
+| Mode | Description | Temperature | Purpose |
+|------|-------------|-------------|---------|
+| `prd` | Technical Product Owner | 0.3 | Requirements gathering and PRD creation |
+| `architect` | Technical Architect | 0.2 | System design and technical specifications |
+| `feature-breakdown` | Feature Developer | 0.4 | Breaking down features into components |
+| `usp` | Implementation Agent | 0.5 | User stories and feature implementation |
+
+### Provider Configuration
+- **Primary Provider**: OpenRouter
+- **Default Model**: `anthropic/claude-sonnet-4`
+- **Alternative Model**: `google/gemini-2.5-pro`
+- **API Key**: Configured via `OPENROUTER_API_KEY` environment variable
+
+### MCP Server Configuration
+The OpenCode configuration includes both local and remote MCP servers:
+
+**Local Servers** (enabled by default):
+- Playwright: Browser automation and testing
+- Sequential Thinking: Problem-solving workflows
+- ShadCN UI: UI component generation
+
+**Remote Servers** (disabled by default):
+- Context7: Documentation retrieval (requires configuration)
+- GitHub: Repository management (requires `GITHUB_TOKEN`)
 
 ## Usage Examples
 
@@ -151,6 +183,32 @@ docker-compose exec opencode opencode
 # Run OpenCode with specific command
 docker-compose exec opencode opencode "Analyze the current project structure"
 ```
+
+### Advanced Container Management
+
+#### Health Monitoring
+```bash
+# Run comprehensive health check
+docker-compose exec opencode /usr/local/bin/healthcheck.sh
+
+# Check Docker native health status
+docker inspect horizon-opencode --format='{{.State.Health.Status}}'
+
+# View health check logs
+docker inspect horizon-opencode --format='{{range .State.Health.Log}}{{.Start}}: {{.Output}}{{end}}'
+```
+
+#### Resource Management
+The container is configured with resource limits:
+- **Memory Limit**: 2GB
+- **CPU Limit**: 2.0 cores
+- **Memory Reservation**: 512MB
+- **CPU Reservation**: 0.5 cores
+
+#### Security Features
+- **Security Options**: `no-new-privileges:true`
+- **Network**: Isolated bridge network (`horizon-opencode-network`)
+- **Logging**: JSON file driver with rotation (10MB max, 3 files)
 
 ### Container Management
 

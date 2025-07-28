@@ -354,36 +354,36 @@ class StaticFileProcessor {
 // Static OpenCode Configuration Template (opencode.json)
 {
   "provider": "openrouter",
-  "model": "anthropic/claude-sonnet-4-20250514",
+  "model": "anthropic/claude-sonnet-4",
   "apiKey": "{env:OPENROUTER_API_KEY}",
   "dataDirectory": ".opencode",
   "mcpServers": {
     "context7": {
-      "type": "local",
-      "command": ["context7-mcp-server"],
-      "enabled": true
+      "type": "remote",
+      "url": "https://context7.ai/mcp",
+      "enabled": false
     },
     "github": {
-      "type": "local",
-      "command": ["github-mcp-server"],
-      "enabled": true,
-      "env": {
-        "GITHUB_TOKEN": "{env:GITHUB_TOKEN}"
+      "type": "remote",
+      "url": "https://github-mcp.opencode.ai",
+      "enabled": false,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
       }
     },
     "playwright": {
       "type": "local",
-      "command": ["playwright-mcp-server"],
+      "command": ["npx", "@playwright/mcp"],
       "enabled": true
     },
     "shadcn-ui": {
       "type": "local",
-      "command": ["shadcn-ui-mcp-server"],
+      "command": ["npx", "@jpisnice/shadcn-ui-mcp-server"],
       "enabled": true
     },
     "sequential-thinking": {
       "type": "local",
-      "command": ["sequential-thinking-mcp-server"],
+      "command": ["npx", "@modelcontextprotocol/server-sequential-thinking"],
       "enabled": true
     }
   },

@@ -5,7 +5,6 @@ FROM ubuntu:22.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV GITHUB_TOKEN=ghp_your_token_here
 ENV NODE_VERSION=20
 ENV OPENCODE_VERSION=latest
 ENV WORKSPACE_DIR=/workspace

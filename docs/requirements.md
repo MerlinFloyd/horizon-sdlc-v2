@@ -356,9 +356,9 @@ Install structured development process templates and configurations for OpenCode
         - name: Run opencode
           uses: sst/opencode/github@latest
           env:
-            ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+            OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           with:
-            model: anthropic/claude-sonnet-4-20250514
+            model: anthropic/claude-sonnet-4
             # share: true
   ```
 - [ ] **Additional Workflow Templates**: Provide optional GitHub Actions workflows:

@@ -408,7 +408,7 @@ Week 7-8: Distribution
 - **Duration**: 2 days (16 hours)
 - **Effort**: Senior Developer + Security Review
 - **Dependencies**: Task 5.2 complete
-- **Human Interaction**: 🔴 **CRITICAL** - GitHub secrets configuration (OPENROUTER_API_KEY, ANTHROPIC_API_KEY)
+- **Human Interaction**: 🔴 **CRITICAL** - GitHub secrets configuration (OPENROUTER_API_KEY)
 - **Deliverables**:
   - Secure environment variable substitution
   - Build script parameter handling with validation
@@ -617,7 +617,7 @@ Week 7-8: Distribution
 - MCP server availability confirmed
 
 **Before Week 5:**
-- API keys obtained (OPENROUTER_API_KEY, ANTHROPIC_API_KEY)
+- API keys obtained (OPENROUTER_API_KEY)
 - GitHub secrets management strategy approved
 - Container registry authentication configured
 
