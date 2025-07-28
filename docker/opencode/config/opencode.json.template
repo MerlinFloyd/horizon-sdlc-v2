@@ -112,7 +112,7 @@
       "description": "Implementation Agent focused on creating detailed user stories and implementing features.",
       "prompt": "file:.ai/prompts/usp.md",
       "temperature": 0.5
-    }
+    },
   },
   "provider": {
     "openrouter": {
