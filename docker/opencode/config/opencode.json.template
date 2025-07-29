@@ -48,7 +48,19 @@
   "mode": {
     "idea-definition": {
       "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/workspace/.ai/prompts/idea-definition.txt}",
+      "prompt": "{file:/workspace/.ai/prompts/idea-definition.md}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": false,
+        "bash": false,
+        "grep": true,
+        "glob": true
+      }
+    },
+    "enterprise-architecture": {
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "prompt": "{file:/workspace/.ai/prompts/enterprise-architecture.md}",
       "tools": {
         "read": true,
         "write": true,
@@ -60,7 +72,7 @@
     },
     "prd-generation": {
       "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/workspace/.ai/prompts/prd-generation.txt}",
+      "prompt": "{file:/workspace/.ai/prompts/prd-generation.md}",
       "tools": {
         "read": true,
         "write": true,
@@ -72,7 +84,7 @@
     },
     "trd-creation": {
       "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/workspace/.ai/prompts/trd-creation.txt}",
+      "prompt": "{file:/workspace/.ai/prompts/trd-creation.md}",
       "tools": {
         "read": true,
         "write": true,
@@ -84,7 +96,7 @@
     },
     "feature-breakdown": {
       "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/workspace/.ai/prompts/feature-breakdown.txt}",
+      "prompt": "{file:/workspace/.ai/prompts/feature-breakdown.md}",
       "tools": {
         "read": true,
         "write": true,
@@ -96,7 +108,7 @@
     },
     "user-stories": {
       "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/workspace/.ai/prompts/user-stories.txt}",
+      "prompt": "{file:/workspace/.ai/prompts/user-stories.md}",
       "tools": {
         "read": true,
         "write": true,
