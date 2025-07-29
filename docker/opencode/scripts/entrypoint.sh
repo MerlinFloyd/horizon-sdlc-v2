@@ -150,7 +150,16 @@ main() {
     # Execute the provided command or start OpenCode
     if [[ $# -eq 0 ]]; then
         log "Starting OpenCode..."
-        exec opencode
+
+        # Check if we have a proper TTY for interactive mode
+        if [[ -t 0 && -t 1 ]]; then
+            log "Interactive terminal detected - starting OpenCode directly"
+            exec opencode
+        else
+            log "Non-interactive mode detected - OpenCode may not work properly"
+            log "For best results, run with: docker run -it"
+            exec opencode
+        fi
     else
         log "Executing command: $*"
         exec "$@"

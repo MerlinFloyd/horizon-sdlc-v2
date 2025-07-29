@@ -95,29 +95,28 @@ cleanup() {
     exit $exit_code
 }
 
-# Function to wait for container to be healthy
+# Function to wait for container to be ready
 wait_for_container() {
-    local max_attempts=30
+    local max_attempts=15
     local attempt=1
-    
+
     print_status "Waiting for container to be ready..."
-    
+
     while [[ $attempt -le $max_attempts ]]; do
         if docker ps --filter "name=$CONTAINER_NAME" --filter "status=running" --format "{{.Names}}" | grep -q "$CONTAINER_NAME"; then
-            # Check if container is healthy (if health check is defined)
-            local health_status=$(docker inspect --format='{{.State.Health.Status}}' "$CONTAINER_NAME" 2>/dev/null || echo "none")
-            
-            if [[ "$health_status" == "healthy" ]] || [[ "$health_status" == "none" ]]; then
+            # For OpenCode, we just need the container to be running
+            # Check if OpenCode has started by looking for its process
+            if docker exec "$CONTAINER_NAME" pgrep -f "opencode" >/dev/null 2>&1; then
                 print_success "Container is ready!"
                 return 0
             fi
         fi
-        
+
         printf "\r${BLUE}[INFO]${NC} Waiting for container... (%d/%d)" $attempt $max_attempts
-        sleep 2
+        sleep 3
         ((attempt++))
     done
-    
+
     echo
     print_error "Container failed to become ready within expected time"
     return 1
@@ -126,34 +125,44 @@ wait_for_container() {
 # Function to start services
 start_services() {
     print_status "Starting OpenCode services..."
-    
+
     # Change to the directory containing docker-compose.yml
     cd "$(dirname "$COMPOSE_FILE")"
-    
-    # Start services in detached mode
-    if $COMPOSE_CMD -f "$(basename "$COMPOSE_FILE")" up -d "$SERVICE_NAME"; then
-        print_success "Services started successfully"
+
+    # Check if container is already running
+    if docker ps --filter "name=$CONTAINER_NAME" --filter "status=running" --format "{{.Names}}" | grep -q "$CONTAINER_NAME"; then
+        print_warning "Container is already running"
+        return 0
+    fi
+
+    # Start services in detached mode first to set up networking
+    if $COMPOSE_CMD -f "$(basename "$COMPOSE_FILE")" up --no-start "$SERVICE_NAME"; then
+        print_success "Services prepared successfully"
         return 0
     else
-        print_error "Failed to start services"
+        print_error "Failed to prepare services"
         return 1
     fi
 }
 
-# Function to attach to container
-attach_to_container() {
-    print_status "Attaching to container terminal..."
-    print_status "Use 'exit' or Ctrl+D to detach from container (containers will keep running)"
-    print_status "Use Ctrl+C to stop containers and exit"
+# Function to run container interactively
+run_container_interactive() {
+    print_status "Starting OpenCode container interactively..."
+    print_status "This will give you direct access to the OpenCode terminal"
+    print_status "Use Ctrl+C to stop OpenCode and exit"
     echo
-    
-    # Attach to the running container with an interactive shell
-    if docker exec -it "$CONTAINER_NAME" opencode; then
-        print_success "Detached from container"
+
+    # Use docker run directly for better TTY support
+    local image_name="horizon-sdlc/opencode:latest"
+    local workspace_mount="-v $(pwd):/workspace"
+    local env_file="--env-file .env"
+
+    # Run the container interactively with docker run
+    if docker run --rm -it $workspace_mount $env_file $image_name; then
+        print_success "OpenCode session ended"
     else
-        print_warning "Failed to attach to container or container exited"
-        print_status "Container logs:"
-        docker logs --tail 20 "$CONTAINER_NAME"
+        print_warning "OpenCode container exited with error"
+        print_status "Check the output above for error details"
     fi
 }
 
@@ -172,32 +181,23 @@ main() {
     
     echo
     
-    # Start services
+    # Prepare services (create containers but don't start them)
     if ! start_services; then
-        print_error "Failed to start services. Check the logs above."
+        print_error "Failed to prepare services. Check the logs above."
         exit 1
     fi
-    
-    # Wait for container to be ready
-    if ! wait_for_container; then
-        print_error "Container is not ready. Showing recent logs:"
-        docker logs --tail 20 "$CONTAINER_NAME"
-        exit 1
-    fi
-    
+
     echo
-    print_success "OpenCode is ready!"
-    print_status "Container: $CONTAINER_NAME"
-    print_status "Web interface (if available): http://localhost:3000"
+    print_success "OpenCode container is ready!"
+    print_status "Starting interactive OpenCode session..."
     echo
-    
-    # Attach to container
-    attach_to_container
-    
+
+    # Run container interactively
+    run_container_interactive
+
     echo
-    print_status "Session ended. Containers are still running."
-    print_status "To stop containers, run: $COMPOSE_CMD -f $COMPOSE_FILE down"
-    print_status "To view logs, run: docker logs $CONTAINER_NAME"
+    print_status "OpenCode session ended."
+    print_status "To clean up, run: $COMPOSE_CMD -f $COMPOSE_FILE down"
 }
 
 # Run main function

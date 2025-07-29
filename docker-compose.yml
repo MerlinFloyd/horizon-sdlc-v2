@@ -47,13 +47,13 @@ services:
           memory: 512M
           cpus: '0.5'
     
-    # Health check
-    healthcheck:
-      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+    # Health check - disabled for interactive OpenCode
+    # healthcheck:
+    #   test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 60s
     
     # Restart policy
     restart: unless-stopped

@@ -42,7 +42,7 @@ usage() {
     cat << EOF
 Usage: $0 [OPTIONS]
 
-Build and deploy the OpenCode container with MCP servers.
+Build and prepare the OpenCode container with MCP servers for interactive use.
 
 OPTIONS:
     -k, --api-key KEY       Set OPENROUTER_API_KEY (required)
@@ -56,12 +56,15 @@ OPTIONS:
 EXAMPLES:
     # Basic build with API key
     $0 --api-key "your-openrouter-api-key"
-    
+
     # Build with GitHub integration
     $0 --api-key "your-api-key" --github-token "your-github-token"
-    
+
     # Build and push to registry
     $0 --api-key "your-api-key" --push --registry "your-registry.com"
+
+    # After building, start OpenCode interactively:
+    ./scripts/start-opencode.sh
 
 ENVIRONMENT VARIABLES:
     OPENROUTER_API_KEY      AI provider API key (can be set instead of --api-key)
@@ -217,47 +220,47 @@ EOF
     success "Environment file created: $env_file"
 }
 
-# Function to deploy container
-deploy_container() {
+# Function to prepare container (build-only mode)
+prepare_container() {
     local api_key="$1"
     local github_token="$2"
-    
-    log "Deploying OpenCode container..."
-    
+
+    log "Preparing OpenCode container environment..."
+
     # Export environment variables for docker-compose
     export OPENROUTER_API_KEY="$api_key"
     export GITHUB_TOKEN="$github_token"
-    
+
     # Stop existing container if running
     if docker-compose ps | grep -q "horizon-opencode"; then
         log "Stopping existing container..."
         docker-compose down
     fi
-    
-    # Start the container
-    if docker-compose up -d; then
-        success "OpenCode container deployed successfully"
-        
-        # Wait for container to be healthy
-        log "Waiting for container to be healthy..."
-        local max_attempts=30
-        local attempt=1
-        
-        while [[ $attempt -le $max_attempts ]]; do
-            if docker-compose ps | grep -q "healthy"; then
-                success "Container is healthy and ready"
-                return 0
-            fi
-            
-            log "Health check attempt $attempt/$max_attempts..."
-            sleep 2
-            ((attempt++))
-        done
-        
-        warning "Container started but health check timed out"
+
+    # Create the container without starting it (for networking setup)
+    if docker-compose up --no-start; then
+        success "OpenCode container prepared successfully"
+        log "Container is ready for interactive startup"
         return 0
     else
-        error "Failed to deploy OpenCode container"
+        error "Failed to prepare OpenCode container"
+        return 1
+    fi
+}
+
+# Function to test container functionality
+test_container() {
+    log "Testing OpenCode container functionality..."
+
+    # Test the container with a quick run
+    local test_output
+    if test_output=$(docker run --rm -v "$(pwd):/workspace" --env-file .env horizon-sdlc/opencode:latest opencode --version 2>&1); then
+        success "Container test passed"
+        log "OpenCode version: $test_output"
+        return 0
+    else
+        error "Container test failed"
+        error "Test output: $test_output"
         return 1
     fi
 }
@@ -343,20 +346,25 @@ main() {
     
     # Create environment file
     create_env_file "$api_key" "$github_token"
-    
-    # Deploy container
-    if ! deploy_container "$api_key" "$github_token"; then
+
+    # Test container functionality
+    if ! test_container; then
         exit 1
     fi
-    
-    success "OpenCode container build and deployment completed successfully!"
-    
+
+    # Prepare container environment
+    if ! prepare_container "$api_key" "$github_token"; then
+        exit 1
+    fi
+
+    success "OpenCode container build and preparation completed successfully!"
+
     # Display next steps
     log "Next steps:"
-    log "  1. Verify container status: docker-compose ps"
-    log "  2. View container logs: docker-compose logs -f opencode"
-    log "  3. Access OpenCode: docker-compose exec opencode opencode"
-    log "  4. Run health check: docker-compose exec opencode /usr/local/bin/healthcheck.sh"
+    log "  1. Start OpenCode interactively: ./scripts/start-opencode.sh"
+    log "  2. Or test manually: docker run --rm -it -v \$(pwd):/workspace --env-file .env horizon-sdlc/opencode:latest"
+    log "  3. Check container status: docker-compose ps"
+    log "  4. View build logs: docker logs horizon-opencode"
 }
 
 # Run main function with all arguments
