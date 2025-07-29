@@ -21,9 +21,9 @@ The `/workspace/.ai` directory contains user-modifiable assets that agents must 
 │   ├── python/             # Python project templates
 │   └── java/               # Java project templates
 └── standards/
-    ├── architectural/      # Architectural guidelines
-    ├── testing/           # Testing standards
-    └── documentation/     # Documentation standards
+    ├── architectural.md      # Architectural guidelines
+    ├── testing.md           # Testing standards
+    └── documentation.md     # Documentation standards
 ```
 
 ## MCP Server Usage Guidelines
@@ -70,33 +70,54 @@ The `/workspace/.ai` directory contains user-modifiable assets that agents must 
 
 ## Workflow Phase Instructions
 
-### Phase 1: PRD (Product Requirements Document)
-- **Agent Mode**: Technical Product Owner
-- **Focus**: Requirements gathering and documentation
-- **Tools**: Read-only analysis, documentation generation
-- **Standards**: Reference `/workspace/.ai/prompts/workflow/prd-templates.json`
-- **MCP Usage**: Context7 for research, GitHub for repository context
+This section documents the four-phase product development workflow that guides users through the complete process of building a product using OpenCode. Each phase has specific OpenCode modes and the requirements and specific tools is specified in the markdown files related to that mode.
 
-### Phase 2: Technical Architecture
-- **Agent Mode**: Technical Architect  
-- **Focus**: System design and technical specifications
-- **Tools**: Design tools, documentation, analysis
-- **Standards**: Reference `/workspace/.ai/standards/architectural/` guidelines
-- **MCP Usage**: Context7 for architectural patterns, Sequential Thinking for planning
+### Phase 1: Product Requirements Definition
 
-### Phase 3: Feature Breakdown
-- **Agent Mode**: Feature Developer
-- **Focus**: Feature decomposition and development planning
-- **Tools**: Full development capabilities
-- **Standards**: Reference `/workspace/.ai/standards/` for language-specific guidelines
-- **MCP Usage**: All MCP servers as needed for comprehensive development
+**Purpose**: Define comprehensive product requirements based on user needs and transform them into a structured Product Requirements Document.
 
-### Phase 4: USP (User Story Prompt) Generation
-- **Agent Mode**: Implementation Agent
-- **Focus**: User story creation and implementation
-- **Tools**: Implementation and testing capabilities
-- **Standards**: Reference `/workspace/.ai/templates/` for consistent implementation
-- **MCP Usage**: GitHub for repository operations, testing MCPs for validation
+**OpenCode Mode**: product-requirements-definition mode
+
+**Standards**: Reference `/workspace/.ai/standards/` guidelines
+
+### Phase 2: Technical Architecture Specification
+
+**Purpose**: Merge product requirements with organizational technical constraints to create a comprehensive technical specification that ensures the product can be built within the organization's technical ecosystem.
+
+**OpenCode Mode**: architect Mode
+
+**Standards**: Reference `/workspace/.ai/standards/` guidelines
+
+### Phase 3: Feature Breakdown and Prioritization
+
+**Purpose**: Decompose requirements and technical specifications into independently implementable features, ordered by dependencies, priority levels, and risk mitigation strategies.
+
+**OpenCode Mode**: feature-breakdown Mode
+
+**Standards**: Reference `/workspace/.ai/standards/` guidelines
+
+### Phase 4: User Story Generation and Implementation (USP Mode)
+
+**Purpose**: Convert individual features into detailed, actionable user stories that provide comprehensive implementation guidance for AI agent execution.
+
+**OpenCode Mode**: user-story-prompt Mode
+
+## Workflow Integration Notes
+
+### Cross-Phase Dependencies
+- Each phase builds upon the outputs of the previous phase
+- Changes in later phases may require revisiting earlier phases
+- Maintain traceability from user stories back to original requirements
+
+### Quality Gates
+- Each phase must be completed and validated before proceeding to the next
+- Regular reviews ensure alignment with original product vision
+- Continuous validation against organizational constraints and standards
+
+### Iterative Refinement
+- Phases may be revisited based on implementation feedback
+- User stories can be refined based on development insights
+- Architecture may be adjusted based on implementation realities
 
 ## Template and Prompt Integration
 

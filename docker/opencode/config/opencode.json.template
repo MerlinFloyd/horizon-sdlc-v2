@@ -46,25 +46,65 @@
     }
   },
   "mode": {
-    "prd": {
-      "description": "Technical Product Owner focused on requirements gathering and creating comprehensive PRDs.",
-      "prompt": "file:/root/.config/opencode/prompts/prd.md",
-      "temperature": 0.3
+    "idea-definition": {
+      "model": "anthropic/claude-sonnet-4",
+      "prompt": "{file:/workspace/.ai/prompts/idea-definition.txt}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": false,
+        "bash": false,
+        "grep": true,
+        "glob": true
+      }
     },
-    "architect": {
-      "description": "Technical Architect responsible for system design and technical specifications.",
-      "prompt": "file:/root/.config/opencode/prompts/architect.md",
-      "temperature": 0.2
+    "prd-generation": {
+      "model": "anthropic/claude-sonnet-4",
+      "prompt": "{file:/workspace/.ai/prompts/prd-generation.txt}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": false,
+        "grep": true,
+        "glob": true
+      }
+    },
+    "trd-creation": {
+      "model": "anthropic/claude-sonnet-4",
+      "prompt": "{file:/workspace/.ai/prompts/trd-creation.txt}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true
+      }
     },
     "feature-breakdown": {
-      "description": "Feature Developer responsible for breaking down features into implementable components.",
-      "prompt": "file:/root/.config/opencode/feature-breakdown.md",
-      "temperature": 0.4
+      "model": "anthropic/claude-sonnet-4",
+      "prompt": "{file:/workspace/.ai/prompts/feature-breakdown.txt}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true
+      }
     },
-    "usp": {
-      "description": "Implementation Agent focused on creating detailed user stories and implementing features.",
-      "prompt": "file:/root/.config/opencode/prompts/usp.md",
-      "temperature": 0.5
+    "user-stories": {
+      "model": "anthropic/claude-sonnet-4",
+      "prompt": "{file:/workspace/.ai/prompts/user-stories.txt}",
+      "tools": {
+        "read": true,
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "grep": true,
+        "glob": true
+      }
     }
   },
   "provider": {
