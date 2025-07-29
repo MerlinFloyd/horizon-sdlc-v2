@@ -138,9 +138,15 @@ main() {
     
     success "OpenCode container initialization completed!"
     
+    # Set environment variables for MCP servers
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        export GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_TOKEN"
+        log "GitHub Personal Access Token configured for MCP server"
+    fi
+
     # Change to workspace directory
     cd /workspace
-    
+
     # Execute the provided command or start OpenCode
     if [[ $# -eq 0 ]]; then
         log "Starting OpenCode..."

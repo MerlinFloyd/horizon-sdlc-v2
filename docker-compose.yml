@@ -1,6 +1,6 @@
 services:
   opencode:
-    image: ghcr.io/${GITHUB_REPOSITORY:-your-username/your-repo}/opencode:${IMAGE_TAG:-latest}
+    image: horizon-sdlc/opencode:latest
     container_name: horizon-opencode
     
     # Environment variables

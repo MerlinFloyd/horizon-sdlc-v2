@@ -106,12 +106,6 @@ The `/workspace/.ai` directory contains user-modifiable assets that agents must 
 - **PRESERVE** template patterns and architectural decisions
 - **VALIDATE** generated code against templates for consistency
 
-### 2. Prompt Template Integration
-- **REFERENCE** `/workspace/.ai/prompts/` for workflow-specific guidance
-- **ADAPT** prompts to current project context and requirements
-- **MAINTAIN** consistency with established prompt patterns
-- **UPDATE** prompts based on project evolution and learning
-
 ### 3. Standards Reference Rules
 - **READ** applicable standards from `/workspace/.ai/standards/` before code generation
 - **APPLY** language-specific coding standards consistently
