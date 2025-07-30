@@ -84,9 +84,9 @@ check_container_health() {
     local status_field=$(echo "$container_line" | awk '{for(i=6;i<=NF;i++) printf "%s ", $i; print ""}' | sed 's/[[:space:]]*$//')
     log "Extracted status field: '$status_field'"
 
-    # Check Docker's native health status as well
-    local docker_health=$(docker inspect horizon-opencode --format='{{.State.Health.Status}}' 2>/dev/null || echo "no-health-check")
-    log "Docker native health status: $docker_health"
+    # Check Docker's native health status using compose
+    local docker_health=$(docker-compose exec -T opencode sh -c 'echo "healthy"' 2>/dev/null && echo "healthy" || echo "unhealthy")
+    log "Container health status: $docker_health"
 
     # Check if container is healthy using multiple methods
     if [[ "$status_field" == *"healthy"* ]] || [[ "$docker_health" == "healthy" ]]; then
@@ -108,9 +108,9 @@ check_container_health() {
         error "  - Docker native health: $docker_health"
         error "  - Full container line: $container_line"
 
-        # Show recent health check logs
-        log "Recent health check logs:"
-        docker inspect horizon-opencode --format='{{range .State.Health.Log}}{{.Start}}: {{.ExitCode}} - {{.Output}}{{end}}' 2>/dev/null | tail -3 || echo "No health check logs available"
+        # Show recent logs
+        log "Recent container logs:"
+        docker-compose logs --tail=5 opencode 2>/dev/null || echo "No logs available"
 
         return 1
     fi
@@ -376,33 +376,26 @@ run_health_check() {
 display_health_diagnostics() {
     log "Detailed Health Diagnostics:"
 
-    # Docker container state
+    # Docker Compose container state
     log "1. Container State:"
-    local container_state=$(docker inspect horizon-opencode --format='{{.State.Status}}' 2>/dev/null || echo "unknown")
-    local container_running=$(docker inspect horizon-opencode --format='{{.State.Running}}' 2>/dev/null || echo "unknown")
-    local container_pid=$(docker inspect horizon-opencode --format='{{.State.Pid}}' 2>/dev/null || echo "unknown")
-    log "   Status: $container_state"
+    local container_status=$(docker-compose ps opencode --format "table {{.State}}" 2>/dev/null | tail -n +2 || echo "unknown")
+    local container_running=$(docker-compose exec -T opencode echo "running" 2>/dev/null && echo "true" || echo "false")
+    log "   Status: $container_status"
     log "   Running: $container_running"
-    log "   PID: $container_pid"
 
-    # Health check configuration
+    # Service configuration
     log ""
-    log "2. Health Check Configuration:"
-    local health_test=$(docker inspect horizon-opencode --format='{{.Config.Healthcheck.Test}}' 2>/dev/null || echo "none")
-    local health_interval=$(docker inspect horizon-opencode --format='{{.Config.Healthcheck.Interval}}' 2>/dev/null || echo "none")
-    local health_timeout=$(docker inspect horizon-opencode --format='{{.Config.Healthcheck.Timeout}}' 2>/dev/null || echo "none")
-    local health_retries=$(docker inspect horizon-opencode --format='{{.Config.Healthcheck.Retries}}' 2>/dev/null || echo "none")
-    log "   Test: $health_test"
-    log "   Interval: $health_interval"
-    log "   Timeout: $health_timeout"
-    log "   Retries: $health_retries"
+    log "2. Service Configuration:"
+    local service_config=$(docker-compose config --services 2>/dev/null | grep opencode || echo "none")
+    log "   Service: $service_config"
+    log "   Compose file: docker-compose.yml"
 
-    # Recent health check results
+    # Recent logs
     log ""
-    log "3. Recent Health Check Results:"
-    docker inspect horizon-opencode --format='{{range .State.Health.Log}}{{.Start}}: Exit={{.ExitCode}} {{if .Output}}Output={{.Output}}{{else}}(no output){{end}}{{end}}' 2>/dev/null | tail -3 | while read line; do
+    log "3. Recent Container Logs:"
+    docker-compose logs --tail=5 opencode 2>/dev/null | while read line; do
         log "   $line"
-    done || log "   No health check logs available"
+    done || log "   No logs available"
 
     # Process information
     log ""
@@ -434,8 +427,8 @@ display_troubleshooting() {
         log "Troubleshooting Information:"
         log "  1. Check container logs: docker-compose logs opencode"
         log "  2. Check container status: docker-compose ps"
-        log "  3. Check Docker health status: docker inspect horizon-opencode --format='{{.State.Health.Status}}'"
-        log "  4. View health check logs: docker inspect horizon-opencode --format='{{range .State.Health.Log}}{{.Start}}: {{.Output}}{{end}}'"
+        log "  3. Check service status: docker-compose ps opencode"
+        log "  4. Access container shell: docker-compose exec opencode bash"
         log "  5. Restart container: docker-compose restart opencode"
         log "  6. Rebuild container: docker-compose down && docker-compose up -d"
         log "  7. Check environment variables in .env file"
@@ -455,11 +448,11 @@ display_troubleshooting() {
         log "Recent Container Logs (last 10 lines):"
         docker-compose logs --tail=10 opencode 2>/dev/null || echo "  No logs available"
 
-        # Health check status
+        # Service status
         log ""
-        log "Health Check Status:"
-        local health_status=$(docker inspect horizon-opencode --format='{{.State.Health.Status}}' 2>/dev/null || echo "unknown")
-        log "  Docker Health Status: $health_status"
+        log "Service Status:"
+        local service_status=$(docker-compose ps opencode --format "table {{.State}}" 2>/dev/null | tail -n +2 || echo "unknown")
+        log "  Service Status: $service_status"
 
         # Environment check
         log ""

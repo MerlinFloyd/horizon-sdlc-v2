@@ -15,7 +15,6 @@ NC='\033[0m' # No Color
 
 # Configuration
 COMPOSE_FILE="docker-compose.yml"
-CONTAINER_NAME="horizon-opencode"
 SERVICE_NAME="opencode"
 
 # Function to print colored output
@@ -53,7 +52,7 @@ check_docker_compose() {
 check_compose_file() {
     if [[ ! -f "$COMPOSE_FILE" ]]; then
         print_error "Docker Compose file not found: $COMPOSE_FILE"
-        print_error "Please ensure you're running this script from the docker/opencode directory"
+        print_error "Please ensure you're running this script from the project root directory"
         exit 1
     fi
     print_status "Found Docker Compose file: $COMPOSE_FILE"
@@ -103,10 +102,10 @@ wait_for_container() {
     print_status "Waiting for container to be ready..."
 
     while [[ $attempt -le $max_attempts ]]; do
-        if docker ps --filter "name=$CONTAINER_NAME" --filter "status=running" --format "{{.Names}}" | grep -q "$CONTAINER_NAME"; then
-            # For OpenCode, we just need the container to be running
+        # Check if service is running using Docker Compose
+        if $COMPOSE_CMD ps --services --filter "status=running" | grep -q "$SERVICE_NAME"; then
             # Check if OpenCode has started by looking for its process
-            if docker exec "$CONTAINER_NAME" pgrep -f "opencode" >/dev/null 2>&1; then
+            if $COMPOSE_CMD exec -T "$SERVICE_NAME" pgrep -f "opencode" >/dev/null 2>&1; then
                 print_success "Container is ready!"
                 return 0
             fi
@@ -126,21 +125,18 @@ wait_for_container() {
 start_services() {
     print_status "Starting OpenCode services..."
 
-    # Change to the directory containing docker-compose.yml
-    cd "$(dirname "$COMPOSE_FILE")"
-
-    # Check if container is already running
-    if docker ps --filter "name=$CONTAINER_NAME" --filter "status=running" --format "{{.Names}}" | grep -q "$CONTAINER_NAME"; then
-        print_warning "Container is already running"
+    # Check if service is already running
+    if $COMPOSE_CMD ps --services --filter "status=running" | grep -q "$SERVICE_NAME"; then
+        print_warning "Service is already running"
         return 0
     fi
 
-    # Start services in detached mode first to set up networking
-    if $COMPOSE_CMD -f "$(basename "$COMPOSE_FILE")" up --no-start "$SERVICE_NAME"; then
-        print_success "Services prepared successfully"
+    # Start services in detached mode
+    if $COMPOSE_CMD up -d "$SERVICE_NAME"; then
+        print_success "Services started successfully"
         return 0
     else
-        print_error "Failed to prepare services"
+        print_error "Failed to start services"
         return 1
     fi
 }
@@ -152,17 +148,14 @@ run_container_interactive() {
     print_status "Use Ctrl+C to stop OpenCode and exit"
     echo
 
-    # Use docker run directly for better TTY support
-    local image_name="horizon-sdlc/opencode:latest"
-    local workspace_mount="-v $(pwd):/workspace"
-    local env_file="--env-file .env"
-
-    # Run the container interactively with docker run
-    if docker run --rm -it $workspace_mount $env_file $image_name; then
+    # Use Docker Compose exec for interactive session
+    # This leverages the proper volume mounts and environment from docker-compose.yml
+    if $COMPOSE_CMD exec "$SERVICE_NAME" opencode; then
         print_success "OpenCode session ended"
     else
         print_warning "OpenCode container exited with error"
         print_status "Check the output above for error details"
+        print_status "You can check logs with: $COMPOSE_CMD logs $SERVICE_NAME"
     fi
 }
 
@@ -181,9 +174,17 @@ main() {
     
     echo
     
-    # Prepare services (create containers but don't start them)
+    # Start services using Docker Compose
     if ! start_services; then
-        print_error "Failed to prepare services. Check the logs above."
+        print_error "Failed to start services. Check the logs above."
+        print_status "You can check logs with: $COMPOSE_CMD logs $SERVICE_NAME"
+        exit 1
+    fi
+
+    # Wait for container to be ready
+    if ! wait_for_container; then
+        print_error "Container failed to become ready"
+        print_status "You can check logs with: $COMPOSE_CMD logs $SERVICE_NAME"
         exit 1
     fi
 
@@ -197,7 +198,7 @@ main() {
 
     echo
     print_status "OpenCode session ended."
-    print_status "To clean up, run: $COMPOSE_CMD -f $COMPOSE_FILE down"
+    print_status "To clean up, run: $COMPOSE_CMD down"
 }
 
 # Run main function

@@ -9,7 +9,7 @@ ENV NODE_VERSION=20
 ENV OPENCODE_VERSION=latest
 ENV WORKSPACE_DIR=/workspace
 ENV OPENCODE_CONFIG_DIR=/root/.config/opencode
-ENV AI_ASSETS_DIR=/workspace/.ai
+ENV AI_ASSETS_DIR=/.ai
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

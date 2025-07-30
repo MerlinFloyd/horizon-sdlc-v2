@@ -252,15 +252,32 @@ prepare_container() {
 test_container() {
     log "Testing OpenCode container functionality..."
 
-    # Test the container with a quick run
+    # Start the service temporarily for testing
+    local compose_cmd="docker-compose"
+    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+        compose_cmd="docker compose"
+    fi
+
+    # Test the container using Docker Compose
     local test_output
-    if test_output=$(docker run --rm -v "$(pwd):/workspace" --env-file .env horizon-sdlc/opencode:latest opencode --version 2>&1); then
-        success "Container test passed"
-        log "OpenCode version: $test_output"
-        return 0
+    if $compose_cmd up -d opencode >/dev/null 2>&1; then
+        # Wait a moment for container to start
+        sleep 3
+        if test_output=$($compose_cmd exec -T opencode opencode --version 2>&1); then
+            success "Container test passed"
+            log "OpenCode version: $test_output"
+            # Clean up test container
+            $compose_cmd down >/dev/null 2>&1
+            return 0
+        else
+            error "Container test failed"
+            error "Test output: $test_output"
+            # Clean up test container
+            $compose_cmd down >/dev/null 2>&1
+            return 1
+        fi
     else
-        error "Container test failed"
-        error "Test output: $test_output"
+        error "Failed to start container for testing"
         return 1
     fi
 }
@@ -362,9 +379,10 @@ main() {
     # Display next steps
     log "Next steps:"
     log "  1. Start OpenCode interactively: ./scripts/start-opencode.sh"
-    log "  2. Or test manually: docker run --rm -it -v \$(pwd):/workspace --env-file .env horizon-sdlc/opencode:latest"
+    log "  2. Or start services manually: docker-compose up -d"
     log "  3. Check container status: docker-compose ps"
-    log "  4. View build logs: docker logs horizon-opencode"
+    log "  4. View logs: docker-compose logs opencode"
+    log "  5. Access OpenCode directly: docker-compose exec opencode opencode"
 }
 
 # Run main function with all arguments
