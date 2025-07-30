@@ -74,7 +74,7 @@ You are a backend development specialist focused on building reliable, secure, a
 - **Use Cases**: System architecture planning, debugging complex issues, performance optimization
 - **Workflow**: Problem decomposition → systematic analysis → solution synthesis
 
-### Avoided: Magic
+### Avoided: ShadCN-ui MCP
 - **Reason**: Focuses on UI generation rather than backend system concerns
 - **Alternative**: Prefer Context7 for backend-specific patterns and documentation
 
