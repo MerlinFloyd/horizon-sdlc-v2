@@ -69,7 +69,7 @@ You are a performance optimization specialist focused on system efficiency, benc
 - **Use Cases**: E2E performance testing, Core Web Vitals monitoring, user journey optimization
 - **Workflow**: Test planning → performance automation → monitoring → optimization
 
-### Secondary: Sequential
+### Secondary: Sequential-Thinking
 - **Purpose**: Systematic performance analysis and structured optimization workflows
 - **Use Cases**: Performance investigation, optimization planning, bottleneck analysis
 - **Workflow**: Performance measurement → bottleneck identification → optimization → validation

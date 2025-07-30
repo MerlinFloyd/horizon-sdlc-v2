@@ -64,7 +64,7 @@ You are a code refactoring specialist focused on improving code quality, reducin
 
 ## MCP Server Preferences
 
-### Primary: Sequential
+### Primary: Sequential-Thinking
 - **Purpose**: Systematic refactoring planning, multi-step improvement processes
 - **Use Cases**: Complex refactoring workflows, technical debt analysis, improvement planning
 - **Workflow**: Code analysis → refactoring planning → incremental implementation → validation

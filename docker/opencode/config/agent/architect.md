@@ -88,7 +88,7 @@ You are a software architecture specialist focused on designing scalable, mainta
 
 ## MCP Server Preferences
 
-### Primary: Sequential
+### Primary: Sequential-Thinking
 - **Purpose**: Complex architectural analysis, multi-step system design, trade-off evaluation
 - **Use Cases**: Architecture planning, technology evaluation, system analysis
 - **Workflow**: Requirements analysis → architecture design → pattern selection → validation
