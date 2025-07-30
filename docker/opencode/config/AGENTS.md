@@ -19,6 +19,10 @@ Global configuration file for OpenCode CLI's mode-based system with intelligent 
 | "optimize performance" | complex | backend | performance agent, Playwright | performance gates, benchmarking | 90% |
 | "security audit" | complex | security | security agent, Sequential | security gates, compliance validation | 95% |
 | "write documentation" | moderate | documentation | scribe agent, Context7 | documentation gates, accuracy verification | 95% |
+| "create PRD" | moderate | product | product-owner agent, Sequential | stakeholder validation, business value assessment | 92% |
+| "define product vision" | moderate | product | product-owner agent, Context7 | vision alignment, stakeholder consensus | 90% |
+| "prioritize backlog" | simple | product | product-owner agent, Sequential | business value ranking, dependency analysis | 88% |
+| "write user stories" | simple | product | product-owner agent, Context7 | INVEST criteria, acceptance criteria validation | 94% |
 | "comprehensive audit" | complex | multi | Wave agent, specialized agents | systematic change mgmt, all gates | 95% |
 | "improve large system" | complex | any | Wave agent, adaptive strategies | systematic change mgmt, enterprise validation | 90% |
 | "multi-file changes" | complex | any | Wave agent, systematic change mgmt | mandatory discovery, impact assessment | 92% |
@@ -45,11 +49,11 @@ Global configuration file for OpenCode CLI's mode-based system with intelligent 
 
 | Stage | Complexity Threshold | Wave Enabled | Primary Agents | MCP Servers |
 |-------|---------------------|--------------|----------------|-------------|
-| idea-definition | 0.5 | false | analyzer, architect | context7, sequential |
-| prd-generation | 0.6 | true | architect, scribe | context7, sequential |
+| idea-definition | 0.5 | false | analyzer, architect, product-owner | context7, sequential |
+| prd-generation | 0.6 | true | product-owner, architect, scribe | context7, sequential |
 | trd-creation | 0.7 | true | architect, security | sequential, context7 |
-| feature-breakdown | 0.6 | true | architect, analyzer | sequential, context7 |
-| user-stories | 0.8 | true | context-based spawning | sequential, context7, magic, playwright |
+| feature-breakdown | 0.6 | true | product-owner, architect, analyzer | sequential, context7 |
+| user-stories | 0.8 | true | product-owner, context-based spawning | sequential, context7, magic, playwright |
 
 ### Agent MCP Server Preferences
 
@@ -60,6 +64,7 @@ Global configuration file for OpenCode CLI's mode-based system with intelligent 
 | backend | Context7 | Sequential | API implementation, frameworks |
 | security | Sequential | Context7 | Security analysis, compliance |
 | performance | Playwright | Sequential | Performance testing, optimization |
+| product-owner | Sequential | Context7 | Product vision, backlog management, stakeholder collaboration |
 
 ## Operational Rules
 
@@ -283,6 +288,11 @@ documentation:
   keywords: [document, README, wiki, guide, manual, instructions, commit, release, changelog]
   file_patterns: ["*.md", "*.rst", "*.txt", "docs/*", "README*", "CHANGELOG*"]
   typical_operations: [write, document, explain, translate, localize]
+
+product:
+  keywords: [product, PRD, requirements, user story, epic, backlog, stakeholder, business value]
+  file_patterns: ["*requirements*", "*prd*", "*backlog*", "*stories*", "product/*"]
+  typical_operations: [define, prioritize, write, analyze, collaborate]
 
 wave_eligible:
   keywords: [comprehensive, systematically, thoroughly, enterprise, large-scale, multi-stage, progressive, iterative, campaign, audit]
