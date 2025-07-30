@@ -7,7 +7,7 @@ MODE CONFIGURATION:
 - Quality Gates: syntax, security, test, context-validation, agent-coordination
 - Output Format: implementation-complete
 - Next Stage: implementation
-- Agent Requirements: spawning enabled, spawning threshold 0.5, agent selection context-based
+- Agent Requirements: primary (product-owner), spawning enabled, spawning threshold 0.5, agent selection context-based
 - MCP Servers: sequential, context7, magic, playwright
 - Complexity Threshold: 0.8
 - Wave Enabled: true

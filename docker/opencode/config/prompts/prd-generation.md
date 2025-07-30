@@ -7,7 +7,7 @@ MODE CONFIGURATION:
 - Quality Gates: requirements-completeness, business-value, context-integration
 - Output Format: product-requirements
 - Next Stage: trd-creation
-- Agent Requirements: primary (architect), optional (analyzer, scribe), spawning threshold 0.7
+- Agent Requirements: primary (product-owner), secondary (architect), optional (analyzer, scribe), spawning threshold 0.7
 - MCP Servers: context7, sequential
 - Complexity Threshold: 0.6
 - Wave Enabled: true
