@@ -29,7 +29,17 @@ services:
       - type: bind
         source: .
         target: /workspace
-      
+
+      # Mount AI assets directory
+      - type: bind
+        source: ./.ai
+        target: /.ai
+
+      # Mount OpenCode configuration directory
+      - type: bind
+        source: ./.opencode
+        target: /root/.config/opencode
+
       # Optional: Mount Docker socket for container management (if needed)
       # - /var/run/docker.sock:/var/run/docker.sock:ro
     
