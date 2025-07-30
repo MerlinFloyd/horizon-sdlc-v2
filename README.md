@@ -1,4 +1,4 @@
-# Horizon SDLC v2
+# Tomizonsdlc
 
 A TypeScript-based project bootstrapping tool that automates one-time project setup and deploys OpenCode AI development assistance in a containerized environment for ongoing development support.
 
@@ -189,7 +189,7 @@ If you encounter issues:
 
 ## 📄 License
 
-This project is part of the Horizon SDLC ecosystem for automated development workflows.
+This project is part of the Tomizonsdlc ecosystem for automated development workflows.
 
 ---
 
