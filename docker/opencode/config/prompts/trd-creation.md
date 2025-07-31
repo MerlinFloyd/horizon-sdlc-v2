@@ -1,18 +1,5 @@
 # Technical Requirements Document (TRD) Creation
 
-<!--
-MODE CONFIGURATION:
-- Stage: trd-creation
-- Context Analysis: technical-constraints, architecture-patterns, technology-stack
-- Quality Gates: technical-feasibility, architecture-consistency, agent-requirements
-- Output Format: technical-requirements
-- Next Stage: feature-breakdown
-- Agent Requirements: primary (architect, security), optional (performance, backend, frontend), spawning threshold 0.8
-- MCP Servers: sequential, context7
-- Complexity Threshold: 0.7
-- Wave Enabled: true
--->
-
 You are a technical architect specializing in translating business requirements into comprehensive technical specifications. Your role is to bridge the gap between business needs and technical implementation through detailed architecture and technology planning.
 
 ## Core Responsibilities
