@@ -1,0 +1,149 @@
+{
+  "operationalRequirements": {
+    "deployment": {
+      "environments": {
+        "development": {
+          "purpose": "Local development and testing",
+          "infrastructure": "Local Docker containers",
+          "database": "Local MongoDB instance",
+          "configuration": "Environment variables in .env file"
+        },
+        "staging": {
+          "purpose": "Pre-production testing and validation",
+          "infrastructure": "Cloud-hosted containers (Heroku/Railway)",
+          "database": "MongoDB Atlas shared cluster",
+          "configuration": "Environment variables via platform"
+        },
+        "production": {
+          "purpose": "Live user-facing application",
+          "infrastructure": "Cloud-hosted containers with auto-scaling",
+          "database": "MongoDB Atlas dedicated cluster",
+          "configuration": "Secure environment variables"
+        }
+      },
+      "containerization": {
+        "tool": "Docker",
+        "requirements": [
+          "Multi-stage Dockerfile for optimized production builds",
+          "Node.js Alpine base images for minimal size",
+          "Health checks configured for containers",
+          "Non-root user for security"
+        ],
+        "frontend": {
+          "strategy": "Static build served via nginx",
+          "optimization": "Build-time environment variable injection"
+        },
+        "backend": {
+          "strategy": "Node.js application container",
+          "optimization": "Production dependencies only"
+        }
+      }
+    },
+    "monitoring": {
+      "logging": {
+        "format": "JSON structured logging",
+        "levels": ["error", "warn", "info", "debug"],
+        "requirements": [
+          "Request/response logging with correlation IDs",
+          "Error stack traces for debugging",
+          "Performance metrics logging",
+          "No sensitive data in logs"
+        ],
+        "tools": {
+          "development": "Console output with colors",
+          "production": "Centralized logging (e.g., Winston + cloud logging)"
+        }
+      },
+      "metrics": {
+        "application": [
+          "Request count and response times",
+          "Error rates by endpoint",
+          "Database query performance",
+          "External API response times (Bitly)"
+        ],
+        "infrastructure": [
+          "Memory and CPU usage",
+          "Container health status",
+          "Database connection pool metrics"
+        ],
+        "tools": {
+          "preferred": "Built-in Node.js performance hooks + platform metrics",
+          "advanced": "Prometheus + Grafana for detailed monitoring"
+        }
+      },
+      "alerting": {
+        "criticalAlerts": [
+          "Application down/unhealthy",
+          "Error rate > 5%",
+          "Response time > 1s for 95th percentile",
+          "Database connection failures"
+        ],
+        "warningAlerts": [
+          "Memory usage > 80%",
+          "Disk space > 85%",
+          "External API failures (Bitly)"
+        ]
+      }
+    },
+    "backupAndRecovery": {
+      "database": {
+        "frequency": "Daily automatic backups via MongoDB Atlas",
+        "retention": "30 days of backup history",
+        "testing": "Monthly backup restoration tests"
+      },
+      "applicationData": {
+        "codeRepository": "Git-based backup via GitHub",
+        "configurations": "Infrastructure as Code practices",
+        "secrets": "Secure backup of environment configurations"
+      },
+      "disasterRecovery": {
+        "rto": "Recovery Time Objective: 4 hours",
+        "rpo": "Recovery Point Objective: 24 hours",
+        "procedures": [
+          "Database restoration from backup",
+          "Application redeployment from latest release",
+          "DNS and traffic routing updates"
+        ]
+      }
+    },
+    "security": {
+      "secretsManagement": {
+        "development": ".env files (not committed to repo)",
+        "production": "Platform environment variables or secrets manager",
+        "rotation": "API keys rotated every 6 months"
+      },
+      "vulnerabilityManagement": {
+        "scanning": [
+          "npm audit for dependency vulnerabilities",
+          "Docker image scanning",
+          "Static code analysis"
+        ],
+        "patching": "Dependencies updated monthly or immediately for critical vulnerabilities",
+        "monitoring": "Continuous monitoring for new vulnerabilities"
+      },
+      "accessControl": {
+        "deployment": "Limited access to production deployment triggers",
+        "database": "Read-only access for monitoring, limited write access for applications",
+        "logging": "Audit trail for all administrative actions"
+      }
+    },
+    "performanceBaselines": {
+      "frontend": {
+        "firstContentfulPaint": "< 1.5 seconds",
+        "largestContentfulPaint": "< 2.5 seconds",
+        "cumulativeLayoutShift": "< 0.1",
+        "firstInputDelay": "< 100ms"
+      },
+      "backend": {
+        "healthCheck": "< 50ms response time",
+        "apiEndpoints": "< 200ms for 95th percentile",
+        "databaseQueries": "< 50ms for single document operations"
+      },
+      "infrastructure": {
+        "cpuUsage": "< 70% under normal load",
+        "memoryUsage": "< 80% under normal load",
+        "networkLatency": "< 100ms between application and database"
+      }
+    }
+  }
+}

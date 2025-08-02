@@ -1,0 +1,173 @@
+{
+  "architecturalPatterns": {
+    "applicationArchitecture": {
+      "pattern": "Next.js Full-Stack Application with Static Generation",
+      "rationale": "Unified frontend/backend framework, optimized performance, SEO benefits, edge deployment capability",
+      "components": {
+        "frontend": "Next.js with App Router, SSG/ISR for pages, CSR for dynamic interactions",
+        "backend": "Next.js API Routes with TypeScript",
+        "database": "MongoDB document store"
+      },
+      "renderingStrategy": {
+        "homepage": "SSG - Static generation for fast loading",
+        "taskPages": "ISR - Incremental regeneration for shared tasks",
+        "dashboard": "CSR - Client-side rendering for dynamic interactions",
+        "apiRoutes": "Edge Runtime where possible for performance"
+      }
+    },
+    "frontendPatterns": {
+      "approved": [
+        "Next.js App Router with layouts and loading states",
+        "React Server Components for static content",
+        "Client Components for interactive elements",
+        "ShadCN/ui components for consistent design system",
+        "Framer Motion for smooth animations and transitions",
+        "Custom hooks for shared client-side logic",
+        "Zustand for lightweight global state management"
+      ],
+      "discouraged": [
+        "Pages Router for new development",
+        "Class components for new development", 
+        "Prop drilling beyond 2-3 levels",
+        "Direct DOM manipulation",
+        "Heavy animation libraries for simple transitions"
+      ],
+      "folderStructure": {
+        "pattern": "Next.js App Router structure with feature organization",
+        "structure": {
+          "app/": "Next.js App Router root",
+          "app/layout.tsx": "Root layout with providers",
+          "app/page.tsx": "Homepage (SSG)",
+          "app/tasks/": "Task-related pages and layouts",
+          "app/shared/[token]/": "Shared task pages (ISR)",
+          "app/api/": "API route handlers",
+          "components/": "Reusable UI components",
+          "components/ui/": "ShadCN/ui component customizations",
+          "lib/": "Utility functions and configurations",
+          "lib/animations.ts": "Framer Motion animation variants",
+          "lib/utils.ts": "General utility functions",
+          "hooks/": "Custom React hooks",
+          "stores/": "Zustand store definitions",
+          "types/": "TypeScript type definitions"
+        }
+      },
+      "componentPatterns": {
+        "uiComponents": {
+          "pattern": "ShadCN/ui with Tailwind customization",
+          "implementation": [
+            "Use ShadCN/ui Button, Input, Card, Dialog components",
+            "Customize with Tailwind CSS variables",
+            "Extend with Framer Motion for animations",
+            "Maintain accessibility standards"
+          ]
+        },
+        "animations": {
+          "pattern": "Framer Motion declarative animations",
+          "implementation": [
+            "Page transitions with layout animations",
+            "Task state changes with micro-interactions",
+            "Loading states with skeleton animations", 
+            "Gesture-based interactions for task management"
+          ],
+          "performance": [
+            "Use transform and opacity for 60fps animations",
+            "Leverage layout animations for automatic transitions",
+            "Implement exit animations for smooth removal"
+          ]
+        }
+      }
+    },
+    "backendPatterns": {
+      "approved": [
+        "Next.js API Routes with TypeScript",
+        "Middleware pattern with Next.js middleware",
+        "Repository pattern with Mongoose models",
+        "Service layer for business logic",
+        "Error handling with Next.js error boundaries",
+        "Edge Runtime for simple operations"
+      ],
+      "apiDesign": {
+        "pattern": "RESTful API Routes following Next.js conventions",
+        "endpoints": {
+          "GET /api/tasks": "Retrieve all tasks",
+          "POST /api/tasks": "Create new task",
+          "PUT /api/tasks/[id]": "Update existing task", 
+          "DELETE /api/tasks/[id]": "Delete task",
+          "POST /api/tasks/[id]/share": "Generate shareable link",
+          "GET /api/shared/[token]": "Access shared task data"
+        },
+        "responseFormat": {
+          "success": { "data": "payload", "message": "optional" },
+          "error": { "error": "message", "code": "error_code", "details": "optional" }
+        },
+        "edgeRuntime": {
+          "suitable": ["GET /api/shared/[token]", "health checks", "simple data fetching"],
+          "unsuitable": ["Complex database operations", "File uploads", "Long-running processes"]
+        }
+      },
+      "folderStructure": {
+        "pattern": "Next.js API Routes with service layer",
+        "structure": {
+          "app/api/": "API route handlers",
+          "app/api/tasks/": "Task-related API endpoints",
+          "app/api/shared/": "Shared task access endpoints",
+          "lib/mongodb.ts": "Database connection utility",
+          "lib/services/": "Business logic services",
+          "lib/models/": "Mongoose schema definitions",
+          "lib/validators/": "Request validation schemas",
+          "middleware.ts": "Next.js middleware for auth/CORS"
+        }
+      }
+    },
+    "dataPatterns": {
+      "modelDesign": {
+        "Task": {
+          "fields": {
+            "_id": "ObjectId (auto-generated)",
+            "title": "String (required, max 200 chars)",
+            "description": "String (optional, max 1000 chars)",
+            "status": "Enum ['pending', 'completed']",
+            "createdBy": "String (user name, max 100 chars)",
+            "shareToken": "String (optional, for sharing)",
+            "createdAt": "Date (auto-generated)",
+            "updatedAt": "Date (auto-generated)"
+          },
+          "indexes": ["shareToken", "createdAt", "createdBy"]
+        }
+      },
+      "validation": {
+        "clientSide": "React Hook Form with Zod schema validation",
+        "serverSide": "Zod validation in API routes",
+        "database": "Mongoose schema validation as final safety net"
+      },
+      "caching": {
+        "staticGeneration": "ISR for shared task pages with 1 hour revalidation",
+        "apiRoutes": "SWR for client-side caching of task data",
+        "edgeCache": "Edge caching for shared task access"
+      }
+    },
+    "integrationPatterns": {
+      "externalAPIs": {
+        "pattern": "Service layer abstraction with Next.js API routes",
+        "implementation": "Dedicated service functions for external APIs",
+        "errorHandling": "Graceful degradation with fallback UI states",
+        "caching": "Next.js caching for external API responses"
+      },
+      "urlSharing": {
+        "tokenGeneration": "Crypto-random tokens for share URLs",
+        "pageGeneration": "ISR for shared task pages at /shared/[token]", 
+        "expirationPolicy": "No expiration (permanent sharing)",
+        "accessControl": "Public access via share token with ISR optimization"
+      },
+      "stateManagement": {
+        "pattern": "Zustand for global state, React state for local",
+        "implementation": [
+          "Task list state in Zustand store",
+          "UI state (modals, loading) in local React state",
+          "Form state with React Hook Form",
+          "Optimistic updates for better UX"
+        ]
+      }
+    }
+  }
+}

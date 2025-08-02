@@ -5,28 +5,61 @@
 
 set -e
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Load container-local logging module
+if [[ -f "/usr/local/lib/logging.sh" ]]; then
+    # Use container-local logging module (primary)
+    source "/usr/local/lib/logging.sh"
+    setup_logging "entrypoint.sh"
+elif [[ -f "/workspace/scripts/lib/logging.sh" ]]; then
+    # Fallback to workspace logging module if available
+    source "/workspace/scripts/lib/logging.sh"
+    setup_logging "entrypoint.sh"
+else
+    # Basic fallback logging (should rarely be needed)
+    log_info() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [INFO] [entrypoint.sh] [$operation] $message"
+    }
 
-# Logging functions
+    log_error() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [ERROR] [entrypoint.sh] [$operation] $message" >&2
+    }
+
+    log_warn() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [WARN] [entrypoint.sh] [$operation] $message"
+    }
+
+    log_debug() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [DEBUG] [entrypoint.sh] [$operation] $message"
+    }
+
+    cleanup_logging() {
+        true
+    }
+fi
+
+# Backward compatibility functions
 log() {
-    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+    log_info "general" "$1"
 }
 
 error() {
-    echo -e "${RED}[ERROR]${NC} $1" >&2
+    log_error "general" "$1"
 }
 
 warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    log_warn "general" "$1"
 }
 
 success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    log_info "general" "$1"
 }
 
 # Function to validate workspace mounting
@@ -166,5 +199,11 @@ main() {
     fi
 }
 
+# Set up signal handlers for cleanup
+trap 'cleanup_logging "entrypoint.sh"; exit 1' INT TERM
+
 # Run main function with all arguments
 main "$@"
+
+# Cleanup logging
+cleanup_logging "entrypoint.sh"

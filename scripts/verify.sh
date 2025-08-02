@@ -9,64 +9,49 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Load centralized logging module
+source "$SCRIPT_DIR/lib/logging.sh"
+
+# Initialize logging
+setup_logging "verify.sh"
 
 # Test results tracking
 TESTS_TOTAL=0
 TESTS_PASSED=0
 TESTS_FAILED=0
 
-# Logging functions
-log() {
-    echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
-}
-
-error() {
-    echo -e "${RED}[ERROR]${NC} $1" >&2
-}
-
-warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
 # Test result functions
 test_start() {
     local test_name="$1"
     ((TESTS_TOTAL++))
-    log "Testing: $test_name"
+    log_info "test_execution" "Testing: $test_name"
 }
 
 test_pass() {
     local test_name="$1"
     ((TESTS_PASSED++))
-    success "✓ $test_name"
+    log_info "test_result" "✓ $test_name"
 }
 
 test_fail() {
     local test_name="$1"
     local reason="$2"
     ((TESTS_FAILED++))
-    error "✗ $test_name - $reason"
+    log_error "test_result" "✗ $test_name - $reason"
 }
 
 # Function to check if container is running
 check_container_running() {
     test_start "Container Status"
-    
+
+    log_debug "container_check" "Checking if horizon-opencode container is running"
     if docker-compose ps | grep -q "horizon-opencode.*Up"; then
         test_pass "Container is running"
+        log_debug "container_check" "Container status check passed"
         return 0
     else
         test_fail "Container Status" "Container is not running"
+        log_debug "container_check" "Container status check failed"
         return 1
     fi
 }
@@ -245,6 +230,9 @@ test_all_mcp_servers() {
     
     # Test Sequential Thinking MCP server
     test_mcp_server "Sequential Thinking" "sequential-thinking-mcp-server"
+
+    # Test Magic MCP server (21st.dev)
+    test_mcp_server "Magic (21st.dev)" "magic-mcp-server"
 }
 
 # Function to test workspace mounting
@@ -292,22 +280,37 @@ test_ai_assets_mounting() {
 # Function to test environment variables
 test_environment_variables() {
     test_start "Environment Variables"
-    
+
     local env_ok=true
-    
-    # Check for API key
+
+    # Check for OpenRouter API key (required)
     if docker-compose exec -T opencode printenv OPENROUTER_API_KEY >/dev/null 2>&1; then
-        success "API key environment variable is set"
+        success "✓ OpenRouter API key is configured (enables AI model access)"
     else
-        error "No API key environment variable found"
+        error "✗ OpenRouter API key is missing (required for AI provider access)"
+        error "  Set OPENROUTER_API_KEY environment variable or use --openrouter-api-key"
         env_ok=false
     fi
-    
+
+    # Check for GitHub token (optional)
+    if docker-compose exec -T opencode printenv GITHUB_TOKEN >/dev/null 2>&1; then
+        success "✓ GitHub token is configured (GitHub MCP server enabled)"
+    else
+        log "ℹ GitHub token not configured (GitHub MCP server disabled)"
+    fi
+
+    # Check for Magic API key (optional)
+    if docker-compose exec -T opencode printenv TWENTY_FIRST_API_KEY >/dev/null 2>&1; then
+        success "✓ Magic API key is configured (21st.dev Magic MCP server enabled)"
+    else
+        log "ℹ Magic API key not configured (Magic MCP server disabled)"
+    fi
+
     if [[ "$env_ok" == "true" ]]; then
-        test_pass "Environment variables are configured"
+        test_pass "Environment variables are properly configured"
         return 0
     else
-        test_fail "Environment Variables" "Required environment variables missing"
+        test_fail "Environment Variables" "Required OpenRouter API key is missing"
         return 1
     fi
 }
@@ -456,17 +459,29 @@ display_troubleshooting() {
 
         # Environment check
         log ""
-        log "Environment Variables Check:"
+        log "API Keys and Authentication Status:"
         if docker-compose exec -T opencode printenv OPENROUTER_API_KEY >/dev/null 2>&1; then
-            log "  ✓ OPENROUTER_API_KEY is set"
+            log "  ✓ OpenRouter API Key: Configured (AI models: Claude Sonnet 4, Gemini 2.5 Pro)"
         else
-            log "  ✗ OPENROUTER_API_KEY is not set"
+            log "  ✗ OpenRouter API Key: Missing (REQUIRED for AI provider access)"
+            log "    → Get your key from: https://openrouter.ai/keys"
+            log "    → Set via: --openrouter-api-key or OPENROUTER_API_KEY environment variable"
         fi
 
         if docker-compose exec -T opencode printenv GITHUB_TOKEN >/dev/null 2>&1; then
-            log "  ✓ GITHUB_TOKEN is set"
+            log "  ✓ GitHub Token: Configured (GitHub MCP server enabled)"
+            log "    → Enables: Repository operations, issue management, code search"
         else
-            log "  ⚠ GITHUB_TOKEN is not set (optional)"
+            log "  ⚠ GitHub Token: Not configured (GitHub MCP server disabled)"
+            log "    → Optional: Set via --github-token or GITHUB_TOKEN environment variable"
+        fi
+
+        if docker-compose exec -T opencode printenv TWENTY_FIRST_API_KEY >/dev/null 2>&1; then
+            log "  ✓ Magic API Key: Configured (21st.dev Magic MCP server enabled)"
+            log "    → Enables: Advanced Magic MCP functionality"
+        else
+            log "  ⚠ Magic API Key: Not configured (Magic MCP server disabled)"
+            log "    → Optional: Set via --magic-key or TWENTY_FIRST_API_KEY environment variable"
         fi
     fi
 }
@@ -512,8 +527,14 @@ main() {
 
     display_troubleshooting
 
+    # Cleanup logging
+    cleanup_logging "verify.sh"
+
     return $exit_code
 }
+
+# Set up signal handlers for cleanup
+trap 'cleanup_logging "verify.sh"; exit 1' INT TERM
 
 # Run main function
 main "$@"

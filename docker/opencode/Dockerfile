@@ -11,6 +11,13 @@ ENV WORKSPACE_DIR=/workspace
 ENV OPENCODE_CONFIG_DIR=/root/.config/opencode
 ENV AI_ASSETS_DIR=/.ai
 
+# MCP Server Environment Variables (to be set at runtime)
+# GitHub MCP Server
+ENV GITHUB_TOKEN=""
+
+# Magic MCP Server (21st.dev)
+ENV TWENTY_FIRST_API_KEY=""
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -46,10 +53,10 @@ RUN npm install -g opencode-ai@latest
 # Install MCP Servers
 
 # 1. Install Context7 MCP Server
-# Note: Using remote MCP server instead of local installation
+RUN npm install -g @upstash/context7-mcp@latest
 
 # 2. Install GitHub MCP Server
-# Note: Using remote MCP server instead of local installation
+RUN npm install -g @modelcontextprotocol/server-github@latest
 
 # 3. Install Playwright MCP Server
 RUN npm install -g @playwright/mcp@latest
@@ -59,6 +66,10 @@ RUN npm install -g @modelcontextprotocol/server-sequential-thinking@latest
 
 # 5. Install ShadCN UI MCP Server
 RUN npm install -g @jpisnice/shadcn-ui-mcp-server@latest
+
+# 6. Install Magic MCP Server (via Smithery CLI)
+# Note: Magic MCP server is run via npx with Smithery CLI, no global installation needed
+# The server will be configured in opencode.json with the appropriate command and args
 
 # Create OpenCode configuration directory and copy files
 RUN mkdir -p $OPENCODE_CONFIG_DIR $OPENCODE_CONFIG_DIR/agent $AI_ASSETS_DIR/prompts
@@ -79,9 +90,10 @@ RUN chmod -R 644 $OPENCODE_CONFIG_DIR/ && \
     chmod 755 $AI_ASSETS_DIR && \
     chmod 755 $AI_ASSETS_DIR/prompts
 
-# Copy scripts
+# Copy scripts and logging module
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY scripts/minimal-entrypoint.sh /usr/local/bin/minimal-entrypoint.sh
+COPY scripts/libs/logging.sh /usr/local/lib/logging.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/minimal-entrypoint.sh
 
 # Set working directory

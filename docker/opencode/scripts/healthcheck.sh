@@ -9,28 +9,61 @@ set -e
 EXIT_SUCCESS=0
 EXIT_FAILURE=1
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Load container-local logging module
+if [[ -f "/usr/local/lib/logging.sh" ]]; then
+    # Use container-local logging module (primary)
+    source "/usr/local/lib/logging.sh"
+    setup_logging "healthcheck.sh"
+elif [[ -f "/workspace/scripts/lib/logging.sh" ]]; then
+    # Fallback to workspace logging module if available
+    source "/workspace/scripts/lib/logging.sh"
+    setup_logging "healthcheck.sh"
+else
+    # Basic fallback logging (should rarely be needed)
+    log_info() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [INFO] [healthcheck.sh] [$operation] $message"
+    }
 
-# Logging functions
+    log_error() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [ERROR] [healthcheck.sh] [$operation] $message" >&2
+    }
+
+    log_warn() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [WARN] [healthcheck.sh] [$operation] $message"
+    }
+
+    log_debug() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [DEBUG] [healthcheck.sh] [$operation] $message"
+    }
+
+    cleanup_logging() {
+        true
+    }
+fi
+
+# Backward compatibility functions
 log() {
-    echo -e "${BLUE}[HEALTH]${NC} $1"
+    log_info "general" "$1"
 }
 
 error() {
-    echo -e "${RED}[ERROR]${NC} $1" >&2
+    log_error "general" "$1"
 }
 
 warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    log_warn "general" "$1"
 }
 
 success() {
-    echo -e "${GREEN}[OK]${NC} $1"
+    log_info "general" "$1"
 }
 
 # Function to check if a command exists and is executable
@@ -128,28 +161,30 @@ check_json() {
 
 # Function to check environment variables
 check_environment() {
-    log "Checking environment variables..."
-    
+    log_info "env_check" "Checking environment variables..."
+
     local env_ok=true
-    
+
     # Check for API key
     if [[ -n "${OPENROUTER_API_KEY:-}" ]]; then
-        success "API key is configured"
+        log_info "env_check" "API key is configured"
     else
-        error "No API key configured (OPENROUTER_API_KEY)"
+        log_error "env_check" "No API key configured (OPENROUTER_API_KEY)"
         env_ok=false
     fi
-    
+
     # Check GITHUB_TOKEN (optional)
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
-        success "GITHUB_TOKEN is configured"
+        log_info "env_check" "GITHUB_TOKEN is configured"
     else
-        warning "GITHUB_TOKEN is not configured (GitHub MCP will be limited)"
+        log_warn "env_check" "GITHUB_TOKEN is not configured (GitHub MCP will be limited)"
     fi
-    
+
     if [[ "$env_ok" == "true" ]]; then
+        log_debug "env_check" "Environment check passed"
         return 0
     else
+        log_debug "env_check" "Environment check failed"
         return 1
     fi
 }
@@ -303,13 +338,18 @@ main() {
     
     # Final health status
     if [[ "$overall_health" == "true" ]]; then
-        success "OpenCode container health check PASSED"
+        log_info "health_check" "OpenCode container health check PASSED"
+        cleanup_logging "healthcheck.sh"
         return $EXIT_SUCCESS
     else
-        error "OpenCode container health check FAILED"
+        log_error "health_check" "OpenCode container health check FAILED"
+        cleanup_logging "healthcheck.sh"
         return $EXIT_FAILURE
     fi
 }
+
+# Set up signal handlers for cleanup
+trap 'cleanup_logging "healthcheck.sh"; exit 1' INT TERM
 
 # Run main function
 main "$@"

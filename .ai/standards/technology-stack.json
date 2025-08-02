@@ -1,0 +1,101 @@
+{
+  "technologyStack": {
+    "frontend": {
+      "approved": ["Next.js 14+", "React 18+", "TypeScript 4.9+"],
+      "preferred": "Next.js 14+ with TypeScript",
+      "rationale": "Full-stack React framework with SSR/SSG, built-in optimization, excellent developer experience and ecosystem",
+      "restrictions": ["No jQuery", "No plain JavaScript for new development"],
+      "buildTools": {
+        "approved": ["Next.js built-in (Webpack + SWC)", "Turbopack"],
+        "preferred": "Next.js built-in with SWC",
+        "rationale": "Fast refresh, built-in optimization, TypeScript support, zero config"
+      },
+      "renderingStrategy": {
+        "approved": ["SSG (Static Site Generation)", "CSR (Client-Side Rendering)", "ISR (Incremental Static Regeneration)"],
+        "preferred": "SSG with ISR for dynamic content",
+        "rationale": "Better SEO, faster initial load, optimal for todo sharing links"
+      },
+      "stateManagement": {
+        "approved": ["React useState/useContext", "Zustand", "Redux Toolkit"],
+        "preferred": "React hooks for simple state, Zustand for moderate complexity",
+        "rationale": "Built-in React solutions for simple cases, Zustand for lightweight global state"
+      },
+      "styling": {
+        "approved": ["Tailwind CSS", "CSS Modules", "styled-components"],
+        "preferred": "Tailwind CSS",
+        "rationale": "Utility-first, responsive design, consistent design system, excellent Next.js integration"
+      },
+      "uiComponents": {
+        "approved": ["ShadCN/ui", "Radix UI", "Headless UI"],
+        "preferred": "ShadCN/ui",
+        "rationale": "High-quality accessible components, customizable with Tailwind, TypeScript support"
+      },
+      "animation": {
+        "approved": ["Framer Motion", "React Spring", "CSS animations"],
+        "preferred": "Framer Motion",
+        "rationale": "Declarative animations, gesture support, excellent React integration, performance optimized"
+      },
+      "routing": {
+        "approved": ["Next.js App Router", "Next.js Pages Router"],
+        "preferred": "Next.js App Router",
+        "rationale": "Latest Next.js routing with layouts, loading states, and React Server Components"
+      }
+    },
+    "backend": {
+      "approved": ["Node.js 18+", "Express.js 4.18+", "TypeScript 4.9+", "Next.js API Routes"],
+      "preferred": "Next.js API Routes with TypeScript",
+      "rationale": "Full-stack framework unification, built-in API optimization, serverless-ready",
+      "restrictions": ["No CommonJS for new projects", "TypeScript required"],
+      "middleware": {
+        "approved": ["helmet", "cors", "express-rate-limit", "express-validator", "Next.js middleware"],
+        "preferred": "Next.js middleware for edge cases, Express.js patterns for complex logic",
+        "rationale": "Edge runtime performance, built-in optimization, familiar patterns"
+      },
+      "apiPattern": {
+        "approved": ["REST with Next.js API Routes", "tRPC", "GraphQL"],
+        "preferred": "REST with Next.js API Routes",
+        "rationale": "Simple implementation, built-in optimization, type-safe with TypeScript"
+      }
+    },
+    "database": {
+      "approved": ["MongoDB 6+", "Mongoose 7+", "Prisma with MongoDB"],
+      "preferred": "MongoDB with Mongoose ODM",
+      "rationale": "Document-based storage suitable for flexible task data, excellent Node.js integration",
+      "restrictions": ["No direct MongoDB driver usage", "Always use ODM/ORM"],
+      "hosting": {
+        "approved": ["MongoDB Atlas", "Self-hosted MongoDB"],
+        "preferred": "MongoDB Atlas",
+        "rationale": "Managed service, automatic scaling, built-in security, backup management"
+      }
+    },
+    "packageManagement": {
+      "approved": ["npm", "yarn", "pnpm"],
+      "preferred": "pnpm",
+      "rationale": "Faster installs, disk efficient, better monorepo support, Node.js ecosystem compatibility"
+    },
+    "thirdPartyServices": {
+      "urlShortening": {
+        "approved": ["Bitly API", "Custom implementation with Next.js"],
+        "preferred": "Bitly API",
+        "rationale": "Reliable service, analytics dashboard, professional URLs"
+      }
+    },
+    "developmentTools": {
+      "linting": {
+        "approved": ["ESLint", "next/core-web-vitals", "@typescript-eslint"],
+        "preferred": "ESLint with Next.js config",
+        "rationale": "Built-in Next.js optimization rules, TypeScript integration"
+      },
+      "formatting": {
+        "approved": ["Prettier", "prettier-plugin-tailwindcss"],
+        "preferred": "Prettier with Tailwind plugin",
+        "rationale": "Consistent formatting, Tailwind class sorting"
+      },
+      "testing": {
+        "approved": ["Jest", "Vitest", "React Testing Library", "Playwright"],
+        "preferred": "Vitest + React Testing Library for unit/integration, Playwright for E2E",
+        "rationale": "Fast test execution, excellent Next.js integration"
+      }
+    }
+  }
+}

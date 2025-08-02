@@ -10,7 +10,10 @@ services:
 
       # Optional: GitHub integration
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      
+
+      # Optional: Magic MCP Server (21st.dev)
+      - TWENTY_FIRST_API_KEY=${TWENTY_FIRST_API_KEY:-}
+
       # Container configuration
       - NODE_ENV=production
       - WORKSPACE_DIR=/workspace

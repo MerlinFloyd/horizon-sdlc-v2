@@ -1,0 +1,279 @@
+{
+  "qualityStandards": {
+    "codeQuality": {
+      "typeScript": {
+        "configuration": {
+          "strict": true,
+          "noImplicitAny": true,
+          "noImplicitReturns": true,
+          "noUnusedLocals": true,
+          "noUnusedParameters": true,
+          "exactOptionalPropertyTypes": true
+        },
+        "requirements": [
+          "All functions must have explicit return types",
+          "Interface definitions for all data structures",
+          "No 'any' types without justification",
+          "Comprehensive type definitions for API responses",
+          "Proper typing for Next.js page and layout components", 
+          "Strong typing for ShadCN component props",
+          "Type-safe Framer Motion animation variants"
+        ]
+      },
+      "linting": {
+        "nextjs": {
+          "tools": ["ESLint", "Prettier", "@next/eslint-config-next"],
+          "config": "next/core-web-vitals",
+          "rules": [
+            "no-console warnings (errors in production)",
+            "prefer-const over let",
+            "no-unused-variables as error",
+            "@next/next/no-img-element (use next/image)",
+            "@next/next/no-html-link-for-pages (use next/link)"
+          ]
+        },
+        "tailwind": {
+          "tools": ["prettier-plugin-tailwindcss"],
+          "configuration": "Automatic class sorting and formatting",
+          "rules": [
+            "Consistent class ordering",
+            "No duplicate utilities",
+            "Prefer Tailwind over custom CSS"
+          ]
+        },
+        "animations": {
+          "tools": ["eslint-plugin-react-motion"],
+          "rules": [
+            "Prefer transform and opacity for performance",
+            "Use layout animations for automatic calculations",
+            "Implement proper animation cleanup"
+          ]
+        }
+      },
+      "formatting": {
+        "tool": "Prettier",
+        "configuration": {
+          "semi": true,
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "plugins": ["prettier-plugin-tailwindcss"]
+        }
+      }
+    },
+    "testing": {
+      "coverage": {
+        "minimum": "80% overall coverage",
+        "statement": "80%",
+        "branch": "75%", 
+        "function": "85%",
+        "line": "80%"
+      },
+      "frontend": {
+        "frameworks": ["Vitest", "React Testing Library", "Playwright"],
+        "types": [
+          "Unit tests for components and hooks",
+          "Integration tests for user workflows",
+          "E2E tests for critical paths",
+          "Visual regression tests for UI components",
+          "Animation performance tests",
+          "Accessibility tests"
+        ],
+        "requirements": [
+          "Test user interactions, not implementation details",
+          "Mock API routes and external services",
+          "Test error states and loading states", 
+          "Test responsive behavior across breakpoints",
+          "Validate ShadCN component integration",
+          "Test animation states and transitions"
+        ],
+        "componentTesting": {
+          "shadcn": [
+            "Test component accessibility",
+            "Validate prop types and variants",
+            "Test keyboard navigation",
+            "Verify theme customization"
+          ],
+          "animations": [
+            "Test animation completion",
+            "Validate gesture interactions",
+            "Test performance impact",
+            "Verify accessibility during animations"
+          ]
+        }
+      },
+      "backend": {
+        "frameworks": ["Vitest", "Next.js Test Helpers"],
+        "types": [
+          "Unit tests for API route handlers",
+          "Integration tests with database",
+          "Middleware testing",
+          "Edge runtime compatibility tests"
+        ],
+        "requirements": [
+          "Test all API endpoints with different HTTP methods",
+          "Test error handling and validation",
+          "Mock external service calls (Bitly API)",
+          "Test Next.js middleware functionality",
+          "Validate edge runtime performance"
+        ]
+      },
+      "e2eTesting": {
+        "framework": "Playwright",
+        "scope": "Critical user journeys and cross-browser compatibility",
+        "scenarios": [
+          "Create and complete a task with animations",
+          "Generate and access a share link",
+          "Responsive behavior across devices",
+          "Performance testing with animation load",
+          "Accessibility testing with screen readers"
+        ],
+        "browsers": ["Chromium", "Firefox", "Safari"],
+        "devices": ["Desktop", "Mobile", "Tablet"]
+      },
+      "performanceTesting": {
+        "tools": ["Lighthouse CI", "@next/bundle-analyzer"],
+        "metrics": [
+          "Core Web Vitals (LCP, FID, CLS)",
+          "Bundle size analysis",
+          "Animation frame rates",
+          "Time to Interactive"
+        ],
+        "thresholds": {
+          "lighthouse": "Score > 90 for Performance, Accessibility",
+          "bundleSize": "First Load JS < 100kb",
+          "animations": "60fps for all animations"
+        }
+      }
+    },
+    "documentation": {
+      "code": {
+        "requirements": [
+          "JSDoc comments for all public functions",
+          "Component documentation with Storybook",
+          "TypeScript interfaces documented",
+          "Animation variant documentation",
+          "ShadCN component customization docs"
+        ]
+      },
+      "components": {
+        "format": "Storybook with MDX documentation",
+        "requirements": [
+          "All ShadCN customizations documented",
+          "Animation examples and variants",
+          "Accessibility guidelines per component",
+          "Responsive behavior examples",
+          "Theme customization options"
+        ]
+      },
+      "api": {
+        "format": "OpenAPI 3.0 specification",
+        "requirements": [
+          "All Next.js API routes documented",
+          "Request/response schemas defined",
+          "Error response examples",
+          "Edge runtime compatibility notes"
+        ]
+      },
+      "project": {
+        "required": [
+          "README with Next.js setup instructions",
+          "Component library documentation",
+          "Animation guidelines and presets",
+          "Deployment guide for Vercel",
+          "Performance optimization guide"
+        ]
+      }
+    },
+    "performanceStandards": {
+      "frontend": {
+        "coreWebVitals": {
+          "LCP": "< 2.5 seconds (Largest Contentful Paint)",
+          "FID": "< 100ms (First Input Delay)", 
+          "CLS": "< 0.1 (Cumulative Layout Shift)"
+        },
+        "nextjsMetrics": {
+          "TTFB": "< 800ms (Time to First Byte)",
+          "FCP": "< 1.8s (First Contentful Paint)",
+          "TTI": "< 3.8s (Time to Interactive)"
+        },
+        "bundleSize": {
+          "firstLoad": "< 100KB compressed",
+          "pageSize": "< 50KB per page",
+          "chunkSize": "< 200KB per chunk"
+        },
+        "animations": {
+          "frameRate": "60fps consistently",
+          "jankFree": "No frame drops during animations",
+          "performanceImpact": "< 5ms per animation frame"
+        }
+      },
+      "backend": {
+        "apiRoutes": {
+          "responseTime": "< 200ms for 95th percentile",
+          "edgeRuntime": "< 50ms for edge-compatible routes", 
+          "throughput": "100+ concurrent requests"
+        },
+        "serverSideRendering": {
+          "generateTime": "< 500ms for SSG pages",
+          "revalidation": "< 300ms for ISR pages",
+          "renderTime": "< 100ms for RSC components"
+        }
+      },
+      "database": {
+        "connectionTime": "< 50ms to MongoDB Atlas",
+        "queryTime": "< 30ms for single document operations",
+        "indexUsage": "All queries properly indexed"
+      }
+    },
+    "accessibilityStandards": {
+      "compliance": "WCAG 2.1 AA",
+      "requirements": [
+        "Semantic HTML markup in all components",
+        "Keyboard navigation for all interactive elements",
+        "Screen reader compatibility with proper ARIA labels",
+        "Color contrast ratios meeting AA standards",
+        "Focus indicators for all focusable elements",
+        "Animation preference respect (prefers-reduced-motion)"
+      ],
+      "shadcnCompliance": [
+        "All ShadCN components maintain accessibility",
+        "Custom variants preserve ARIA attributes",
+        "Keyboard navigation preserved in customizations"
+      ],
+      "animationAccessibility": [
+        "Respect prefers-reduced-motion setting",
+        "Provide fallback static states",
+        "Ensure animations don't cause vestibular disorders",
+        "Maintain focus management during animations"
+      ]
+    }
+  },
+  "qualityGates": {
+    "preCommit": [
+      "TypeScript compilation passes",
+      "ESLint passes with Next.js rules",
+      "Prettier formatting applied",
+      "Unit tests pass",
+      "Component tests pass"
+    ],
+    "preMerge": [
+      "All tests pass (unit + integration + component)",
+      "Code coverage meets minimum thresholds",
+      "Performance tests pass (Lighthouse CI)",
+      "Bundle size within limits",
+      "Accessibility tests pass", 
+      "Visual regression tests pass",
+      "No security vulnerabilities detected",
+      "API documentation updated"
+    ],
+    "deployment": [
+      "Production build successful",
+      "All quality gates passed",
+      "E2E tests pass in staging",
+      "Core Web Vitals validated",
+      "Animation performance verified",
+      "Deployment smoke tests pass"
+    ]
+  }
+}

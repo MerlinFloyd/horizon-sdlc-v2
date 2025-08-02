@@ -27,6 +27,9 @@
     "github": {
       "type": "local",
       "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "{env:GITHUB_TOKEN}"
+      },
       "enabled": true
     },
     "playwright": {
@@ -42,6 +45,14 @@
     "shadcn-ui": {
       "type": "local",
       "command": ["npx", "@jpisnice/shadcn-ui-mcp-server"],
+      "enabled": true
+    },
+    "magic": {
+      "type": "local",
+      "command": ["npx", "-y", "@smithery/cli@latest", "run", "@21st-dev/magic-mcp"],
+      "env": {
+        "TWENTY_FIRST_API_KEY": "{env:TWENTY_FIRST_API_KEY}"
+      },
       "enabled": true
     }
   },

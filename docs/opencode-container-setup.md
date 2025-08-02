@@ -22,6 +22,7 @@ The OpenCode container includes:
 ### Required Authentication
 - **OPENROUTER_API_KEY** (required)
 - **GITHUB_TOKEN** (optional, for GitHub MCP functionality)
+- **TWENTY_FIRST_API_KEY** (optional, for Magic MCP server functionality)
 
 ## Quick Start
 
@@ -33,6 +34,9 @@ The OpenCode container includes:
 
 # With GitHub integration
 ./scripts/build.sh --api-key "your-api-key" --github-token "your-github-token"
+
+# With all MCP integrations
+./scripts/build.sh --api-key "your-api-key" --github-token "your-github-token" --magic-key "your-magic-api-key"
 ```
 
 ### 2. Verify Installation
@@ -103,7 +107,7 @@ Run the verification script to ensure everything is working:
 The verification script tests:
 - Container status and health
 - OpenCode installation and configuration
-- All 5 MCP servers functionality
+- All 6 MCP servers functionality (Context7, GitHub, Playwright, Sequential Thinking, ShadCN UI, Magic)
 - Workspace and AI assets mounting
 - Environment variables configuration
 - Virtual display for headless operations

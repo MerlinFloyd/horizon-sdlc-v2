@@ -1,930 +1,398 @@
-# Technical Requirements Document
-## Horizon SDLC
-
-### 1. Executive Summary
-
-This document defines the **technical implementation specifications** for Horizon SDLC. It complements the [requirements.md](./requirements.md) by providing concrete implementation details, TypeScript interfaces, CLI specifications, and performance requirements.
-
-**Reference**: See [requirements.md](./requirements.md) for complete system architecture, component relationships, and OpenCode integration requirements.
-
-**Focus Areas**:
-- TypeScript interfaces and data models
-- CLI implementation specifications
-- Performance requirements and optimization
-- Error handling and recovery mechanisms
-- Build system and development workflow
-
-### 2. Core Technology Stack
-
-**Reference**: See [requirements.md Section 9.1.2](./requirements.md#912-technology-stack) for complete technology stack overview.
-
-**Implementation Details**:
-- **Runtime**: Node.js 20+ with ES2022 target
-- **Language**: TypeScript 5.x with strict mode enabled
-- **CLI Framework**: Commander.js 11.x for command parsing, Inquirer.js 9.x for interactive wizard
-- **File Operations**: fs-extra 11.x for enhanced file system operations with glob pattern support
-- **Container Management**: dockerode 4.x (Docker SDK) for container orchestration
-- **Testing**: Jest 29.x with ts-jest for TypeScript support
-- **Build System**: TypeScript compiler with esbuild for fast builds
-- **String Processing**: Simple find/replace operations for project name substitution
-
-### 3. TypeScript Interfaces and Data Models
-
-**Reference**: See [requirements.md Section 9.2](./requirements.md#92-data-models) for enum definitions and basic types.
-
-```typescript
-// Core configuration interfaces
-interface ProjectConfig {
-  name: string;
-  description?: string;
-  languages: SupportedLanguage[];
-  frameworks: string[];
-  features: ProjectFeature[];
-  opencode: OpenCodeConfig;
-  metadata: ProjectMetadata;
-}
-
-interface ProjectMetadata {
-  version: string;
-  author?: string;
-  license?: string;
-  repository?: string;
-  createdAt: Date;
-  lastModified: Date;
-}
-
-interface OpenCodeConfig {
-  provider: 'openrouter';
-  model: string;
-  apiKey: string; // Environment variable reference pattern
-  dataDirectory: string;
-  mcpServers: Record<string, MCPServerConfig>;
-  agentModes: Record<string, AgentModeConfig>;
-  workspace: WorkspaceConfig;
-}
-
-interface MCPServerConfig {
-  name: string;
-  type: 'local' | 'remote';
-  command: string[];
-  enabled: boolean;
-  environment?: Record<string, string>;
-  timeout?: number;
-  retries?: number;
-}
-
-interface AgentModeConfig {
-  name: string;
-  description: string;
-  systemPrompt: string;
-  tools: string[];
-  maxTokens?: number;
-  temperature?: number;
-}
-
-interface WorkspaceConfig {
-  mountPoints: VolumeMountConfig[];
-  environmentVariables: Record<string, string>;
-  resourceLimits: ResourceLimits;
-}
-
-interface VolumeMountConfig {
-  hostPath: string;
-  containerPath: string;
-  readOnly: boolean;
-}
-
-interface ResourceLimits {
-  memory?: string;
-  cpu?: string;
-  diskSpace?: string;
-}
-
-// File processing interfaces
-interface FileProcessingContext {
-  project: ProjectConfig;
-  language: SupportedLanguage;
-  features: ProjectFeature[];
-  timestamp: Date;
-  user: UserContext;
-}
-
-interface UserContext {
-  name?: string;
-  email?: string;
-  githubUsername?: string;
-}
-
-// Simple string replacement interface
-interface StringReplacement {
-  find: string;
-  replace: string;
-}
-
-interface FileProcessingOptions {
-  replacements: StringReplacement[];
-  preservePermissions: boolean;
-  validateOutput: boolean;
-}
-
-// CLI command interfaces
-interface CLICommand {
-  name: string;
-  description: string;
-  options: CLIOption[];
-  action: (args: any, options: any) => Promise<void>;
-}
-
-interface CLIOption {
-  flags: string;
-  description: string;
-  defaultValue?: any;
-  required?: boolean;
-  choices?: string[];
-}
-
-// Validation interfaces
-interface ValidationResult {
-  isValid: boolean;
-  errors: ValidationError[];
-  warnings: ValidationWarning[];
-}
-
-interface ValidationError {
-  field: string;
-  message: string;
-  code: string;
-}
-
-interface ValidationWarning {
-  field: string;
-  message: string;
-  suggestion?: string;
-}
-```
-
-### 4. CLI Implementation Specifications
-
-**Reference**: See [requirements.md Section 8.5](./requirements.md#85-cli-interface) for complete CLI interface requirements.
-
-#### 4.1 Command Implementation Details
-
-```typescript
-// CLI command definitions
-const commands: CLICommand[] = [
-  {
-    name: 'init',
-    description: 'Initialize a new project with interactive wizard',
-    options: [
-      {
-        flags: '-c, --config <file>',
-        description: 'Use configuration file for batch mode',
-        required: false
-      },
-      {
-        flags: '-y, --yes',
-        description: 'Skip confirmations and use defaults',
-        required: false
-      },
-      {
-        flags: '--dry-run',
-        description: 'Show what would be created without making changes',
-        required: false
-      }
-    ],
-    action: async (args, options) => {
-      if (options.config) {
-        await runBatchMode(options.config);
-      } else {
-        await runInteractiveWizard(options);
-      }
-    }
-  },
-  {
-    name: 'add',
-    description: 'Add language or framework to existing project',
-    options: [
-      {
-        flags: '-l, --language <lang>',
-        description: 'Language to add',
-        choices: ['typescript', 'go', 'python', 'java'],
-        required: true
-      },
-      {
-        flags: '-f, --framework <framework>',
-        description: 'Framework to add',
-        required: false
-      }
-    ],
-    action: async (args, options) => {
-      await addLanguageToProject(options.language, options.framework);
-    }
-  },
-  {
-    name: 'update',
-    description: 'Update templates and standards',
-    options: [
-      {
-        flags: '--templates-only',
-        description: 'Update only templates',
-        required: false
-      },
-      {
-        flags: '--standards-only',
-        description: 'Update only standards',
-        required: false
-      }
-    ],
-    action: async (args, options) => {
-      await updateProjectAssets(options);
-    }
-  },
-  {
-    name: 'deploy',
-    description: 'Deploy OpenCode container',
-    options: [
-      {
-        flags: '--api-key <key>',
-        description: 'OpenRouter API key',
-        required: true
-      },
-      {
-        flags: '--force',
-        description: 'Force redeploy if container exists',
-        required: false
-      }
-    ],
-    action: async (args, options) => {
-      await deployOpenCodeContainer(options.apiKey, options.force);
-    }
-  }
-];
-```
-
-#### 4.2 Interactive Wizard Implementation
-
-```typescript
-interface WizardStep {
-  name: string;
-  prompt: InquirerPrompt;
-  validator?: (answer: any) => boolean | string;
-  when?: (answers: any) => boolean;
-}
-
-const wizardSteps: WizardStep[] = [
-  {
-    name: 'projectName',
-    prompt: {
-      type: 'input',
-      message: 'Project name:',
-      validate: (input: string) => {
-        if (!input.trim()) return 'Project name is required';
-        if (!/^[a-z0-9-]+$/.test(input)) return 'Use lowercase letters, numbers, and hyphens only';
-        return true;
-      }
-    }
-  },
-  {
-    name: 'languages',
-    prompt: {
-      type: 'checkbox',
-      message: 'Select languages:',
-      choices: [
-        { name: 'TypeScript', value: 'typescript', checked: true },
-        { name: 'Go', value: 'go' },
-        { name: 'Python', value: 'python' },
-        { name: 'Java', value: 'java' }
-      ],
-      validate: (choices: string[]) => {
-        return choices.length > 0 || 'Select at least one language';
-      }
-    }
-  },
-  {
-    name: 'features',
-    prompt: {
-      type: 'checkbox',
-      message: 'Select features:',
-      choices: [
-        { name: 'Testing Framework', value: 'testing', checked: true },
-        { name: 'Linting & Formatting', value: 'linting', checked: true },
-        { name: 'CI/CD Pipeline', value: 'ci-cd', checked: true },
-        { name: 'Docker Support', value: 'docker' },
-        { name: 'Documentation', value: 'documentation', checked: true }
-      ]
-    }
-  },
-  {
-    name: 'githubIntegration',
-    prompt: {
-      type: 'confirm',
-      message: 'Enable GitHub Actions integration?',
-      default: true
-    }
-  },
-  {
-    name: 'openCodeDeploy',
-    prompt: {
-      type: 'confirm',
-      message: 'Deploy OpenCode container now?',
-      default: true
-    }
-  }
-];
-```
-
-### 5. File Processing and Asset Deployment
-
-**Reference**: See [requirements.md Section 8.2](./requirements.md#82-project-structure-generation) for complete file generation requirements and [Section 7.1](./requirements.md#71-opencode-configuration-specifications) for OpenCode configuration specifications.
-
-#### 5.1 Simple File Processing Implementation
-
-```typescript
-interface FileProcessor {
-  copyAssets(sourcePath: string, targetPath: string, options: FileProcessingOptions): Promise<void>;
-  processFile(filePath: string, replacements: StringReplacement[]): Promise<string>;
-  validateFile(filePath: string): Promise<ValidationResult>;
-}
-
-class StaticFileProcessor implements FileProcessor {
-  constructor(private fileSystem: FileSystemManager) {}
-
-  async copyAssets(sourcePath: string, targetPath: string, options: FileProcessingOptions): Promise<void> {
-    const files = await this.fileSystem.glob(path.join(sourcePath, '**/*'), {
-      nodir: true,
-      dot: true
-    });
-
-    for (const sourceFile of files) {
-      const relativePath = path.relative(sourcePath, sourceFile);
-      const targetFile = path.join(targetPath, relativePath);
-
-      // Ensure target directory exists
-      await this.fileSystem.ensureDir(path.dirname(targetFile));
-
-      // Read source file
-      let content = await this.fileSystem.readFile(sourceFile, 'utf-8');
-
-      // Apply simple string replacements
-      for (const replacement of options.replacements) {
-        content = content.replace(new RegExp(replacement.find, 'g'), replacement.replace);
-      }
-
-      // Write to target with preserved permissions
-      await this.fileSystem.writeFile(targetFile, content);
-
-      if (options.preservePermissions) {
-        const stats = await this.fileSystem.stat(sourceFile);
-        await this.fileSystem.chmod(targetFile, stats.mode);
-      }
-
-      // Validate output if requested
-      if (options.validateOutput) {
-        await this.validateFile(targetFile);
-      }
-    }
-  }
-
-  async processFile(filePath: string, replacements: StringReplacement[]): Promise<string> {
-    let content = await this.fileSystem.readFile(filePath, 'utf-8');
-
-    for (const replacement of replacements) {
-      content = content.replace(new RegExp(replacement.find, 'g'), replacement.replace);
-    }
-
-    return content;
-  }
-
-  async validateFile(filePath: string): Promise<ValidationResult> {
-    const errors: ValidationError[] = [];
-    const warnings: ValidationWarning[] = [];
-
-    try {
-      const content = await this.fileSystem.readFile(filePath, 'utf-8');
-
-      // Basic validation
-      if (!content.trim()) {
-        warnings.push({
-          field: 'content',
-          message: 'File is empty',
-          suggestion: 'Verify this is intentional'
-        });
-      }
-
-      // JSON validation for .json files
-      if (filePath.endsWith('.json')) {
-        try {
-          JSON.parse(content);
-        } catch (e) {
-          errors.push({
-            field: 'content',
-            message: `Invalid JSON: ${e.message}`,
-            code: 'INVALID_JSON'
-          });
-        }
-      }
-
-    } catch (error) {
-      errors.push({
-        field: 'file',
-        message: `Cannot read file: ${error.message}`,
-        code: 'FILE_READ_ERROR'
-      });
-    }
-
-    return {
-      isValid: errors.length === 0,
-      errors,
-      warnings
-    };
-  }
-}
-```
-
-#### 5.2 Project Generation Pipeline
-
-```typescript
-interface ProjectGenerator {
-  generateProject(config: ProjectConfig): Promise<void>;
-  deployAssets(config: ProjectConfig): Promise<void>;
-  validateProject(projectPath: string): Promise<ValidationResult>;
-}
-
-class SimpleProjectGenerator implements ProjectGenerator {
-  constructor(private fileProcessor: FileProcessor) {}
-
-  async generateProject(config: ProjectConfig): Promise<void> {
-    // Create basic project structure
-    await this.createProjectStructure(config);
-
-    // Copy language-specific files
-    for (const language of config.languages) {
-      await this.copyLanguageAssets(language, config);
-    }
-
-    // Copy common configuration files
-    await this.copyCommonAssets(config);
-
-    // Deploy standards and prompts
-    await this.deployAssets(config);
-  }
-
-  private async createProjectStructure(config: ProjectConfig): Promise<void> {
-    const directories = [
-      'src',
-      'tests',
-      '.ai/templates',
-      '.ai/standards',
-      '.ai/prompts',
-      '.ai/config',
-      '.opencode',
-      '.github/workflows'
-    ];
-
-    for (const dir of directories) {
-      await fs.ensureDir(path.join(config.name, dir));
-    }
-  }
-
-  private async copyLanguageAssets(language: SupportedLanguage, config: ProjectConfig): Promise<void> {
-    const sourcePath = path.join('assets/templates', language, 'files');
-    const targetPath = config.name;
-
-    const replacements: StringReplacement[] = [
-      { find: '{{PROJECT_NAME}}', replace: config.name },
-      { find: '{{PROJECT_DESCRIPTION}}', replace: config.description || '' },
-      { find: '{{AUTHOR_NAME}}', replace: config.metadata.author || '' },
-      { find: '{{CURRENT_YEAR}}', replace: new Date().getFullYear().toString() }
-    ];
-
-    await this.fileProcessor.copyAssets(sourcePath, targetPath, {
-      replacements,
-      preservePermissions: true,
-      validateOutput: true
-    });
-  }
-
-  async deployAssets(config: ProjectConfig): Promise<void> {
-    // Copy standards (no processing needed - they're already JSON)
-    await this.fileProcessor.copyAssets(
-      'assets/standards',
-      path.join(config.name, '.ai/standards'),
-      { replacements: [], preservePermissions: false, validateOutput: true }
-    );
-
-    // Copy prompts (no processing needed)
-    await this.fileProcessor.copyAssets(
-      'assets/prompts',
-      path.join(config.name, '.ai/prompts'),
-      { replacements: [], preservePermissions: false, validateOutput: true }
-    );
-
-    // Copy configuration templates with basic replacements
-    const configReplacements: StringReplacement[] = [
-      { find: '{{PROJECT_NAME}}', replace: config.name },
-      { find: '{{PRIMARY_LANGUAGE}}', replace: config.languages[0] }
-    ];
-
-    await this.fileProcessor.copyAssets(
-      'assets/configs',
-      path.join(config.name, '.ai/config'),
-      { replacements: configReplacements, preservePermissions: false, validateOutput: true }
-    );
-  }
-}
-```
-
-### 6. Performance Requirements and Optimization
-
-**Reference**: See [requirements.md Section 7.4](./requirements.md#74-opencode-container-deployment) for container deployment specifications and [Section 7.3](./requirements.md#73-workspace-asset-management) for asset management requirements.
-
-#### 6.1 Performance Targets
-
-```typescript
-interface PerformanceTargets {
-  bootstrapTime: {
-    target: number; // milliseconds
-    maximum: number; // milliseconds
-    measurement: 'complete project setup including OpenCode deployment';
-  };
-  containerStartup: {
-    target: number; // milliseconds
-    maximum: number; // milliseconds
-    measurement: 'OpenCode container operational';
-  };
-  assetDeployment: {
-    target: number; // milliseconds
-    maximum: number; // milliseconds
-    measurement: 'template and standard deployment';
-  };
-  memoryUsage: {
-    bootstrapper: string; // MB
-    opencode: string; // MB
-    measurement: 'peak memory consumption';
-  };
-  diskUsage: {
-    generatedProject: string; // MB
-    assets: string; // MB
-    measurement: 'excluding dependencies';
-  };
-}
-
-const performanceTargets: PerformanceTargets = {
-  bootstrapTime: {
-    target: 180000, // 3 minutes
-    maximum: 300000, // 5 minutes
-    measurement: 'complete project setup including OpenCode deployment'
-  },
-  containerStartup: {
-    target: 60000, // 1 minute
-    maximum: 120000, // 2 minutes
-    measurement: 'OpenCode container operational'
-  },
-  assetDeployment: {
-    target: 10000, // 10 seconds
-    maximum: 20000, // 20 seconds
-    measurement: 'static file copying and basic string replacement'
-  },
-  memoryUsage: {
-    bootstrapper: '512MB',
-    opencode: '2GB',
-    measurement: 'peak memory consumption'
-  },
-  diskUsage: {
-    generatedProject: '100MB',
-    assets: '50MB',
-    measurement: 'excluding dependencies'
-  }
-};
-```
-
-#### 6.2 Optimization Strategies
-
-```typescript
-interface OptimizationStrategy {
-  name: string;
-  description: string;
-  implementation: string;
-  expectedImprovement: string;
-}
-
-const optimizationStrategies: OptimizationStrategy[] = [
-  {
-    name: 'Parallel File Operations',
-    description: 'Concurrent file copying and asset deployment',
-    implementation: 'Use Promise.all() for independent file operations, parallel directory processing',
-    expectedImprovement: '50-70% reduction in total bootstrap time'
-  },
-  {
-    name: 'Incremental Updates',
-    description: 'Only update changed files during iterative setup',
-    implementation: 'File hash comparison and selective file copying',
-    expectedImprovement: '80-90% faster update operations'
-  },
-  {
-    name: 'Streaming File Operations',
-    description: 'Stream large file operations instead of loading into memory',
-    implementation: 'Node.js streams for file copying, chunked processing for large files',
-    expectedImprovement: '60-80% reduction in memory usage'
-  },
-  {
-    name: 'Efficient String Replacement',
-    description: 'Optimize string replacement operations',
-    implementation: 'Pre-compiled regex patterns, single-pass replacement for multiple patterns',
-    expectedImprovement: '30-40% faster file processing'
-  },
-  {
-    name: 'Container Optimization',
-    description: 'Optimize Docker image layers and startup time',
-    implementation: 'Multi-stage builds, layer caching, health check optimization',
-    expectedImprovement: '30-50% faster container startup'
-  }
-];
-```
-
-### 7. Error Handling and Recovery Implementation
-
-**Reference**: See [requirements.md Section 8.6](./requirements.md#86-error-handling-and-recovery) for complete error handling requirements and [Section 7.2.6](./requirements.md#726-security-considerations-and-best-practices) for security considerations.
-
-#### 7.1 Error Classification and Handling
-
-```typescript
-enum ErrorCategory {
-  SETUP_ERROR = 'setup',
-  DEPLOYMENT_ERROR = 'deployment',
-  INTEGRATION_ERROR = 'integration',
-  VALIDATION_ERROR = 'validation',
-  SYSTEM_ERROR = 'system'
-}
-
-enum ErrorSeverity {
-  FATAL = 'fatal',
-  ERROR = 'error',
-  WARNING = 'warning',
-  INFO = 'info'
-}
-
-interface BootstrapError extends Error {
-  category: ErrorCategory;
-  severity: ErrorSeverity;
-  code: string;
-  context?: Record<string, any>;
-  recoverable: boolean;
-  suggestions?: string[];
-}
-
-class ErrorHandler {
-  private errorLog: BootstrapError[] = [];
-
-  handleError(error: BootstrapError): void {
-    this.errorLog.push(error);
-
-    switch (error.severity) {
-      case ErrorSeverity.FATAL:
-        this.handleFatalError(error);
-        break;
-      case ErrorSeverity.ERROR:
-        this.handleRecoverableError(error);
-        break;
-      case ErrorSeverity.WARNING:
-        this.logWarning(error);
-        break;
-      case ErrorSeverity.INFO:
-        this.logInfo(error);
-        break;
-    }
-  }
-
-  private handleFatalError(error: BootstrapError): void {
-    console.error(`FATAL ERROR [${error.code}]: ${error.message}`);
-    if (error.suggestions) {
-      console.error('Suggestions:');
-      error.suggestions.forEach(suggestion => console.error(`  - ${suggestion}`));
-    }
-    process.exit(1);
-  }
-
-  private handleRecoverableError(error: BootstrapError): void {
-    console.error(`ERROR [${error.code}]: ${error.message}`);
-
-    if (error.recoverable) {
-      console.log('Attempting recovery...');
-      this.attemptRecovery(error);
-    }
-  }
-
-  private attemptRecovery(error: BootstrapError): void {
-    switch (error.category) {
-      case ErrorCategory.SETUP_ERROR:
-        this.recoverFromSetupError(error);
-        break;
-      case ErrorCategory.DEPLOYMENT_ERROR:
-        this.recoverFromDeploymentError(error);
-        break;
-      case ErrorCategory.INTEGRATION_ERROR:
-        this.recoverFromIntegrationError(error);
-        break;
-    }
-  }
-}
-```
-
-#### 7.2 Recovery Mechanisms
-
-```typescript
-interface RecoveryStrategy {
-  errorCode: string;
-  strategy: (error: BootstrapError) => Promise<boolean>;
-  maxRetries: number;
-  backoffMs: number;
-}
-
-const recoveryStrategies: RecoveryStrategy[] = [
-  {
-    errorCode: 'DOCKER_CONNECTION_FAILED',
-    strategy: async (error) => {
-      // Retry Docker connection with exponential backoff
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return await testDockerConnection();
-    },
-    maxRetries: 3,
-    backoffMs: 2000
-  },
-  {
-    errorCode: 'TEMPLATE_PROCESSING_FAILED',
-    strategy: async (error) => {
-      // Clear template cache and retry
-      templateCache.clear();
-      return await retryTemplateProcessing(error.context?.templatePath);
-    },
-    maxRetries: 2,
-    backoffMs: 1000
-  },
-  {
-    errorCode: 'OPENCODE_DEPLOYMENT_FAILED',
-    strategy: async (error) => {
-      // Clean up failed container and retry
-      await cleanupFailedContainer(error.context?.containerName);
-      return await retryOpenCodeDeployment(error.context?.config);
-    },
-    maxRetries: 2,
-    backoffMs: 5000
-  }
-];
-```
-
-### 8. Build System and Development Workflow
-
-**Reference**: See [requirements.md Section 10.2](./requirements.md#102-installation-and-usage) for build scripts requirements and [Section 10.1](./requirements.md#101-docker-distribution) for distribution specifications.
-
-#### 8.1 Build Configuration
-
-```typescript
-// Build configuration interface
-interface BuildConfig {
-  target: 'production';
-  platform: 'node';
-  format: 'cjs';
-  minify: boolean;
-  sourcemap: boolean;
-  external: string[];
-  define: Record<string, string>;
-}
-
-const buildConfigs: Record<string, BuildConfig> = {
-  production: {
-    target: 'production',
-    platform: 'node',
-    format: 'cjs',
-    minify: true,
-    sourcemap: false,
-    external: ['fs', 'path', 'os'],
-    define: {
-      'process.env.NODE_ENV': '"production"'
-    }
-  }
-};
-```
-
-#### 8.2 Development Scripts
-
-```json
-{
-  "scripts": {
-    "build": "tsc && esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js",
-    "build:watch": "tsc --watch & esbuild src/index.ts --bundle --platform=node --outfile=dist/index.js --watch",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix",
-    "format": "prettier --write src/**/*.ts",
-    "validate": "npm run lint && npm run test && npm run build",
-    "docker:build": "docker build -t horizon-sdlc .",
-    "docker:run": "docker run -it -v $(pwd):/workspace horizon-sdlc",
-    "release": "npm run validate && npm version patch && npm publish"
-  }
-}
-```
-
-#### 8.3 Docker Build Optimization
-
-```dockerfile
-# Multi-stage Dockerfile for optimized builds
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-FROM node:20-alpine AS runtime
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs dist ./dist
-COPY --chown=nodejs:nodejs assets ./assets
-USER nodejs
-EXPOSE 3000
-CMD ["node", "dist/index.js"]
-```
-
-### 9. Testing Implementation Specifications
-
-**Reference**: See [requirements.md Section 8.6](./requirements.md#86-error-handling-and-recovery) for testing strategy requirements.
-
-#### 9.1 Test Configuration
-
-```typescript
-// Jest configuration for TypeScript
-const jestConfig = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/src', '<rootDir>/tests'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest'
-  },
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/*.d.ts',
-    '!src/index.ts'
-  ],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80
-    }
-  },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.ts'],
-  testTimeout: 30000
-};
-```
-
-#### 9.2 Test Utilities
-
-```typescript
-// Test utilities for mocking and fixtures
-export class TestUtils {
-  static createTempProject(config: Partial<ProjectConfig> = {}): string {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'horizon-test-'));
-    const projectConfig: ProjectConfig = {
-      name: 'test-project',
-      languages: [SupportedLanguage.TYPESCRIPT],
-      frameworks: [],
-      features: [ProjectFeature.TESTING],
-      opencode: this.createMockOpenCodeConfig(),
-      metadata: {
-        version: '1.0.0',
-        createdAt: new Date(),
-        lastModified: new Date()
-      },
-      ...config
-    };
-
-    return tempDir;
-  }
-
-  static createMockOpenCodeConfig(): OpenCodeConfig {
-    return {
-      provider: 'openrouter',
-      model: 'anthropic/claude-sonnet-4',
-      apiKey: '{env:TEST_API_KEY}',
-      dataDirectory: '.opencode',
-      mcpServers: {},
-      agentModes: {},
-      workspace: {
-        mountPoints: [],
-        environmentVariables: {},
-        resourceLimits: {}
-      }
-    };
-  }
-
-  static async cleanupTempProject(projectPath: string): Promise<void> {
-    await fs.remove(projectPath);
-  }
-}
-```
-
-This technical requirements document provides concrete implementation specifications that complement the high-level requirements in requirements.md, focusing on TypeScript interfaces, CLI implementation details, performance optimization, error handling, and build system configuration.
+# Technical Requirements Document (TRD)
+# Simple To-Do Application
+
+## Technical Overview
+
+### System Architecture
+The application employs a **Next.js Full-Stack Architecture** with hybrid rendering strategies optimized for both performance and user experience. The system integrates client-side interactivity with server-side optimization, supporting anonymous usage while enabling seamless collaboration through secure sharing mechanisms.
+
+### Technical Approach
+**Hybrid Storage Strategy**: Combines browser localStorage for immediate responsiveness with MongoDB persistence for reliability and sharing. This approach eliminates authentication friction while ensuring data durability and enabling collaborative features.
+
+**Progressive Enhancement Architecture**: Starts with core functionality working without JavaScript, then enhances with interactive features. This ensures accessibility and performance across all devices and network conditions.
+
+### Integration Strategy
+**Unified Framework Integration**: Leverages Next.js 14+ App Router for seamless frontend/backend integration, reducing complexity while maintaining optimal performance through strategic rendering patterns (SSG/CSR/ISR).
+
+**Component Library Consistency**: Builds on established ShadCN/ui + Tailwind CSS foundation for consistent design system implementation and accessibility compliance.
+
+### Scalability Plan
+**Stateless Architecture**: API routes designed for horizontal scaling with MongoDB Atlas auto-scaling. Edge-compatible endpoints utilize Next.js Edge Runtime for global distribution and optimal performance.
+
+## Technology Stack
+
+### Frontend
+- **Next.js 14+**: Full-stack React framework with App Router
+- **React 18+**: Component library with concurrent features
+- **TypeScript 4.9+**: Strict typing for development safety
+- **ShadCN/ui**: Accessible component library with Tailwind integration
+- **Tailwind CSS**: Utility-first styling for responsive design
+- **Framer Motion**: Declarative animations for smooth interactions
+
+### Backend
+- **Next.js API Routes**: TypeScript-based serverless functions
+- **Mongoose 7+**: MongoDB ODM for type-safe data operations
+- **Node.js 18+**: Runtime environment with ES modules
+- **Edge Runtime**: For high-performance, globally distributed endpoints
+
+### Database
+- **MongoDB Atlas**: Managed cloud database with automatic scaling
+- **MongoDB 6+**: Document-based storage for flexible task data
+- **Mongoose ODM**: Type-safe database operations and validation
+
+### Infrastructure
+- **Docker**: Containerization for consistent deployment
+- **Vercel/Railway**: Cloud hosting with automatic CI/CD
+- **GitHub Actions**: Continuous integration and deployment
+- **Bitly API**: URL shortening for enhanced sharing experience
+
+### Development Tools
+- **Vitest**: Fast unit and integration testing
+- **Playwright**: Cross-browser E2E testing automation
+- **ESLint**: Code quality and Next.js optimization rules
+- **Prettier**: Code formatting with Tailwind class sorting
+- **TypeScript Strict Mode**: Maximum type safety and error prevention
+
+## Architecture Patterns
+
+### Primary Patterns
+- **Next.js App Router Pattern**: Leverages layouts, loading states, and React Server Components for optimal user experience
+- **Repository Pattern**: Data access abstraction using Mongoose models for maintainable database operations
+- **Component Composition Pattern**: ShadCN/ui components composed for complex UI functionality while maintaining accessibility
+
+### Secondary Patterns
+- **Observer Pattern**: Real-time updates through optimistic UI updates and data synchronization
+- **Strategy Pattern**: Rendering strategy selection (SSG/CSR/ISR) based on content type and user interaction needs
+- **Factory Pattern**: Share token generation with cryptographically secure random token creation
+
+### Rationale
+These patterns provide:
+- **Maintainability**: Clear separation of concerns and reusable component architecture
+- **Performance**: Optimal rendering strategies and efficient data flow patterns
+- **Scalability**: Stateless design enabling horizontal scaling and edge distribution
+- **Security**: Secure token generation and input validation through established patterns
+
+## Technical Requirements
+
+### TR001: Homepage Performance Optimization
+**Requirement**: Homepage must achieve <2.5s Largest Contentful Paint using Static Site Generation  
+**Business Mapping**: BR001 (Zero-friction task creation)  
+**Implementation**: Next.js SSG with pre-built HTML, optimized images, and minimal JavaScript bundle  
+**Complexity**: Low  
+**Dependencies**: ["Next.js build optimization", "Image optimization"]
+
+### TR002: Task Creation API Performance
+**Requirement**: Task creation API endpoint must respond within 200ms for 95th percentile  
+**Business Mapping**: BR001 (Zero-friction task creation)  
+**Implementation**: Edge Runtime API routes with optimized MongoDB queries and connection pooling  
+**Complexity**: Medium  
+**Dependencies**: ["MongoDB Atlas connection", "API route optimization"]
+
+### TR003: Optimistic UI Updates
+**Requirement**: Immediate visual feedback for user actions before server confirmation  
+**Business Mapping**: BR001 (Zero-friction task creation)  
+**Implementation**: Zustand state management with optimistic updates and rollback on failure  
+**Complexity**: Medium  
+**Dependencies**: ["State management setup", "Error handling"]
+
+### TR004: Hybrid Data Persistence
+**Requirement**: Seamless data storage using localStorage with MongoDB synchronization  
+**Business Mapping**: BR002 (Persistent data storage without accounts)  
+**Implementation**: localStorage for immediate access, background sync to MongoDB with conflict resolution  
+**Complexity**: High  
+**Dependencies**: ["localStorage wrapper", "Sync mechanism", "Conflict resolution"]
+
+### TR005: Anonymous Task Management
+**Requirement**: Task creation and management without user authentication  
+**Business Mapping**: BR002 (Persistent data storage without accounts)  
+**Implementation**: Optional user name for task attribution, no password or email requirements  
+**Complexity**: Low  
+**Dependencies**: ["Input validation", "Privacy controls"]
+
+### TR006: Secure Share Token Generation
+**Requirement**: Cryptographically secure tokens for task sharing  
+**Business Mapping**: BR003 (One-click sharing)  
+**Implementation**: Crypto.randomUUID() with additional entropy for unguessable share URLs  
+**Complexity**: Medium  
+**Dependencies**: ["Token validation", "URL structure"]
+
+### TR007: Incremental Static Regeneration
+**Requirement**: Shared task pages must load quickly with SEO optimization  
+**Business Mapping**: BR003 (One-click sharing)  
+**Implementation**: ISR with 1-hour revalidation for shared task pages at /shared/[token]  
+**Complexity**: Medium  
+**Dependencies**: ["Next.js ISR configuration", "Token validation"]
+
+### TR008: Real-time Collaboration
+**Requirement**: Shared tasks must update in real-time for all viewers  
+**Business Mapping**: BR003 (One-click sharing)  
+**Implementation**: SWR for client-side polling with optimistic updates and conflict resolution  
+**Complexity**: High  
+**Dependencies**: ["State synchronization", "Conflict resolution", "Error handling"]
+
+### TR009: Mobile-First Responsive Design
+**Requirement**: Optimal experience across all device sizes with mobile priority  
+**Business Mapping**: BR004 (Mobile-first experience)  
+**Implementation**: Tailwind responsive utilities with 320px minimum width support  
+**Complexity**: Medium  
+**Dependencies**: ["Breakpoint strategy", "Touch optimization"]
+
+### TR010: Touch-Optimized Interactions
+**Requirement**: Touch targets must be 44px minimum with gesture support  
+**Business Mapping**: BR004 (Mobile-first experience)  
+**Implementation**: ShadCN/ui components with touch-friendly sizing and Framer Motion gestures  
+**Complexity**: Medium  
+**Dependencies**: ["Component customization", "Gesture handlers"]
+
+### TR011: Progressive Web App Features
+**Requirement**: App-like experience with offline capability  
+**Business Mapping**: BR004 (Mobile-first experience)  
+**Implementation**: Next.js PWA configuration with service worker for offline task access  
+**Complexity**: High  
+**Dependencies**: ["Service worker setup", "Offline data strategy"]
+
+### TR012: Smooth Animation System
+**Requirement**: 60fps animations for all state transitions and micro-interactions  
+**Business Mapping**: BR005 (Satisfying interactions)  
+**Implementation**: Framer Motion with optimized transform/opacity animations and layout animations  
+**Complexity**: Medium  
+**Dependencies**: ["Animation variants", "Performance monitoring"]
+
+### TR013: Task Completion Feedback
+**Requirement**: Satisfying visual and haptic feedback for task completion  
+**Business Mapping**: BR005 (Satisfying interactions)  
+**Implementation**: Framer Motion completion animations with optional device vibration  
+**Complexity**: Low  
+**Dependencies**: ["Animation system", "Device API access"]
+
+### TR014: Semantic HTML Structure
+**Requirement**: Screen reader accessible markup following WCAG 2.1 AA standards  
+**Business Mapping**: BR006 (Accessible design)  
+**Implementation**: Semantic HTML5 elements with proper ARIA labels and ShadCN/ui accessibility features  
+**Complexity**: Medium  
+**Dependencies**: ["Component accessibility", "ARIA implementation"]
+
+### TR015: Keyboard Navigation Support
+**Requirement**: Full application functionality accessible via keyboard only  
+**Business Mapping**: BR006 (Accessible design)  
+**Implementation**: Focus management with ShadCN/ui focus trap and logical tab order  
+**Complexity**: Medium  
+**Dependencies**: ["Focus management", "Keyboard handlers"]
+
+### TR016: Input Validation and Sanitization
+**Requirement**: All user inputs validated and sanitized to prevent XSS attacks  
+**Business Mapping**: Security requirement derived from sharing features  
+**Implementation**: Zod schema validation on client and server with DOMPurify for HTML sanitization  
+**Complexity**: Medium  
+**Dependencies**: ["Validation schemas", "Sanitization library"]
+
+### TR017: Rate Limiting Protection
+**Requirement**: API endpoints protected against abuse and spam  
+**Business Mapping**: Security requirement for public API access  
+**Implementation**: Next.js middleware with sliding window rate limiting by IP address  
+**Complexity**: Medium  
+**Dependencies**: ["Middleware configuration", "Redis for rate limit storage"]
+
+### TR018: CORS Security Configuration
+**Requirement**: Cross-origin requests properly configured for security  
+**Business Mapping**: Security requirement for API access  
+**Implementation**: Next.js API routes with strict CORS policy for allowed origins  
+**Complexity**: Low  
+**Dependencies**: ["Environment configuration", "Origin validation"]
+
+### TR019: Data Privacy Controls
+**Requirement**: User control over data collection and sharing  
+**Business Mapping**: BR002 + Privacy compliance  
+**Implementation**: Minimal data collection with export functionality and clear privacy communication  
+**Complexity**: Low  
+**Dependencies**: ["Data export", "Privacy UI"]
+
+### TR020: Performance Monitoring
+**Requirement**: Real-time monitoring of Core Web Vitals and API performance  
+**Business Mapping**: Quality assurance for all business requirements  
+**Implementation**: Web Vitals tracking with performance.measure for APIs and user interactions  
+**Complexity**: Medium  
+**Dependencies**: ["Analytics setup", "Performance dashboards"]
+
+## Performance Requirements
+
+### Response Time Targets
+- **Homepage loading**: LCP < 2.5 seconds (SSG optimization)
+- **Task creation**: Visual feedback < 100ms, API response < 200ms
+- **Share link generation**: < 300ms including token creation
+- **Shared page access**: < 1.5 seconds with ISR
+
+### Throughput Requirements
+- **Concurrent users**: Support 1000+ simultaneous users
+- **API requests**: Handle 100+ requests/second per endpoint
+- **Database operations**: < 50ms for single document operations
+- **Real-time updates**: < 500ms sync delay for shared tasks
+
+### Availability Standards
+- **Uptime target**: 99.9% availability (8.77 hours downtime/year)
+- **Error rate**: < 1% for API endpoints under normal load
+- **Recovery time**: < 4 hours for full service restoration
+- **Data consistency**: Eventual consistency within 1 second for shared tasks
+
+### Scalability Targets
+- **User growth**: Support 10x user increase without architecture changes
+- **Data volume**: Handle 1M+ tasks with sub-50ms query time
+- **Geographic distribution**: Edge deployment for global sub-200ms response times
+- **Mobile performance**: Maintain 60fps on mid-tier mobile devices
+
+## Security Requirements
+
+### Authentication Strategy
+- **No-password approach**: Anonymous task creation with optional name attribution
+- **Session management**: Browser-based sessions using localStorage for task ownership
+- **Share token security**: Cryptographically secure tokens with no expiration
+- **Privacy by design**: Minimal data collection with user control
+
+### Authorization Model
+- **Public task access**: Anyone with share token can view and edit shared tasks
+- **Creator privileges**: Original creator maintains ownership through localStorage association
+- **No user accounts**: Authorization based on browser session and share tokens
+- **Data isolation**: Personal tasks isolated by browser session, shared tasks by token
+
+### Data Protection
+- **Encryption in transit**: HTTPS/TLS 1.3 for all communications
+- **Encryption at rest**: MongoDB Atlas encryption for persistent data
+- **Input sanitization**: XSS prevention through DOMPurify and Zod validation
+- **Data minimization**: Store only task content and optional user names
+
+### Compliance Standards
+- **GDPR readiness**: No personal data collection, clear data practices
+- **WCAG 2.1 AA**: Accessibility compliance for inclusive design
+- **OWASP Top 10**: Protection against common web vulnerabilities
+- **Privacy controls**: User export and deletion capabilities
+
+## Integration Points
+
+### Existing APIs Integration
+- **MongoDB Atlas**: Primary data persistence with automatic scaling
+- **Bitly API**: Optional URL shortening for share links (fallback to native URLs)
+- **Browser Storage API**: localStorage for client-side data persistence
+- **Web Vitals API**: Performance monitoring and optimization
+
+### External Services Integration
+- **Cloud hosting**: Vercel/Railway for application deployment
+- **CDN services**: Automatic edge distribution for global performance
+- **Analytics services**: Privacy-focused performance monitoring
+- **Error tracking**: Development and production error monitoring
+
+### Data Exchange Formats
+- **API responses**: JSON with consistent error and success formats
+- **Database documents**: MongoDB BSON with Mongoose schema validation
+- **Client-server sync**: JSON-based state synchronization
+- **Share tokens**: URL-safe base64 encoded random strings
+
+### Communication Protocols
+- **REST API**: Standard HTTP methods for CRUD operations
+- **WebSocket fallback**: Considered for real-time features if needed
+- **HTTP/2**: Modern protocol support for performance optimization
+- **Progressive enhancement**: Graceful degradation for limited network conditions
+
+## Required Agents
+
+### Primary Agents (Mandatory)
+- **Frontend Agent**: React/Next.js development, ShadCN/ui component integration, Framer Motion animations, responsive design implementation, accessibility compliance
+- **Backend Agent**: Next.js API routes development, MongoDB/Mongoose integration, share token system, performance optimization, Edge Runtime configuration
+- **Security Agent**: Input validation implementation, secure token generation, rate limiting configuration, CORS setup, privacy compliance measures
+
+### Optional Agents (Value Enhancement)
+- **Performance Agent**: Core Web Vitals optimization, bundle size analysis, animation performance tuning, mobile optimization strategies
+- **QA Agent**: Comprehensive testing strategy, E2E scenario development, accessibility testing, cross-browser validation, performance regression testing
+
+### Rationale for Agent Selection
+**Frontend/Backend separation** enables specialized expertise for complex full-stack application development while maintaining clear separation of concerns.
+
+**Security agent critical** due to anonymous sharing features requiring robust token security, input validation, and privacy compliance without traditional authentication.
+
+**Performance agent valuable** given strict 10-second time-to-task requirement and mobile-first approach requiring optimization across multiple platforms.
+
+**QA agent valuable** due to accessibility requirements and the need for comprehensive cross-device testing in a no-authentication environment.
+
+## Context Integrations
+
+### Existing Component Reuse
+- **ShadCN/ui component library**: Button, Input, Card, Dialog, Checkbox components with accessibility built-in
+- **Tailwind CSS design system**: Existing responsive breakpoints, color palette, spacing system
+- **Framer Motion animation library**: Pre-configured animation variants and gesture handling
+- **Next.js App Router structure**: Established routing patterns and layout compositions
+
+### Integration Opportunities
+- **Docker containerization**: Leverage existing Dockerfile patterns and multi-stage builds
+- **GitHub Actions CI/CD**: Extend existing workflow for quality gates and deployment automation
+- **ESLint/Prettier configuration**: Extend existing code quality and formatting rules
+- **TypeScript configuration**: Build on established strict typing and compilation rules
+
+### Migration Requirements
+- **No data migration**: New application with clean slate architecture
+- **Standards alignment**: Ensure consistency with existing organizational patterns
+- **Quality gate integration**: Implement established testing and code quality requirements
+- **Documentation integration**: Follow existing documentation patterns and standards
+
+## Implementation Phases
+
+### Phase 1: Core Task Management (2-3 weeks)
+**Description**: Essential task creation, completion, and persistence functionality  
+**Deliverables**:
+- Homepage with SSG optimization
+- Task creation and management UI
+- MongoDB data persistence
+- localStorage synchronization
+- Basic responsive design
+
+**Timeline**: 2-3 weeks  
+**Dependencies**: ["Next.js setup", "MongoDB Atlas configuration", "ShadCN/ui integration"]
+
+### Phase 2: Collaboration Features (1-2 weeks)
+**Description**: Share link generation and collaborative task access  
+**Deliverables**:
+- Share token generation system
+- ISR shared task pages
+- Real-time collaboration features
+- Share link UI and UX
+
+**Timeline**: 1-2 weeks  
+**Dependencies**: ["Phase 1 completion", "Security token implementation"]
+
+### Phase 3: Polish and Optimization (1-2 weeks)
+**Description**: Performance optimization, animations, and accessibility compliance  
+**Deliverables**:
+- Framer Motion animation system
+- PWA capabilities
+- Accessibility compliance
+- Performance optimization
+- Comprehensive testing
+
+**Timeline**: 1-2 weeks  
+**Dependencies**: ["Phase 2 completion", "Animation system", "Testing framework"]
+
+## Quality Gates
+
+### Technical Validation
+- **Syntax validation**: TypeScript strict mode compilation without errors
+- **Code quality**: ESLint with Next.js rules passing without warnings
+- **Type safety**: Comprehensive TypeScript coverage with no implicit any
+- **Security scan**: Input validation and XSS prevention measures verified
+
+### Performance Validation
+- **Core Web Vitals**: LCP < 2.5s, FID < 100ms, CLS < 0.1 across all pages
+- **Bundle optimization**: First Load JS < 100KB, efficient code splitting
+- **Animation performance**: 60fps sustained during all transitions and interactions
+- **Mobile optimization**: Performance targets met on mid-tier mobile devices
+
+### Integration Validation
+- **Cross-browser testing**: Chrome, Firefox, Safari compatibility verified
+- **Device testing**: Mobile, tablet, desktop responsive behavior validated
+- **Accessibility testing**: WCAG 2.1 AA compliance with automated and manual testing
+- **API integration**: All endpoints tested with proper error handling and validation
+
+### Deployment Validation
+- **Production build**: Successful compilation and optimization for production environment
+- **Database connectivity**: MongoDB Atlas connection and query performance verified
+- **Security configuration**: HTTPS, CORS, rate limiting, and input validation active
+- **Monitoring setup**: Performance tracking and error reporting operational
+
+This Technical Requirements Document provides the comprehensive foundation for implementing the Simple To-Do Application while ensuring alignment with business requirements, technical standards, and quality expectations. The systematic approach balances user experience goals with robust technical architecture, security, and performance requirements.

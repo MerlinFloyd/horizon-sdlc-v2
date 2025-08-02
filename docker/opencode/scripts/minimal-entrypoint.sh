@@ -5,23 +5,57 @@
 
 set -e
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Load container-local logging module
+if [[ -f "/usr/local/lib/logging.sh" ]]; then
+    # Use container-local logging module (primary)
+    source "/usr/local/lib/logging.sh"
+    setup_logging "minimal-entrypoint.sh"
+elif [[ -f "/workspace/scripts/lib/logging.sh" ]]; then
+    # Fallback to workspace logging module if available
+    source "/workspace/scripts/lib/logging.sh"
+    setup_logging "minimal-entrypoint.sh"
+else
+    # Basic fallback logging (should rarely be needed)
+    log_info() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [INFO] [minimal-entrypoint.sh] [$operation] $message"
+    }
 
-# Simple logging
+    log_error() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [ERROR] [minimal-entrypoint.sh] [$operation] $message" >&2
+    }
+
+    log_warn() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [WARN] [minimal-entrypoint.sh] [$operation] $message"
+    }
+
+    log_debug() {
+        local operation="$1"
+        local message="$2"
+        echo "[$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")] [DEBUG] [minimal-entrypoint.sh] [$operation] $message"
+    }
+
+    cleanup_logging() {
+        true
+    }
+fi
+
+# Backward compatibility functions
 log() {
-    echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $1"
+    log_info "general" "$1"
 }
 
 error() {
-    echo -e "${RED}[ERROR]${NC} $1" >&2
+    log_error "general" "$1"
 }
 
 success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    log_info "general" "$1"
 }
 
 # Essential workspace validation
@@ -54,33 +88,49 @@ setup_environment() {
 # Main execution
 main() {
     log "OpenCode container starting..."
-    
+
     # Essential validation only
     if ! validate_workspace; then
         error "Workspace validation failed"
         exit 1
     fi
-    
+
     # Set up environment
     setup_environment
-    
+
     # Change to workspace directory
     cd /workspace
-    
+
     # Show minimal startup info
     log "OpenCode v$(opencode --version 2>/dev/null || echo 'Unknown')"
     log "Workspace: $(pwd)"
     log "API Key: $([ -n "${OPENROUTER_API_KEY:-}" ] && echo "configured" || echo "not configured")"
-    
-    success "Starting OpenCode..."
-    
+
+    # Check for debug mode
+    if [[ $# -gt 0 ]] && [[ "$1" == "--debug" || "$1" == "bash" ]]; then
+        log "Debug mode requested - starting interactive bash shell"
+        log "Environment variables are configured and ready"
+        log "Use 'opencode' command to start OpenCode manually"
+        log "Use 'exit' to leave the container"
+        success "Entering debug shell..."
+        exec bash
+    fi
+
     # Execute the provided command or start OpenCode
     if [[ $# -eq 0 ]]; then
+        success "Starting OpenCode..."
         exec opencode
     else
+        log "Executing command: $*"
         exec "$@"
     fi
 }
 
+# Set up signal handlers for cleanup
+trap 'cleanup_logging "minimal-entrypoint.sh"; exit 1' INT TERM
+
 # Run main function with all arguments
 main "$@"
+
+# Cleanup logging
+cleanup_logging "minimal-entrypoint.sh"

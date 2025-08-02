@@ -1,0 +1,89 @@
+{
+  "securityStandards": {
+    "inputValidation": {
+      "requirements": [
+        "All user inputs must be validated on both client and server side",
+        "Use express-validator for server-side validation",
+        "Sanitize HTML content to prevent XSS attacks",
+        "Implement length limits on all text fields"
+      ],
+      "implementation": {
+        "frontend": "Form validation with React Hook Form",
+        "backend": "express-validator middleware",
+        "database": "Mongoose schema validation"
+      }
+    },
+    "dataProtection": {
+      "encryption": {
+        "inTransit": "HTTPS/TLS 1.3 required for all communications",
+        "atRest": "Database encryption via MongoDB Atlas encryption",
+        "shareTokens": "Cryptographically secure random tokens"
+      },
+      "dataMinimization": {
+        "principle": "Collect only necessary data",
+        "implementation": [
+          "No user authentication/passwords required",
+          "Store only user-provided names (no emails/personal data)",
+          "Task data limited to title and description"
+        ]
+      }
+    },
+    "rateLimiting": {
+      "apiEndpoints": {
+        "general": "100 requests per 15 minutes per IP",
+        "taskCreation": "10 new tasks per minute per IP",
+        "shareGeneration": "5 share links per minute per IP"
+      },
+      "implementation": "express-rate-limit middleware"
+    },
+    "cors": {
+      "configuration": {
+        "origin": ["production domain", "development localhost"],
+        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "allowedHeaders": ["Content-Type", "Authorization"],
+        "credentials": false
+      }
+    },
+    "errorHandling": {
+      "principle": "Never expose internal system details",
+      "implementation": [
+        "Generic error messages for production",
+        "Detailed logging for debugging",
+        "No stack traces in production responses"
+      ]
+    },
+    "securityHeaders": {
+      "required": [
+        "helmet middleware for security headers",
+        "Content-Security-Policy",
+        "X-Content-Type-Options: nosniff",
+        "X-Frame-Options: DENY",
+        "X-XSS-Protection: 1; mode=block"
+      ]
+    }
+  },
+  "complianceStandards": {
+    "dataPrivacy": {
+      "gdprConsiderations": [
+        "Minimal data collection (names only)",
+        "No tracking or analytics by default",
+        "Clear data usage in terms of service"
+      ],
+      "dataRetention": {
+        "userGenerated": "Tasks retained indefinitely until user deletion",
+        "logs": "Application logs retained for 30 days maximum",
+        "analytics": "No personal data analytics collection"
+      }
+    },
+    "accessibilityCompliance": {
+      "standard": "WCAG 2.1 AA compliance",
+      "requirements": [
+        "Semantic HTML markup",
+        "Keyboard navigation support",
+        "Screen reader compatibility",
+        "Sufficient color contrast ratios",
+        "Focus indicators for interactive elements"
+      ]
+    }
+  }
+}
