@@ -77,9 +77,8 @@ RUN npm install -g @modelcontextprotocol/server-sequential-thinking@latest
 # 5. Install ShadCN UI MCP Server
 RUN npm install -g @jpisnice/shadcn-ui-mcp-server@latest
 
-# 6. Install Magic MCP Server (via Smithery CLI)
-# Note: Magic MCP server is run via npx with Smithery CLI, no global installation needed
-# The server will be configured in opencode.json with the appropriate command and args
+# 6. Install Magic MCP Server
+# RUN npx @21st-dev/cli@latest install generic --api-key $TWENTY_FIRST_API_KEY
 
 # Create OpenCode configuration directory and copy files
 RUN mkdir -p $OPENCODE_CONFIG_DIR $OPENCODE_CONFIG_DIR/agent $AI_ASSETS_DIR/prompts

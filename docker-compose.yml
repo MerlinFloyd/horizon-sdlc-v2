@@ -1,5 +1,8 @@
 services:
   opencode:
+    build:
+      context: .
+      dockerfile: docker/opencode/Dockerfile
     image: horizon-sdlc/opencode:latest
     container_name: horizon-opencode
     

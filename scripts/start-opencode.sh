@@ -66,62 +66,68 @@ start_container() {
 
     log_info "startup" "Starting OpenCode service..."
 
-    # Start container with appropriate arguments
-    if [[ ${#container_args[@]} -gt 0 ]]; then
-        # Use docker-compose run for containers that need arguments passed to entrypoint
-        if ! $COMPOSE_CMD run --rm -d --name "horizon-opencode" "$SERVICE_NAME" "${container_args[@]}" >/dev/null 2>&1; then
-            log_error "startup" "Failed to start service with arguments: ${container_args[*]}"
-            cleanup_containers
-            exit 1
+    # For interactive TUI mode, run container directly attached to terminal
+    if [[ "$DEBUG_MODE" != "true" ]]; then
+        log_info "startup" "Starting OpenCode TUI in interactive mode..."
+
+        # Run container interactively with TTY allocation
+        if [[ ${#container_args[@]} -gt 0 ]]; then
+            exec $COMPOSE_CMD run --rm --name "horizon-opencode" "$SERVICE_NAME" "${container_args[@]}"
+        else
+            exec $COMPOSE_CMD run --rm --name "horizon-opencode" "$SERVICE_NAME"
         fi
     else
-        # Use docker-compose up for normal startup
-        if ! $COMPOSE_CMD up -d "$SERVICE_NAME" >/dev/null 2>&1; then
-            log_error "startup" "Failed to start service"
-            cleanup_containers
-            exit 1
+        # For debug mode, start detached and then exec into it
+        if [[ ${#container_args[@]} -gt 0 ]]; then
+            # Use docker-compose run for containers that need arguments passed to entrypoint
+            if ! $COMPOSE_CMD run --rm -d --name "horizon-opencode" "$SERVICE_NAME" "${container_args[@]}" >/dev/null 2>&1; then
+                log_error "startup" "Failed to start service with arguments: ${container_args[*]}"
+                cleanup_containers
+                exit 1
+            fi
+        else
+            # Use docker-compose up for normal startup
+            if ! $COMPOSE_CMD up -d "$SERVICE_NAME" >/dev/null 2>&1; then
+                log_error "startup" "Failed to start service"
+                cleanup_containers
+                exit 1
+            fi
         fi
+
+        # Wait for container readiness with timeout
+        local attempt=1
+        local max_attempts=10
+
+        while [[ $attempt -le $max_attempts ]]; do
+            if docker ps --filter "name=horizon-opencode" --filter "status=running" | grep -q "horizon-opencode"; then
+                log_info "startup" "Container ready"
+                return 0
+            fi
+
+            log_info "startup" "Waiting for container... (attempt $attempt/$max_attempts)"
+            sleep 2 && ((attempt++))
+        done
+
+        log_error "startup" "Container failed to start within expected time"
+        cleanup_containers
+        exit 1
     fi
-
-    # Wait for container readiness with timeout
-    local attempt=1
-    local max_attempts=10
-
-    while [[ $attempt -le $max_attempts ]]; do
-        if docker ps --filter "name=horizon-opencode" --filter "status=running" | grep -q "horizon-opencode"; then
-            log_info "startup" "Container ready"
-            return 0
-        fi
-
-        log_info "startup" "Waiting for container... (attempt $attempt/$max_attempts)"
-        sleep 2 && ((attempt++))
-    done
-
-    log_error "startup" "Container failed to start within expected time"
-    cleanup_containers
-    exit 1
 }
 
 # Execute container session based on mode
 execute_container_session() {
-    local session_description=""
-
-    # Determine session type based on flags
-    if [[ "$DEBUG_MODE" == "true" && "$PRINT_LOGS" == "true" ]]; then
-        session_description="debug mode with console logging"
-    elif [[ "$DEBUG_MODE" == "true" ]]; then
-        session_description="debug shell"
-    elif [[ "$PRINT_LOGS" == "true" ]]; then
-        session_description="console logging mode"
-    else
-        session_description="normal mode"
-    fi
-
-    log_info "session" "Starting $session_description session (Ctrl+C to exit)"
-
-    # Handle different session types
+    # Only needed for debug mode since normal mode runs interactively
     if [[ "$DEBUG_MODE" == "true" ]]; then
-        # For debug mode, attach to the running container with bash
+        local session_description=""
+
+        # Determine session type based on flags
+        if [[ "$PRINT_LOGS" == "true" ]]; then
+            session_description="debug mode with console logging"
+        else
+            session_description="debug shell"
+        fi
+
+        log_info "session" "Starting $session_description session (Ctrl+C to exit)"
         log_info "session" "Container started in debug mode - you now have a bash shell"
 
         if docker exec -it "horizon-opencode" bash; then
@@ -129,16 +135,8 @@ execute_container_session() {
         else
             log_warn "session" "Debug session ended with error"
         fi
-    else
-        # For normal mode, follow the logs
-        log_info "session" "Following OpenCode container logs (Ctrl+C to stop)"
-
-        if docker logs -f "horizon-opencode"; then
-            log_info "session" "Log following ended successfully"
-        else
-            log_warn "session" "Log following ended with error"
-        fi
     fi
+    # For normal mode, the container is already running interactively via exec in start_container()
 }
 
 # Cleanup on exit - use comprehensive cleanup
@@ -196,7 +194,7 @@ main() {
     elif [[ "$PRINT_LOGS" == "true" ]]; then
         mode_description="CONSOLE LOGGING"
     else
-        mode_description="NORMAL"
+        mode_description="INTERACTIVE TUI"
     fi
 
     log_info "main" "Starting OpenCode Development Environment ($mode_description mode)"
@@ -204,9 +202,11 @@ main() {
     # Setup and checks
     trap cleanup SIGINT SIGTERM
     check_prerequisites
+
+    # Start container - for normal mode this will exec and not return
     start_container
 
-    # Execute container session
+    # Execute container session (only reached in debug mode)
     execute_container_session
 
     log_info "main" "Session complete. Use '$COMPOSE_CMD down' to cleanup."

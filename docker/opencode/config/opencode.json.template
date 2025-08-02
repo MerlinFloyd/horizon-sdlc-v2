@@ -46,7 +46,7 @@
     },
     "magic": {
       "type": "local",
-      "command": ["npx", "-y", "@smithery/cli@latest", "run", "@21st-dev/magic-mcp"],
+      "command": ["npx", "@21st-dev/magic", "API_KEY={env:TWENTY_FIRST_API_KEY}" ],
       "enabled": true
     }
   },
