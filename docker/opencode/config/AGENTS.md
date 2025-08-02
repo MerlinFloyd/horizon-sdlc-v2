@@ -15,10 +15,10 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 | Pattern | Complexity | Domain | Auto-Activates | Validation Requirements | Confidence |
 |---------|------------|---------|----------------|------------------------|------------|
 | "analyze architecture" | complex | infrastructure | architect agent, Sequential-Thinking | systematic change mgmt, quality gates | 95% |
-| "create component" | simple | frontend | frontend agent, ShadCN-ui MCP | lint/typecheck, Context7 validation | 90% |
+| "create component" | simple | frontend | frontend agent, Magic MCP | lint/typecheck, Context7 validation | 90% |
 | "implement feature" | moderate | any | domain-specific agent, Context7, Sequential-Thinking | full quality gates, context retention | 88% |
 | "implement API" | moderate | backend | backend agent, Sequential-Thinking, Context7 | security gates, integration testing | 92% |
-| "implement UI component" | simple | frontend | frontend agent, ShadCN-ui MCP, Context7 | accessibility, responsive validation | 94% |
+| "implement UI component" | simple | frontend | frontend agent, Magic MCP, Context7 | accessibility, responsive validation | 94% |
 | "fix bug" | moderate | any | analyzer agent, Sequential-Thinking | regression testing, impact assessment | 85% |
 | "optimize performance" | complex | backend | performance agent, Playwright | performance gates, benchmarking | 90% |
 | "security audit" | complex | security | security agent, Sequential-Thinking | security gates, compliance validation | 95% |
@@ -57,14 +57,14 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 | prd-generation | 0.6 | true | product-owner, architect, scribe | context7, sequential-thinking |
 | trd-creation | 0.7 | true | architect, security | sequential-thinking, context7 |
 | feature-breakdown | 0.6 | true | product-owner, architect, analyzer | sequential-thinking, context7 |
-| user-stories | 0.8 | true | product-owner, context-based spawning | sequential-thinking, context7, shadcn-ui mcp, playwright |
+| user-stories | 0.8 | true | product-owner, context-based spawning | sequential-thinking, context7, magic mcp, playwright |
 
 ### Agent MCP Server Preferences
 
 | Agent | Primary MCP | Secondary MCP | Specialization |
 |-------|-------------|---------------|----------------|
 | architect | Sequential-Thinking | Context7 | System design, complex analysis |
-| frontend | ShadCN-ui MCP | Playwright | UI components, user testing |
+| frontend | Magic MCP | Playwright | UI components, user testing |
 | backend | Context7 | Sequential-Thinking | API implementation, frameworks |
 | security | Sequential-Thinking | Context7 | Security analysis, compliance |
 | performance | Playwright | Sequential-Thinking | Performance testing, optimization |
@@ -383,7 +383,7 @@ trigger_conditions:
 
 **Workflow Process**:
 1. Problem Decomposition: Break complex problems into analyzable components
-2. Server Coordination: Coordinate with Context7 for documentation, ShadCN-ui MCP for UI insights, Playwright for testing
+2. Server Coordination: Coordinate with Context7 for documentation, Magic MCP for UI insights, Playwright for testing
 3. Systematic Analysis: Apply structured thinking to each component
 4. Relationship Mapping: Identify dependencies, interactions, and feedback loops
 5. Hypothesis Generation: Create testable hypotheses for each component
@@ -392,7 +392,7 @@ trigger_conditions:
 8. Recommendation Generation: Provide actionable next steps with priority ordering
 9. Validation: Check reasoning for logical consistency
 
-### ShadCN-ui MCP (UI Components & Design)
+### Magic MCP (UI Components & Design)
 **Purpose**: Modern UI component generation, design system integration, responsive design
 
 **Activation Patterns**:
@@ -422,7 +422,7 @@ trigger_conditions:
 1. Browser Connection: Connect to Chrome, Firefox, Safari, or Edge instances
 2. Environment Setup: Configure viewport, user agent, network conditions, device emulation
 3. Navigation: Navigate to target URLs with proper waiting and error handling
-4. Server Coordination: Sync with Sequential-Thinking for test planning, ShadCN-ui MCP for UI validation
+4. Server Coordination: Sync with Sequential-Thinking for test planning, Magic MCP for UI validation
 5. Interaction: Perform user actions (clicks, form fills, navigation) across browsers
 6. Data Collection: Capture screenshots, videos, performance metrics, console logs
 7. Validation: Verify expected behaviors, visual states, and performance thresholds
@@ -456,7 +456,7 @@ trigger_conditions:
 ### Error Recovery Strategies
 - **Context7 unavailable** → WebSearch for documentation → Manual implementation
 - **Sequential-Thinking timeout** → Use native analysis → Note limitations
-- **ShadCN-ui MCP failure** → Generate basic component → Suggest manual enhancement
+- **Magic MCP failure** → Generate basic component → Suggest manual enhancement
 - **Playwright connection lost** → Suggest manual testing → Provide test cases
 - **Exponential Backoff**: Automatic retry with exponential backoff and jitter
 - **Circuit Breaker**: Prevent cascading failures with circuit breaker pattern

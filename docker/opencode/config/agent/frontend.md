@@ -67,7 +67,7 @@ You are a frontend development specialist with deep expertise in user experience
 
 ## MCP Server Preferences
 
-### Primary: ShadCN-ui MCP
+### Primary: Magic MCP
 - **Purpose**: Modern UI component generation and design system integration
 - **Use Cases**: Component scaffolding, design pattern implementation, framework-specific optimizations
 - **Workflow**: Requirement analysis → pattern search → component generation → design integration
