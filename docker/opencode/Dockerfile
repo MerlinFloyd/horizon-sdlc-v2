@@ -11,6 +11,12 @@ ENV WORKSPACE_DIR=/workspace
 ENV OPENCODE_CONFIG_DIR=/root/.config/opencode
 ENV AI_ASSETS_DIR=/.ai
 
+# Headless clipboard environment variables
+ENV DISPLAY=:99
+ENV XVFB_DISPLAY=:99
+ENV XVFB_SCREEN=0
+ENV XVFB_RESOLUTION=1024x768x24
+
 # MCP Server Environment Variables (to be set at runtime)
 # GitHub MCP Server
 ENV GITHUB_TOKEN=""
@@ -18,7 +24,7 @@ ENV GITHUB_TOKEN=""
 # Magic MCP Server (21st.dev)
 ENV TWENTY_FIRST_API_KEY=""
 
-# Install system dependencies
+# Install system dependencies including clipboard utilities
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
@@ -31,6 +37,10 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     lsb-release \
     software-properties-common \
+    xclip \
+    xsel \
+    wl-clipboard \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 20
