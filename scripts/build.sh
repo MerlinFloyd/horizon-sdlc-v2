@@ -1,425 +1,206 @@
 #!/bin/bash
-
-# Horizon SDLC OpenCode Container Build Script
-# Builds and deploys the OpenCode container with MCP servers
+# OpenCode Container Build Script - Streamlined for local development
 
 set -e
 
-# Script configuration
+# === CONFIGURATION ===
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DOCKER_CONTEXT="$PROJECT_ROOT/docker/opencode"
 
-# Load centralized logging module
-source "$SCRIPT_DIR/lib/logging.sh"
+# Load logging module
+source "$SCRIPT_DIR/lib/logging.sh" && setup_logging "build.sh"
 
-# Initialize logging
-setup_logging "build.sh"
+# === FUNCTIONS ===
 
-# Set GitHub Container Registry as default
-DOCKER_REGISTRY="${DOCKER_REGISTRY:-ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')}"
-
-# Function to display usage information
+# Display usage information
 usage() {
-    log_info "help_display" "Displaying usage information"
     cat << EOF
 Usage: $0 [OPTIONS]
 
-Build and prepare the OpenCode container with MCP servers for interactive use.
+Build OpenCode container for local development.
 
 OPTIONS:
-    -o, --openrouter-api-key KEY Set OPENROUTER_API_KEY (required)
-    -g, --github-token TOKEN Set GITHUB_TOKEN (optional)
-    -m, --magic-key KEY     Set TWENTY_FIRST_API_KEY (optional)
-    -t, --tag TAG           Docker image tag (default: latest)
-    -n, --no-cache          Build without Docker cache
-    -p, --push              Push image to registry after build
-    -r, --registry URL      Docker registry URL for push
-    -h, --help              Show this help message
+    -o, --openrouter-api-key KEY  Set OPENROUTER_API_KEY (required)
+    -g, --github-token TOKEN      Set GITHUB_TOKEN (optional)
+    -m, --magic-key KEY          Set TWENTY_FIRST_API_KEY (optional)
+    -t, --tag TAG                Docker image tag (default: latest)
+    -n, --no-cache               Build without Docker cache
+    -h, --help                   Show this help message
 
 EXAMPLES:
-    # Basic build with OpenRouter API key
-    $0 --openrouter-api-key "your-openrouter-api-key"
+    $0 --openrouter-api-key "your-api-key"
+    $0 -o "your-api-key" -g "your-github-token" --no-cache
 
-    # Build with GitHub integration
-    $0 --openrouter-api-key "your-openrouter-api-key" --github-token "your-github-token"
-
-    # Build and push to registry
-    $0 --openrouter-api-key "your-openrouter-api-key" --push --registry "your-registry.com"
-
-    # After building, start OpenCode interactively:
-    ./scripts/start-opencode.sh
-
-ENVIRONMENT VARIABLES:
-    OPENROUTER_API_KEY      AI provider API key (can be set instead of --openrouter-api-key)
-    GITHUB_TOKEN           GitHub token for MCP integration (can be set instead of --github-token)
-    TWENTY_FIRST_API_KEY   Magic MCP server API key (can be set instead of --magic-key)
-    DOCKER_REGISTRY        Default registry for push operations
-
+After building, start OpenCode: ./scripts/start-opencode.sh
 EOF
 }
 
-# Function to validate prerequisites
-validate_prerequisites() {
-    log_info "prerequisite_check" "Validating prerequisites..."
+# Check prerequisites and validate inputs
+check_prerequisites() {
+    # Check Docker and Docker Compose
+    command -v docker >/dev/null || { log_error "prerequisites" "Docker not found"; exit 1; }
+    docker info >/dev/null 2>&1 || { log_error "prerequisites" "Docker daemon not running"; exit 1; }
 
-    # Check Docker
-    if ! command -v docker >/dev/null 2>&1; then
-        log_error "prerequisite_check" "Docker is not installed or not in PATH"
-        return 1
-    fi
-    log_debug "prerequisite_check" "Docker command found"
-
-    # Check Docker Compose
     if ! command -v docker-compose >/dev/null 2>&1 && ! docker compose version >/dev/null 2>&1; then
-        log_error "prerequisite_check" "Docker Compose is not installed or not in PATH"
-        return 1
+        log_error "prerequisites" "Docker Compose not found"
+        exit 1
     fi
-    log_debug "prerequisite_check" "Docker Compose found"
 
-    # Check if Docker daemon is running
-    if ! docker info >/dev/null 2>&1; then
-        log_error "prerequisite_check" "Docker daemon is not running"
-        return 1
-    fi
-    log_debug "prerequisite_check" "Docker daemon is running"
+    # Check project structure
+    [[ -f "$PROJECT_ROOT/docker-compose.yml" ]] || {
+        log_error "prerequisites" "Run script from project root (docker-compose.yml not found)"
+        exit 1
+    }
 
-    # Check if we're in the correct directory
-    if [[ ! -f "$PROJECT_ROOT/docker-compose.yml" ]]; then
-        log_error "prerequisite_check" "docker-compose.yml not found. Please run this script from the project root."
-        return 1
-    fi
-    log_debug "prerequisite_check" "docker-compose.yml found"
-
-    log_info "prerequisite_check" "Prerequisites validation passed"
-    return 0
+    log_info "prerequisites" "Prerequisites validated"
 }
 
-# Function to validate API key
-validate_api_key() {
+# Validate API key and setup directories
+validate_and_setup() {
     local api_key="$1"
 
-    log_info "api_validation" "Validating OpenRouter API key..."
+    [[ -n "$api_key" ]] || {
+        log_error "validation" "OpenRouter API key required (use -o or set OPENROUTER_API_KEY)"
+        exit 1
+    }
 
-    if [[ -z "$api_key" ]]; then
-        log_error "api_validation" "OpenRouter API key is required. Use --openrouter-api-key or set OPENROUTER_API_KEY environment variable."
-        return 1
-    fi
+    [[ ${#api_key} -ge 20 ]] || log_warn "validation" "API key seems short, please verify"
 
-    # Basic validation - check if it looks like an API key
-    if [[ ${#api_key} -lt 20 ]]; then
-        log_warn "api_validation" "API key seems too short. Please verify it's correct."
-    fi
+    # Create required directories
+    mkdir -p "$PROJECT_ROOT/.opencode/agent" "$PROJECT_ROOT/.ai/templates" "$PROJECT_ROOT/.ai/standards" || {
+        log_error "setup" "Failed to create directories"
+        exit 1
+    }
 
-    log_info "api_validation" "API key validation passed"
-    return 0
+    log_info "validation" "API key validated and directories created"
 }
 
-# Function to create necessary directories
-setup_directories() {
-    log_info "directory_setup" "Setting up directories..."
-
-    # Create .opencode directory if it doesn't exist
-    if mkdir -p "$PROJECT_ROOT/.opencode/agent"; then
-        log_debug "directory_setup" "Created .opencode/agent directory"
-    else
-        log_error "directory_setup" "Failed to create .opencode/agent directory"
-        return 1
-    fi
-
-    # Create .ai directory structure if it doesn't exist
-    if mkdir -p "$PROJECT_ROOT/.ai/templates" && mkdir -p "$PROJECT_ROOT/.ai/standards"; then
-        log_debug "directory_setup" "Created .ai directory structure"
-    else
-        log_error "directory_setup" "Failed to create .ai directory structure"
-        return 1
-    fi
-
-    log_info "directory_setup" "Directory setup completed"
-}
-
-# Function to build Docker image
+# Build Docker image
 build_image() {
     local tag="$1"
     local no_cache="$2"
 
-    log_info "docker_build" "Building OpenCode Docker image with tag: $tag"
-
     local build_args=""
-    if [[ "$no_cache" == "true" ]]; then
-        build_args="--no-cache"
-        log_debug "docker_build" "Using --no-cache flag"
-    fi
+    [[ "$no_cache" == "true" ]] && build_args="--no-cache"
 
-    # Build the image
-    log_debug "docker_build" "Running docker build command in context: $DOCKER_CONTEXT"
+    log_info "docker_build" "Building OpenCode image: horizon-sdlc/opencode:$tag"
+
     if docker build $build_args -t "horizon-sdlc/opencode:$tag" "$DOCKER_CONTEXT"; then
-        log_info "docker_build" "Docker image built successfully: horizon-sdlc/opencode:$tag"
-        return 0
+        log_info "docker_build" "Image built successfully"
     else
-        log_error "docker_build" "Docker image build failed"
-        return 1
+        log_error "docker_build" "Build failed"
+        exit 1
     fi
 }
 
-# Function to push image to registry
-push_image() {
-    local tag="$1"
-    local registry="$2"
-
-    if [[ -n "$registry" ]]; then
-        local full_tag="$registry/horizon-sdlc/opencode:$tag"
-
-        log_info "docker_push" "Tagging image for registry: $full_tag"
-        if docker tag "horizon-sdlc/opencode:$tag" "$full_tag"; then
-            log_debug "docker_push" "Image tagged successfully"
-        else
-            log_error "docker_push" "Failed to tag image"
-            return 1
-        fi
-
-        log_info "docker_push" "Pushing image to registry..."
-        if docker push "$full_tag"; then
-            log_info "docker_push" "Image pushed successfully: $full_tag"
-            return 0
-        else
-            log_error "docker_push" "Failed to push image to registry"
-            return 1
-        fi
-    else
-        log_warn "docker_push" "No registry specified, skipping push"
-        return 0
-    fi
-}
-
-# Function to create environment file
+# Create environment file
 create_env_file() {
-    local api_key="$1"
-    local github_token="$2"
-    local magic_key="$3"
-
-    log_info "env_setup" "Creating environment configuration..."
-
+    local api_key="$1" github_token="$2" magic_key="$3"
     local env_file="$PROJECT_ROOT/.env"
 
-    if cat > "$env_file" << EOF
-# OpenCode Container Environment Configuration
-# Generated by build.sh on $(date)
-
-# Required: AI Provider API Key
+    cat > "$env_file" << EOF
+# OpenCode Environment Configuration - Generated $(date +%Y-%m-%d)
 OPENROUTER_API_KEY=$api_key
-
-# Optional: GitHub Integration
 GITHUB_TOKEN=${github_token:-}
-
-# Optional: Magic MCP Server (21st.dev)
 TWENTY_FIRST_API_KEY=${magic_key:-}
-
-# Container Configuration
 NODE_ENV=production
 LOG_LEVEL=info
-SECURE_MODE=true
-
-# MCP Server Configuration
 MCP_SERVER_TIMEOUT=30000
 MCP_SERVER_RETRIES=3
 EOF
-    then
-        log_debug "env_setup" "Environment file content written successfully"
-    else
-        log_error "env_setup" "Failed to write environment file"
-        return 1
-    fi
 
-    # Secure the environment file
-    if chmod 600 "$env_file"; then
-        log_debug "env_setup" "Environment file permissions set to 600"
-    else
-        log_warn "env_setup" "Failed to set secure permissions on environment file"
-    fi
-
+    chmod 600 "$env_file" 2>/dev/null || log_warn "env_setup" "Could not secure .env file permissions"
     log_info "env_setup" "Environment file created: $env_file"
 }
 
-# Function to prepare container (build-only mode)
-prepare_container() {
-    local api_key="$1"
-    local github_token="$2"
-    local magic_key="$3"
+# Comprehensive container cleanup function
+cleanup_test_containers() {
+    local compose_cmd="$1"
+    log_info "cleanup" "Cleaning up test containers..."
 
-    log "Preparing OpenCode container environment..."
+    # Stop and remove containers
+    $compose_cmd down --timeout 10 >/dev/null 2>&1 || true
+    docker rm -f horizon-opencode >/dev/null 2>&1 || true
 
-    # Export environment variables for docker-compose
-    export OPENROUTER_API_KEY="$api_key"
-    export GITHUB_TOKEN="$github_token"
-    export TWENTY_FIRST_API_KEY="$magic_key"
-
-    # Stop existing container if running
-    if docker-compose ps | grep -q "horizon-opencode"; then
-        log "Stopping existing container..."
-        docker-compose down
-    fi
-
-    # Create the container without starting it (for networking setup)
-    if docker-compose up --no-start; then
-        success "OpenCode container prepared successfully"
-        log "Container is ready for interactive startup"
-        return 0
-    else
-        error "Failed to prepare OpenCode container"
-        return 1
-    fi
+    # Remove any orphaned containers with the same image
+    docker ps -a --filter "ancestor=horizon-sdlc/opencode:latest" --format "{{.ID}}" | xargs -r docker rm -f >/dev/null 2>&1 || true
 }
 
-# Function to test container functionality
+# Test container functionality with robust cleanup
 test_container() {
-    log "Testing OpenCode container functionality..."
+    log_info "container_test" "Testing container functionality..."
 
-    # Start the service temporarily for testing
+    # Detect compose command
     local compose_cmd="docker-compose"
-    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
-        compose_cmd="docker compose"
+    command -v docker >/dev/null && docker compose version >/dev/null 2>&1 && compose_cmd="docker compose"
+
+    # Setup cleanup trap for this function
+    trap "cleanup_test_containers '$compose_cmd'" EXIT ERR
+
+    # Initial cleanup
+    cleanup_test_containers "$compose_cmd"
+
+    # Test container startup
+    if ! $compose_cmd up -d opencode >/dev/null 2>&1; then
+        log_error "container_test" "Failed to start container for testing"
+        cleanup_test_containers "$compose_cmd"
+        exit 1
     fi
 
-    # Test the container using Docker Compose
-    local test_output
-    if $compose_cmd up -d opencode >/dev/null 2>&1; then
-        # Wait a moment for container to start
-        sleep 3
-        if test_output=$($compose_cmd exec -T opencode opencode --version 2>&1); then
-            success "Container test passed"
-            log "OpenCode version: $test_output"
-            # Clean up test container
-            $compose_cmd down >/dev/null 2>&1
-            return 0
-        else
-            error "Container test failed"
-            error "Test output: $test_output"
-            # Clean up test container
-            $compose_cmd down >/dev/null 2>&1
-            return 1
-        fi
+    # Wait for container to be ready
+    sleep 3
+
+    # Test OpenCode functionality
+    if test_output=$($compose_cmd exec -T opencode opencode --print-logs --version 2>&1); then
+        log_info "container_test" "Test passed - OpenCode version: $test_output"
+        cleanup_test_containers "$compose_cmd"
+        trap - EXIT ERR  # Remove trap on success
     else
-        error "Failed to start container for testing"
-        return 1
+        log_error "container_test" "Test failed: $test_output"
+        cleanup_test_containers "$compose_cmd"
+        exit 1
     fi
 }
 
-# Main function
+# === MAIN EXECUTION ===
 main() {
-    local api_key=""
-    local github_token=""
-    local magic_key=""
-    local tag="latest"
-    local no_cache="false"
-    local push="false"
-    local registry="${DOCKER_REGISTRY:-}"
-    
-    # Parse command line arguments
+    local api_key="" github_token="" magic_key="" tag="latest" no_cache="false"
+
+    # Parse arguments
     while [[ $# -gt 0 ]]; do
-        case $1 in
-            -o|--openrouter-api-key)
-                api_key="$2"
-                shift 2
-                ;;
-            -g|--github-token)
-                github_token="$2"
-                shift 2
-                ;;
-            -m|--magic-key)
-                magic_key="$2"
-                shift 2
-                ;;
-            -t|--tag)
-                tag="$2"
-                shift 2
-                ;;
-            -n|--no-cache)
-                no_cache="true"
-                shift
-                ;;
-            -p|--push)
-                push="true"
-                shift
-                ;;
-            -r|--registry)
-                registry="$2"
-                shift 2
-                ;;
-            -h|--help)
-                usage
-                exit 0
-                ;;
-            *)
-                error "Unknown option: $1"
-                usage
-                exit 1
-                ;;
+        case "$1" in
+            -o|--openrouter-api-key) api_key="$2"; shift 2 ;;
+            -g|--github-token) github_token="$2"; shift 2 ;;
+            -m|--magic-key) magic_key="$2"; shift 2 ;;
+            -t|--tag) tag="$2"; shift 2 ;;
+            -n|--no-cache) no_cache="true"; shift ;;
+            -h|--help) usage; exit 0 ;;
+            *) log_error "args" "Unknown option: $1. Use --help for usage."; exit 1 ;;
         esac
     done
-    
-    # Use environment variables if not provided via command line
+
+    # Use environment variables as fallback
     api_key="${api_key:-$OPENROUTER_API_KEY}"
     github_token="${github_token:-$GITHUB_TOKEN}"
     magic_key="${magic_key:-$TWENTY_FIRST_API_KEY}"
-    
-    log "Starting OpenCode container build and deployment..."
-    
-    # Validate prerequisites
-    if ! validate_prerequisites; then
-        exit 1
-    fi
-    
-    # Validate API key
-    if ! validate_api_key "$api_key"; then
-        exit 1
-    fi
-    
-    # Setup directories
-    setup_directories
-    
-    # Build Docker image
-    if ! build_image "$tag" "$no_cache"; then
-        exit 1
-    fi
-    
-    # Push image if requested
-    if [[ "$push" == "true" ]]; then
-        if ! push_image "$tag" "$registry"; then
-            exit 1
-        fi
-    fi
-    
-    # Create environment file
+
+    log_info "build_start" "Starting OpenCode container build..."
+
+    # Execute build process
+    check_prerequisites
+    validate_and_setup "$api_key"
+    build_image "$tag" "$no_cache"
     create_env_file "$api_key" "$github_token" "$magic_key"
+    test_container
 
-    # Test container functionality
-    if ! test_container; then
-        exit 1
-    fi
+    log_info "build_complete" "Build completed successfully!"
+    log_info "next_steps" "Start OpenCode: ./scripts/start-opencode.sh"
 
-    # Prepare container environment
-    if ! prepare_container "$api_key" "$github_token" "$magic_key"; then
-        exit 1
-    fi
-
-    log_info "build_complete" "OpenCode container build and preparation completed successfully!"
-
-    # Display next steps
-    log_info "next_steps" "Next steps:"
-    log_info "next_steps" "  1. Start OpenCode interactively: ./scripts/start-opencode.sh"
-    log_info "next_steps" "  2. Or start services manually: docker-compose up -d"
-    log_info "next_steps" "  3. Check container status: docker-compose ps"
-    log_info "next_steps" "  4. View logs: docker-compose logs opencode"
-    log_info "next_steps" "  5. Access OpenCode directly: docker-compose exec opencode opencode"
-
-    # Cleanup logging
     cleanup_logging "build.sh"
 }
 
-# Set up signal handlers for cleanup
+# === EXECUTION ===
 trap 'cleanup_logging "build.sh"; exit 1' INT TERM
-
-# Run main function with all arguments
 main "$@"
 

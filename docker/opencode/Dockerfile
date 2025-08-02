@@ -44,8 +44,8 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /
     && apt-get install -y docker-ce-cli \
     && rm -rf /var/lib/apt/lists/*
 
-# Create workspace and OpenCode directories
-RUN mkdir -p $WORKSPACE_DIR
+# Create workspace, OpenCode, and logging directories
+RUN mkdir -p $WORKSPACE_DIR /var/log/opencode
 
 # Install OpenCode
 RUN npm install -g opencode-ai@latest
@@ -82,13 +82,14 @@ COPY config/agent/ $OPENCODE_CONFIG_DIR/agent/
 # Copy prompt files to AI assets directory
 COPY config/prompts/ $AI_ASSETS_DIR/prompts/
 
-# Set proper permissions for OpenCode to read configuration files
+# Set proper permissions for OpenCode to read configuration files and write logs
 RUN chmod -R 644 $OPENCODE_CONFIG_DIR/ && \
     chmod -R 644 $AI_ASSETS_DIR/ && \
     chmod 755 $OPENCODE_CONFIG_DIR && \
     chmod 755 $OPENCODE_CONFIG_DIR/agent && \
     chmod 755 $AI_ASSETS_DIR && \
-    chmod 755 $AI_ASSETS_DIR/prompts
+    chmod 755 $AI_ASSETS_DIR/prompts && \
+    chmod 755 /var/log/opencode
 
 # Copy scripts and logging module
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh

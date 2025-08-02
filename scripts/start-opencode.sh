@@ -1,278 +1,218 @@
 #!/bin/bash
-
-# start-opencode.sh
-# Script to start OpenCode container services and attach to interactive terminal
-# Usage: ./start-opencode.sh [--debug|bash]
-#   --debug or bash: Start container in debug mode with interactive bash shell
+# OpenCode Container Startup Script - Streamlined for Docker Compose management
+# Usage: ./start-opencode.sh [--debug|bash] [--print-logs]
 
 set -euo pipefail
 
-# Script configuration
+# === CONFIGURATION ===
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Load centralized logging module
-source "$SCRIPT_DIR/lib/logging.sh"
-
-# Initialize logging
-setup_logging "start-opencode.sh"
-
-# Configuration
 COMPOSE_FILE="docker-compose.yml"
 SERVICE_NAME="opencode"
 DEBUG_MODE=false
+PRINT_LOGS=false
 
-# Function to print colored output (backward compatibility)
-print_status() {
-    log_info "general" "$1"
-}
+# Load logging module
+source "$SCRIPT_DIR/lib/logging.sh" && setup_logging "start-opencode.sh"
 
-print_success() {
-    log_info "general" "$1"
-}
+# === CORE FUNCTIONS ===
 
-print_warning() {
-    log_warn "general" "$1"
-}
-
-print_error() {
-    log_error "general" "$1"
-}
-
-# Function to check if docker-compose is available
-check_docker_compose() {
-    if command -v docker-compose &> /dev/null; then
+# Check prerequisites (Docker Compose, files, environment)
+check_prerequisites() {
+    # Detect Docker Compose command
+    if command -v docker-compose &>/dev/null; then
         COMPOSE_CMD="docker-compose"
-    elif command -v docker &> /dev/null && docker compose version &> /dev/null; then
+    elif command -v docker &>/dev/null && docker compose version &>/dev/null; then
         COMPOSE_CMD="docker compose"
     else
-        print_error "Neither 'docker-compose' nor 'docker compose' is available"
-        print_error "Please install Docker Compose to continue"
+        log_error "prerequisites" "Docker Compose not found. Please install Docker Compose."
         exit 1
     fi
-    print_status "Using: $COMPOSE_CMD"
+
+    # Check required files
+    [[ -f "$COMPOSE_FILE" ]] || { log_error "prerequisites" "Docker Compose file not found: $COMPOSE_FILE"; exit 1; }
+    [[ -f ".env" ]] || {
+        log_error "prerequisites" ".env file required with OPENROUTER_API_KEY and optional GITHUB_TOKEN"
+        exit 1
+    }
+
+    log_info "prerequisites" "Using $COMPOSE_CMD with $COMPOSE_FILE"
 }
 
-# Function to check if compose file exists
-check_compose_file() {
-    if [[ ! -f "$COMPOSE_FILE" ]]; then
-        print_error "Docker Compose file not found: $COMPOSE_FILE"
-        print_error "Please ensure you're running this script from the project root directory"
-        exit 1
+# Comprehensive container cleanup function
+cleanup_containers() {
+    log_info "cleanup" "Cleaning up containers..."
+
+    # Stop and remove containers with timeout
+    $COMPOSE_CMD down --timeout 10 >/dev/null 2>&1 || true
+    docker rm -f horizon-opencode >/dev/null 2>&1 || true
+
+    # Remove any orphaned containers with the same image
+    docker ps -a --filter "ancestor=horizon-sdlc/opencode:latest" --format "{{.ID}}" | xargs -r docker rm -f >/dev/null 2>&1 || true
+}
+
+# Start container service with robust error handling
+start_container() {
+    local container_args=()
+
+    # Determine container startup arguments based on mode
+    if [[ "$DEBUG_MODE" == "true" ]]; then
+        container_args=("--debug")
+    elif [[ "$PRINT_LOGS" == "true" ]]; then
+        container_args=("--print-logs")
     fi
-    print_status "Found Docker Compose file: $COMPOSE_FILE"
-}
 
-# Function to check for required .env file
-check_environment() {
-    local env_file=".env"
+    # Initial cleanup to prevent conflicts
+    cleanup_containers
 
-    if [[ ! -f "$env_file" ]]; then
-        print_error ".env file not found in current directory"
-        print_error "The .env file is required for the OpenCode container to function properly"
-        print_error "Please create a .env file with the necessary environment variables:"
-        print_error "  OPENROUTER_API_KEY=your_api_key_here"
-        print_error "  GITHUB_TOKEN=your_github_token_here (optional)"
-        print_error ""
-        print_error "Example .env file content:"
-        print_error "  OPENROUTER_API_KEY=sk-or-v1-..."
-        print_error "  GITHUB_TOKEN=ghp_..."
-        exit 1
+    log_info "startup" "Starting OpenCode service..."
+
+    # Start container with appropriate arguments
+    if [[ ${#container_args[@]} -gt 0 ]]; then
+        # Use docker-compose run for containers that need arguments passed to entrypoint
+        if ! $COMPOSE_CMD run --rm -d --name "horizon-opencode" "$SERVICE_NAME" "${container_args[@]}" >/dev/null 2>&1; then
+            log_error "startup" "Failed to start service with arguments: ${container_args[*]}"
+            cleanup_containers
+            exit 1
+        fi
     else
-        print_success "Found .env file: $env_file"
-        print_status "Environment variables will be loaded by Docker Compose"
+        # Use docker-compose up for normal startup
+        if ! $COMPOSE_CMD up -d "$SERVICE_NAME" >/dev/null 2>&1; then
+            log_error "startup" "Failed to start service"
+            cleanup_containers
+            exit 1
+        fi
     fi
-}
 
-# Function to cleanup on exit
-cleanup() {
-    local exit_code=$?
-    echo
-    print_status "Received interrupt signal, cleaning up..."
-    
-    # Stop the containers gracefully
-    print_status "Stopping OpenCode containers..."
-    cd "$(dirname "$COMPOSE_FILE")"
-    $COMPOSE_CMD -f "$(basename "$COMPOSE_FILE")" down --timeout 10
-    
-    print_success "Cleanup completed"
-    exit $exit_code
-}
-
-# Function to wait for container to be ready
-wait_for_container() {
-    local max_attempts=15
+    # Wait for container readiness with timeout
     local attempt=1
-
-    print_status "Waiting for container to be ready..."
+    local max_attempts=10
 
     while [[ $attempt -le $max_attempts ]]; do
-        # Check if service is running using Docker Compose
-        if $COMPOSE_CMD ps --services --filter "status=running" | grep -q "$SERVICE_NAME"; then
-            # Check if OpenCode has started by looking for its process
-            if $COMPOSE_CMD exec -T "$SERVICE_NAME" pgrep -f "opencode" >/dev/null 2>&1; then
-                print_success "Container is ready!"
-                return 0
-            fi
+        if docker ps --filter "name=horizon-opencode" --filter "status=running" | grep -q "horizon-opencode"; then
+            log_info "startup" "Container ready"
+            return 0
         fi
 
-        printf "\r${BLUE}[INFO]${NC} Waiting for container... (%d/%d)" $attempt $max_attempts
-        sleep 3
-        ((attempt++))
+        log_info "startup" "Waiting for container... (attempt $attempt/$max_attempts)"
+        sleep 2 && ((attempt++))
     done
 
-    echo
-    print_error "Container failed to become ready within expected time"
-    return 1
+    log_error "startup" "Container failed to start within expected time"
+    cleanup_containers
+    exit 1
 }
 
-# Function to start services
-start_services() {
-    print_status "Starting OpenCode services..."
+# Execute container session based on mode
+execute_container_session() {
+    local session_description=""
 
-    # Check if service is already running
-    if $COMPOSE_CMD ps --services --filter "status=running" | grep -q "$SERVICE_NAME"; then
-        print_warning "Service is already running"
-        return 0
-    fi
-
-    # Start services in detached mode
-    if $COMPOSE_CMD up -d "$SERVICE_NAME"; then
-        print_success "Services started successfully"
-        return 0
+    # Determine session type based on flags
+    if [[ "$DEBUG_MODE" == "true" && "$PRINT_LOGS" == "true" ]]; then
+        session_description="debug mode with console logging"
+    elif [[ "$DEBUG_MODE" == "true" ]]; then
+        session_description="debug shell"
+    elif [[ "$PRINT_LOGS" == "true" ]]; then
+        session_description="console logging mode"
     else
-        print_error "Failed to start services"
-        return 1
+        session_description="normal mode"
     fi
-}
 
-# Function to run container interactively
-run_container_interactive() {
+    log_info "session" "Starting $session_description session (Ctrl+C to exit)"
+
+    # Handle different session types
     if [[ "$DEBUG_MODE" == "true" ]]; then
-        print_status "Starting OpenCode container in DEBUG mode..."
-        print_status "This will give you direct access to a bash shell inside the container"
-        print_status "Environment variables and workspace are configured and ready"
-        print_status "Use 'opencode' command to start OpenCode manually"
-        print_status "Use 'exit' to leave the container"
-        echo
+        # For debug mode, attach to the running container with bash
+        log_info "session" "Container started in debug mode - you now have a bash shell"
 
-        # Use Docker Compose exec for debug session with bash
-        if $COMPOSE_CMD exec "$SERVICE_NAME" --debug; then
-            print_success "Debug session ended"
+        if docker exec -it "horizon-opencode" bash; then
+            log_info "session" "Debug session ended successfully"
         else
-            print_warning "Debug session exited with error"
-            print_status "Check the output above for error details"
+            log_warn "session" "Debug session ended with error"
         fi
     else
-        print_status "Starting OpenCode container interactively..."
-        print_status "This will give you direct access to the OpenCode terminal"
-        print_status "Use Ctrl+C to stop OpenCode and exit"
-        echo
+        # For normal mode, follow the logs
+        log_info "session" "Following OpenCode container logs (Ctrl+C to stop)"
 
-        # Use Docker Compose exec for interactive session
-        # This leverages the proper volume mounts and environment from docker-compose.yml
-        if $COMPOSE_CMD exec "$SERVICE_NAME" opencode; then
-            print_success "OpenCode session ended"
+        if docker logs -f "horizon-opencode"; then
+            log_info "session" "Log following ended successfully"
         else
-            print_warning "OpenCode container exited with error"
-            print_status "Check the output above for error details"
-            print_status "You can check logs with: $COMPOSE_CMD logs $SERVICE_NAME"
+            log_warn "session" "Log following ended with error"
         fi
     fi
 }
 
-# Function to parse command line arguments
-parse_arguments() {
+# Cleanup on exit - use comprehensive cleanup
+cleanup() {
+    cleanup_containers
+    cleanup_logging "start-opencode.sh"
+}
+
+# === ARGUMENT PARSING ===
+parse_args() {
     while [[ $# -gt 0 ]]; do
-        case $1 in
+        case "$1" in
             --debug|bash)
                 DEBUG_MODE=true
-                print_status "Debug mode enabled"
+                shift
+                ;;
+            --print-logs)
+                PRINT_LOGS=true
                 shift
                 ;;
             -h|--help)
-                echo "Usage: $0 [--debug|bash]"
-                echo ""
-                echo "Options:"
-                echo "  --debug, bash    Start container in debug mode with interactive bash shell"
-                echo "  -h, --help       Show this help message"
-                echo ""
-                echo "Examples:"
-                echo "  $0               Start OpenCode normally"
-                echo "  $0 --debug       Start in debug mode"
-                echo "  $0 bash          Start in debug mode (alternative syntax)"
+                cat << EOF
+Usage: $0 [--debug|bash] [--print-logs]
+
+Options:
+  --debug, bash    Start in debug mode with interactive bash shell
+  --print-logs     Start OpenCode with console logging enabled
+  -h, --help       Show this help message
+
+Examples:
+  $0                        Start OpenCode normally
+  $0 --debug                Start in debug mode
+  $0 --print-logs           Start with console logging
+  $0 --debug --print-logs   Start in debug mode with console logging
+EOF
                 exit 0
                 ;;
             *)
-                print_error "Unknown option: $1"
-                print_error "Use --help for usage information"
+                log_error "args" "Unknown option: $1. Use --help for usage."
                 exit 1
                 ;;
         esac
     done
 }
 
-# Main execution
+# === MAIN EXECUTION ===
 main() {
-    # Parse command line arguments
-    parse_arguments "$@"
+    parse_args "$@"
 
-    if [[ "$DEBUG_MODE" == "true" ]]; then
-        print_status "Starting OpenCode Development Environment (DEBUG MODE)"
+    local mode_description=""
+    if [[ "$DEBUG_MODE" == "true" && "$PRINT_LOGS" == "true" ]]; then
+        mode_description="DEBUG + CONSOLE LOGGING"
+    elif [[ "$DEBUG_MODE" == "true" ]]; then
+        mode_description="DEBUG"
+    elif [[ "$PRINT_LOGS" == "true" ]]; then
+        mode_description="CONSOLE LOGGING"
     else
-        print_status "Starting OpenCode Development Environment"
+        mode_description="NORMAL"
     fi
-    echo
 
-    # Set up signal handlers for graceful shutdown
+    log_info "main" "Starting OpenCode Development Environment ($mode_description mode)"
+
+    # Setup and checks
     trap cleanup SIGINT SIGTERM
+    check_prerequisites
+    start_container
 
-    # Perform checks
-    check_docker_compose
-    check_compose_file
-    check_environment
+    # Execute container session
+    execute_container_session
 
-    echo
-    
-    # Start services using Docker Compose
-    if ! start_services; then
-        print_error "Failed to start services. Check the logs above."
-        print_status "You can check logs with: $COMPOSE_CMD logs $SERVICE_NAME"
-        exit 1
-    fi
-
-    # Wait for container to be ready
-    if ! wait_for_container; then
-        print_error "Container failed to become ready"
-        print_status "You can check logs with: $COMPOSE_CMD logs $SERVICE_NAME"
-        exit 1
-    fi
-
-    echo
-    print_success "OpenCode container is ready!"
-    if [[ "$DEBUG_MODE" == "true" ]]; then
-        print_status "Starting debug session..."
-    else
-        print_status "Starting interactive OpenCode session..."
-    fi
-    echo
-
-    # Run container interactively
-    run_container_interactive
-
-    echo
-    if [[ "$DEBUG_MODE" == "true" ]]; then
-        print_status "Debug session ended."
-    else
-        print_status "OpenCode session ended."
-    fi
-    print_status "To clean up, run: $COMPOSE_CMD down"
+    log_info "main" "Session complete. Use '$COMPOSE_CMD down' to cleanup."
 }
 
-# Set up signal handlers for cleanup
-trap 'cleanup_logging "start-opencode.sh"; exit 1' INT TERM
-
-# Run main function
+# === EXECUTION ===
+trap 'cleanup; exit 1' INT TERM
 main "$@"
-
-# Cleanup logging
 cleanup_logging "start-opencode.sh"

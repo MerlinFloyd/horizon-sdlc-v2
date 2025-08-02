@@ -233,23 +233,6 @@ log_fatal() {
     write_log "FATAL" "$operation" "$message" "$line_number"
 }
 
-# Backward compatibility functions (maintain existing function names)
-log() {
-    log_info "general" "$1"
-}
-
-error() {
-    log_error "general" "$1"
-}
-
-warning() {
-    log_warn "general" "$1"
-}
-
-success() {
-    log_info "general" "$1"
-}
-
 # Cleanup function for session end
 cleanup_logging() {
     if [[ "$ENABLE_JSON_LOGGING" == "true" ]]; then
@@ -262,4 +245,3 @@ cleanup_logging() {
 export -f setup_logging get_timestamp get_caller_info escape_json should_log
 export -f format_console_log format_json_log write_log
 export -f log_debug log_info log_warn log_error log_fatal
-export -f log error warning success cleanup_logging
