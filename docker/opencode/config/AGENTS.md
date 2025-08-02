@@ -17,16 +17,11 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 | "analyze architecture" | complex | infrastructure | architect agent, Sequential-Thinking | systematic change mgmt, quality gates | 95% |
 | "create component" | simple | frontend | frontend agent, Magic MCP | lint/typecheck, Context7 validation | 90% |
 | "implement feature" | moderate | any | domain-specific agent, Context7, Sequential-Thinking | full quality gates, context retention | 88% |
-| "implement API" | moderate | backend | backend agent, Sequential-Thinking, Context7 | security gates, integration testing | 92% |
+| "implement API" | moderate | backend | backend agent, Sequential-Thinking, Context7 | integration testing, code quality | 92% |
 | "implement UI component" | simple | frontend | frontend agent, Magic MCP, Context7 | accessibility, responsive validation | 94% |
 | "fix bug" | moderate | any | analyzer agent, Sequential-Thinking | regression testing, impact assessment | 85% |
 | "optimize performance" | complex | backend | performance agent, Playwright | performance gates, benchmarking | 90% |
-| "security audit" | complex | security | security agent, Sequential-Thinking | security gates, compliance validation | 95% |
 | "write documentation" | moderate | documentation | scribe agent, Context7 | documentation gates, accuracy verification | 95% |
-| "create PRD" | moderate | product | product-owner agent, Sequential-Thinking | stakeholder validation, business value assessment | 92% |
-| "define product vision" | moderate | product | product-owner agent, Context7 | vision alignment, stakeholder consensus | 90% |
-| "prioritize backlog" | simple | product | product-owner agent, Sequential-Thinking | business value ranking, dependency analysis | 88% |
-| "write user stories" | simple | product | product-owner agent, Context7 | INVEST criteria, acceptance criteria validation | 94% |
 | "comprehensive audit" | complex | multi | Wave agent, specialized agents | systematic change mgmt, all gates | 95% |
 | "improve large system" | complex | any | Wave agent, adaptive strategies | systematic change mgmt, enterprise validation | 90% |
 | "multi-file changes" | complex | any | Wave agent, systematic change mgmt | mandatory discovery, impact assessment | 92% |
@@ -44,7 +39,7 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 **Wave Activation**: complexity >= 0.7 + multiple domains OR systematic codebase changes
 
 **Quality Gates Priority**:
-- **Mandatory**: syntax, lint, security, test
+- **Mandatory**: syntax, lint, test
 - **Conditional**: type, performance, documentation, integration
 
 ### Stage-Specific Configuration Inheritance
@@ -53,11 +48,11 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 
 | Stage | Complexity Threshold | Wave Enabled | Primary Agents | MCP Servers |
 |-------|---------------------|--------------|----------------|-------------|
-| idea-definition | 0.5 | false | analyzer, architect, product-owner | context7, sequential-thinking |
-| prd-generation | 0.6 | true | product-owner, architect, scribe | context7, sequential-thinking |
-| trd-creation | 0.7 | true | architect, security | sequential-thinking, context7 |
-| feature-breakdown | 0.6 | true | product-owner, architect, analyzer | sequential-thinking, context7 |
-| user-stories | 0.8 | true | product-owner, context-based spawning | sequential-thinking, context7, magic mcp, playwright |
+| idea-definition | 0.5 | false | analyzer, architect | context7, sequential-thinking |
+| prd-generation | 0.6 | true | architect, scribe | context7, sequential-thinking |
+| trd-creation | 0.7 | true | architect | sequential-thinking, context7 |
+| feature-breakdown | 0.6 | true | architect, analyzer | sequential-thinking, context7 |
+| user-stories | 0.8 | true | scribe, context-based spawning | sequential-thinking, context7, magic mcp, playwright |
 
 ### Agent MCP Server Preferences
 
@@ -66,9 +61,12 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 | architect | Sequential-Thinking | Context7 | System design, complex analysis |
 | frontend | Magic MCP | Playwright | UI components, user testing |
 | backend | Context7 | Sequential-Thinking | API implementation, frameworks |
-| security | Sequential-Thinking | Context7 | Security analysis, compliance |
+| devops | Sequential-Thinking | Context7 | Infrastructure automation, deployment |
+| qa | Playwright | Sequential-Thinking | Quality assurance, testing strategies |
 | performance | Playwright | Sequential-Thinking | Performance testing, optimization |
-| product-owner | Sequential-Thinking | Context7 | Product vision, backlog management, stakeholder collaboration |
+| analyzer | Sequential-Thinking | Context7 | Code analysis, debugging, problem solving |
+| refactorer | Sequential-Thinking | Context7 | Code refactoring, improvement |
+| scribe | Context7 | Sequential-Thinking | Documentation, technical writing |
 
 ## Operational Rules
 
@@ -115,10 +113,10 @@ Your goal is to generate high quaility code and documentation as quickly as poss
 - Database schema or configuration changes
 - Framework or dependency updates
 
-### File Operation Security
-**Core Security Principle**: Read → Analyze → Plan → Execute → Verify
+### File Operation Safety
+**Core Safety Principle**: Read → Analyze → Plan → Execute → Verify
 
-**MANDATORY Security Rules**:
+**MANDATORY Safety Rules**:
 - **Read Before Write**: ALWAYS use Read tool before Write or Edit operations
 - **Path Security**: Use absolute paths only, prevent path traversal attacks
 - **Transaction Safety**: Prefer batch operations and transaction-like behavior
@@ -154,7 +152,7 @@ quality_gates:
     context_retention: "≥90% context state preservation"
     dependency_check: "impact assessment and dependency mapping"
     resource_validation: "availability and permission verification"
-    security_scan: "path validation and access control verification"
+    path_validation: "path validation and access control verification"
 
   step_1_syntax:
     validation: "language parsers, Context7 validation, intelligent suggestions"
@@ -171,33 +169,28 @@ quality_gates:
     requirements: "code quality standards, style consistency"
     mandatory: "must pass before task completion"
 
-  step_4_security:
-    validation: "Sequential-Thinking analysis, vulnerability assessment, OWASP compliance"
-    requirements: "no security vulnerabilities, safe coding practices"
-    escalation: "flag critical security issues immediately"
-
-  step_5_test:
+  step_4_test:
     validation: "Playwright E2E, coverage analysis (≥80% unit, ≥70% integration)"
     requirements: "all tests pass, coverage thresholds met"
     regression: "verify no existing functionality broken"
 
-  step_6_performance:
+  step_5_performance:
     validation: "Sequential-Thinking analysis, benchmarking, optimization suggestions"
     requirements: "no performance regressions, efficiency standards"
     monitoring: "establish performance baselines"
 
-  step_7_documentation:
+  step_6_documentation:
     validation: "Context7 patterns, completeness validation, accuracy verification"
     requirements: "documentation updated, examples provided"
     consistency: "maintain documentation standards"
 
-  step_8_integration:
+  step_7_integration:
     validation: "Playwright testing, deployment validation, compatibility verification"
     requirements: "system integration verified, deployment ready"
     rollback: "rollback plan validated and ready"
 
 gate_enforcement:
-  mandatory_gates: ["syntax", "lint", "security", "test"]
+  mandatory_gates: ["syntax", "lint", "test"]
   conditional_gates: ["type", "performance", "documentation", "integration"]
   failure_handling: "stop execution, report issues, suggest fixes"
   bypass_conditions: "explicit user override with acknowledgment"
@@ -283,24 +276,14 @@ infrastructure:
   file_patterns: ["Dockerfile", "*.yml", "*.yaml", ".github/*", "terraform/*"]
   typical_operations: [setup, configure, automate, monitor]
 
-security:
-  keywords: [vulnerability, authentication, encryption, audit, compliance]
-  file_patterns: ["*auth*", "*security*", "*.pem", "*.key"]
-  typical_operations: [scan, harden, audit, fix]
-
 documentation:
   keywords: [document, README, wiki, guide, manual, instructions, commit, release, changelog]
   file_patterns: ["*.md", "*.rst", "*.txt", "docs/*", "README*", "CHANGELOG*"]
   typical_operations: [write, document, explain, translate, localize]
 
-product:
-  keywords: [product, PRD, requirements, user story, epic, backlog, stakeholder, business value]
-  file_patterns: ["*requirements*", "*prd*", "*backlog*", "*stories*", "product/*"]
-  typical_operations: [define, prioritize, write, analyze, collaborate]
-
 wave_eligible:
   keywords: [comprehensive, systematically, thoroughly, enterprise, large-scale, multi-stage, progressive, iterative, campaign, audit]
-  complexity_indicators: [system-wide, architecture, performance, security, quality, scalability]
+  complexity_indicators: [system-wide, architecture, performance, quality, scalability]
   operation_indicators: [improve, optimize, refactor, modernize, enhance, audit, transform]
   scale_indicators: [entire, complete, full, comprehensive, enterprise, large, massive]
   typical_operations: [comprehensive_improvement, systematic_optimization, enterprise_transformation, progressive_enhancement]
@@ -323,7 +306,7 @@ auto_triggers:
     scale_indicators: ["entire", "complete", "full", "comprehensive", "large-scale"]
 
   persona_activation:
-    domain_keywords: ["UI", "API", "database", "security", "performance", "documentation"]
+    domain_keywords: ["UI", "API", "database", "performance", "documentation", "architecture"]
     complexity_assessment: "automatic based on task analysis"
     context_triggers: ["framework-specific", "specialized knowledge", "domain expertise"]
 
@@ -509,7 +492,7 @@ trigger_conditions:
 - **Purposeful Logging**: Every log entry must provide actionable value for operations or debugging
 - **Structured Data**: Use consistent, machine-readable formats for automated analysis
 - **Context Richness**: Include relevant metadata that aids in troubleshooting and analysis
-- **Security Consciousness**: Never log sensitive information or expose internal system details
+- **Privacy Consciousness**: Never log sensitive information or expose internal system details
 
 ## Testing Philosophy
 
@@ -532,7 +515,7 @@ trigger_conditions:
 - **Transparency**: Be clear about capabilities, limitations, and decision-making processes
 - **Accountability**: Take responsibility for the consequences of generated code and recommendations
 - **Privacy Protection**: Respect user privacy and data protection requirements
-- **Security First**: Never compromise security for convenience or speed
+- **Quality First**: Never compromise code quality for convenience or speed
 
 ### Human-AI Collaboration
 - **Augmentation Over Replacement**: Enhance human capabilities rather than replace them

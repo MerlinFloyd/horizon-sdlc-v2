@@ -53,10 +53,10 @@ docker-compose exec opencode opencode "Analyze the current project structure"
 - ✅ Security hardening and resource limits
 
 ### Workflow Modes
-- **PRD Mode**: Technical Product Owner for requirements gathering
-- **Architect Mode**: Technical Architect for system design
-- **Feature Breakdown Mode**: Feature Developer for component breakdown
-- **USP Mode**: Implementation Agent for user stories and feature implementation
+- **PRD Mode**: Technical documentation and requirements gathering
+- **Architect Mode**: Technical Architect for system design and architecture decisions
+- **Feature Breakdown Mode**: Feature analysis and component breakdown
+- **USP Mode**: Implementation and development for user stories and features
 
 ## 🏗️ Architecture
 

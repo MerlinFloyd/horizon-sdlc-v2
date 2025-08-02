@@ -296,17 +296,18 @@ These patterns provide:
 
 ### Primary Agents (Mandatory)
 - **Frontend Agent**: React/Next.js development, ShadCN/ui component integration, Framer Motion animations, responsive design implementation, accessibility compliance
-- **Backend Agent**: Next.js API routes development, MongoDB/Mongoose integration, share token system, performance optimization, Edge Runtime configuration
-- **Security Agent**: Input validation implementation, secure token generation, rate limiting configuration, CORS setup, privacy compliance measures
+- **Backend Agent**: Next.js API routes development, MongoDB/Mongoose integration, share token system, performance optimization, Edge Runtime configuration, input validation implementation, secure token generation
+- **Architect Agent**: System design, technology strategy, integration patterns, framework recommendations for complex system design challenges
 
 ### Optional Agents (Value Enhancement)
 - **Performance Agent**: Core Web Vitals optimization, bundle size analysis, animation performance tuning, mobile optimization strategies
 - **QA Agent**: Comprehensive testing strategy, E2E scenario development, accessibility testing, cross-browser validation, performance regression testing
+- **DevOps Agent**: Infrastructure automation, deployment pipelines, containerization, monitoring solutions
 
 ### Rationale for Agent Selection
 **Frontend/Backend separation** enables specialized expertise for complex full-stack application development while maintaining clear separation of concerns.
 
-**Security agent critical** due to anonymous sharing features requiring robust token security, input validation, and privacy compliance without traditional authentication.
+**Architect agent essential** for system design decisions, technology strategy, and ensuring scalable architecture patterns across the application.
 
 **Performance agent valuable** given strict 10-second time-to-task requirement and mobile-first approach requiring optimization across multiple platforms.
 
