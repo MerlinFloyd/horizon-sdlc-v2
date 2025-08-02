@@ -126,11 +126,11 @@ test_start_script_args() {
 test_script_modifications() {
     print_status "Verifying script modifications..."
     
-    # Check that minimal-entrypoint.sh contains debug logic
-    if grep -q "debug.*bash" docker/opencode/scripts/minimal-entrypoint.sh; then
-        print_success "minimal-entrypoint.sh contains debug mode logic"
+    # Check that entrypoint.sh contains debug logic
+    if grep -q "debug.*bash" docker/opencode/scripts/entrypoint.sh; then
+        print_success "entrypoint.sh contains debug mode logic"
     else
-        print_error "minimal-entrypoint.sh missing debug mode logic"
+        print_error "entrypoint.sh missing debug mode logic"
         return 1
     fi
     

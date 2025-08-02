@@ -92,9 +92,8 @@ RUN chmod -R 644 $OPENCODE_CONFIG_DIR/ && \
 
 # Copy scripts and logging module
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY scripts/minimal-entrypoint.sh /usr/local/bin/minimal-entrypoint.sh
 COPY scripts/libs/logging.sh /usr/local/lib/logging.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/minimal-entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set working directory
 WORKDIR $WORKSPACE_DIR
@@ -110,5 +109,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Expose OpenCode default port (if applicable)
 EXPOSE 3000
 
-# Set entrypoint - use a minimal entrypoint for better OpenCode compatibility
-ENTRYPOINT ["/usr/local/bin/minimal-entrypoint.sh"]
+# Set entrypoint - using consolidated entrypoint for better OpenCode compatibility
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
