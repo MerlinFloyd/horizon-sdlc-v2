@@ -235,6 +235,39 @@ test_all_mcp_servers() {
     test_mcp_server "Magic (21st.dev)" "magic-mcp-server"
 }
 
+# Function to test GitHub CLI installation
+test_github_cli() {
+    test_start "GitHub CLI"
+
+    # Check if gh command is available
+    if docker-compose exec -T opencode which gh >/dev/null 2>&1; then
+        # Check if gh responds to version command
+        if docker-compose exec -T opencode gh --version >/dev/null 2>&1; then
+            local gh_version=$(docker-compose exec -T opencode gh --version 2>/dev/null | head -n1 | cut -d' ' -f3 2>/dev/null || echo "unknown")
+            test_pass "GitHub CLI is installed and functional (version: $gh_version)"
+
+            # Check authentication if GITHUB_TOKEN is set
+            if docker-compose exec -T opencode printenv GITHUB_TOKEN >/dev/null 2>&1; then
+                if docker-compose exec -T opencode timeout 10 gh auth status >/dev/null 2>&1; then
+                    success "✓ GitHub CLI authentication is working"
+                else
+                    warning "GitHub CLI is installed but authentication may not be working"
+                    log "This could be due to invalid token or network issues"
+                fi
+            else
+                log "ℹ GitHub CLI installed but no GITHUB_TOKEN configured"
+            fi
+            return 0
+        else
+            test_fail "GitHub CLI" "gh command exists but not responding to --version"
+            return 1
+        fi
+    else
+        test_fail "GitHub CLI" "gh command not found"
+        return 1
+    fi
+}
+
 # Function to test workspace mounting
 test_workspace_mounting() {
     test_start "Workspace Mounting"
@@ -294,9 +327,9 @@ test_environment_variables() {
 
     # Check for GitHub token (optional)
     if docker-compose exec -T opencode printenv GITHUB_TOKEN >/dev/null 2>&1; then
-        success "✓ GitHub token is configured (GitHub MCP server enabled)"
+        success "✓ GitHub token is configured (GitHub MCP server and GitHub CLI enabled)"
     else
-        log "ℹ GitHub token not configured (GitHub MCP server disabled)"
+        log "ℹ GitHub token not configured (GitHub MCP server and GitHub CLI authentication disabled)"
     fi
 
     # Check for Magic API key (optional)
@@ -469,10 +502,10 @@ display_troubleshooting() {
         fi
 
         if docker-compose exec -T opencode printenv GITHUB_TOKEN >/dev/null 2>&1; then
-            log "  ✓ GitHub Token: Configured (GitHub MCP server enabled)"
-            log "    → Enables: Repository operations, issue management, code search"
+            log "  ✓ GitHub Token: Configured (GitHub MCP server and GitHub CLI enabled)"
+            log "    → Enables: Repository operations, issue management, code search, CLI automation"
         else
-            log "  ⚠ GitHub Token: Not configured (GitHub MCP server disabled)"
+            log "  ⚠ GitHub Token: Not configured (GitHub MCP server and GitHub CLI disabled)"
             log "    → Optional: Set via --github-token or GITHUB_TOKEN environment variable"
         fi
 
@@ -503,7 +536,10 @@ main() {
     
     # MCP servers
     test_all_mcp_servers
-    
+
+    # GitHub CLI
+    test_github_cli
+
     # Mounting and environment
     test_workspace_mounting
     test_ai_assets_mounting

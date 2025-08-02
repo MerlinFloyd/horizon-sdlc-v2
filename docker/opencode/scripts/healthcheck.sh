@@ -177,7 +177,7 @@ check_environment() {
     if [[ -n "${GITHUB_TOKEN:-}" ]]; then
         log_info "env_check" "GITHUB_TOKEN is configured"
     else
-        log_warn "env_check" "GITHUB_TOKEN is not configured (GitHub MCP will be limited)"
+        log_warn "env_check" "GITHUB_TOKEN is not configured (GitHub MCP and GitHub CLI will be limited)"
     fi
 
     if [[ "$env_ok" == "true" ]]; then
@@ -214,7 +214,15 @@ check_system() {
     if ! check_command "git" "Git"; then
         system_ok=false
     fi
-    
+
+    # Check GitHub CLI
+    if ! check_command "gh" "GitHub CLI"; then
+        log_warn "system_check" "GitHub CLI not available (gh command not found)"
+        # Don't fail system check for missing GitHub CLI as it's not critical
+    else
+        log_info "system_check" "GitHub CLI is available"
+    fi
+
     if [[ "$system_ok" == "true" ]]; then
         return 0
     else
