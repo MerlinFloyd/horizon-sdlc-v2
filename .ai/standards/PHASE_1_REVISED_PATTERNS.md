@@ -74,7 +74,6 @@ workspace-root/
   "dockerIntegration": {
     "coLocation": {
       "principle": "Dockerfiles live with their applications",
-      "rationale": "Easier maintenance, clearer ownership, project-specific optimizations",
       "examples": [
         "apps/web-dashboard/Dockerfile",
         "apps/api-core/Dockerfile",
@@ -83,14 +82,10 @@ workspace-root/
     },
     "orchestration": {
       "localDevelopment": {
-        "file": "docker-compose.yml (workspace root)",
-        "purpose": "Unified local development environment",
-        "includes": ["databases", "message queues", "external services"]
+        "file": "docker-compose.yml (workspace root)"
       },
       "kubernetesManifests": {
-        "location": "Co-located with applications (apps/*/k8s/)",
-        "purpose": "Production deployment configurations",
-        "includes": ["deployments", "services", "ingress", "configmaps"]
+        "location": "Co-located with applications (apps/*/k8s/)"
       }
     }
   }
