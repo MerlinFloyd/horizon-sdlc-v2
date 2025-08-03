@@ -59,6 +59,24 @@
         "typography": "Consistent typography scale and font loading",
         "spacing": "Standardized spacing system and layout grid",
         "customization": "Design token management through CSS custom properties"
+      },
+      "interactiveComponents": {
+        "reactFlow": {
+          "approved": "React Flow for node-based editors, flowcharts, and interactive diagrams",
+          "rationale": "Interactive node-based editors, flowcharts, and diagram creation with performance optimization and accessibility support",
+          "useCases": [
+            "Workflow builders and process diagrams",
+            "Data flow visualization and pipeline editors",
+            "Interactive network graphs and mind maps",
+            "Decision trees and organizational charts"
+          ],
+          "integration": {
+            "location": "Components in libs/shared/ui with custom node types",
+            "styling": "Integrate with Tailwind CSS and design tokens",
+            "accessibility": "Built-in keyboard navigation and screen reader support",
+            "performance": "Optimized for large datasets with virtualization"
+          }
+        }
       }
     },
     "animationStandards": {
