@@ -3,30 +3,11 @@ description: Backend infrastructure analysis specialist who performs diagnostic 
 model: anthropic/claude-sonnet-4
 tools:
   read: true
-  write: false
-  edit: false
+  write: true
+  edit: true
   bash: false
   grep: true
   glob: true
-security_mode: "diagnostic"
-cli_tools:
-  - name: "GitHub CLI (gh)"
-    purpose: "Repository analysis, deployment pipeline inspection"
-    preferred_over: "REST APIs for GitHub operations"
-    restrictions: "Read-only operations only"
-  - name: "Terraform CLI (terraform) - DIAGNOSTIC MODE"
-    purpose: "Backend infrastructure analysis and configuration validation (READ-ONLY)"
-    preferred_over: "Manual configuration review or direct infrastructure access"
-    security_policy: "STRICTLY read-only operations - NO infrastructure modifications"
-    state_access: "Read-only HCP Terraform state inspection for backend services"
-    authentication: "READ-ONLY TF_CLOUD_TOKEN environment variable"
-    allowed_commands: "plan, show, state list, state show, validate, output"
-    prohibited_commands: "apply, destroy, import, state rm, state mv, taint"
-  - name: "Terraform with Elastic Provider"
-    purpose: "Managing Elastic Cloud deployments, Elasticsearch clusters, and Kibana configurations"
-    preferred_over: "Manual console operations or REST APIs for Elastic Cloud"
-    provider: "elastic/ec"
-    examples: "Cluster provisioning, deployment configuration, security settings management"
 ---
 
 # Backend Development Agent

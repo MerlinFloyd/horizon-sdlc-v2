@@ -1,10 +1,34 @@
 # OpenCode Agent Orchestration System
 
-**Primary Directive**: Evidence > assumptions | Code > documentation | Efficiency > verbosity
+**Primary Directive**: Agent expertise > direct execution | Evidence > assumptions | Code > documentation | Efficiency > verbosity
 
 **Core Workflow**: Understand → Context → Execute → Test → Verify
 
 **Standards Compliance**: ALWAYS read `/workspace/.ai/standards/*.json` and ensure all output adheres to defined standards.
+
+## 🎯 Agent-First Principles
+
+**Core Philosophy**: Specialized agent expertise delivers superior outcomes compared to direct execution. Agents provide domain knowledge, established patterns, quality assurance, and contextual decision-making that generic execution cannot match.
+
+### Agent Utilization Mandate
+- **Default Approach**: ALWAYS prefer agent delegation over direct execution
+- **Agent Expertise**: Leverage specialized knowledge, patterns, and quality standards
+- **Quality Assurance**: Agents provide built-in validation and best practices
+- **Context Preservation**: Agents maintain domain-specific context and decision rationale
+
+### Direct Execution Criteria (Requires Justification)
+Direct execution is only appropriate when:
+- [ ] **No Suitable Agent**: No available agent has relevant domain expertise
+- [ ] **Agent Unavailable**: Technical issues prevent agent utilization
+- [ ] **Trivial Operations**: File reading, basic information retrieval, simple formatting
+- [ ] **Emergency Response**: Critical system issues requiring immediate action
+
+### Agent Selection Priority Framework
+1. **Domain Expertise Match**: Select agent with strongest domain alignment
+2. **Complexity Handling**: Choose agent capable of handling task complexity
+3. **Quality Standards**: Prefer agents with relevant quality frameworks
+4. **MCP Integration**: Leverage agents with appropriate MCP server access
+5. **Workflow Phase**: Align agent selection with current workflow phase
 
 ## Available CLI Tools
 
@@ -199,18 +223,22 @@ terraform {
 
 ## Agent Selection & Orchestration
 
-### Quick Selection Matrix
+### Agent-First Selection Matrix
 
-| Pattern | Agent(s) | MCP | Complexity | Validation |
-|---------|----------|-----|------------|------------|
-| Architecture analysis | architect | sequential, context7 | Complex | Systematic change mgmt |
-| Component creation | frontend | magic, context7 | Simple | Lint, accessibility |
-| API implementation | backend | context7, sequential | Moderate | Integration testing |
-| Bug investigation | analyzer | sequential, context7 | Moderate | Regression testing |
-| Performance optimization | performance | playwright, sequential | Complex | Performance gates |
-| Documentation | scribe | context7, sequential | Moderate | Accuracy verification |
-| System improvement | architect + domain | sequential, context7 | Complex | Enterprise validation |
-| Multi-file changes | analyzer + domain | sequential, context7 | Complex | Discovery, impact assessment |
+| Pattern | Primary Agent(s) | Agent Benefits | MCP | Complexity | Validation |
+|---------|------------------|----------------|-----|------------|------------|
+| Architecture analysis | architect | System design expertise, pattern knowledge | sequential, context7 | Complex | Systematic change mgmt |
+| Component creation | frontend | UX expertise, accessibility standards | magic, context7 | Moderate | Lint, accessibility, UX |
+| API implementation | backend | Security patterns, performance optimization | context7, sequential | Moderate | Integration testing |
+| Bug investigation | analyzer | Systematic debugging, root cause analysis | sequential, context7 | Moderate | Regression testing |
+| Performance optimization | performance | Benchmarking expertise, optimization patterns | playwright, sequential | Complex | Performance gates |
+| Documentation | scribe | Technical writing, accuracy standards | context7, sequential | Moderate | Accuracy verification |
+| System improvement | architect + domain | Cross-domain expertise, impact analysis | sequential, context7 | Complex | Enterprise validation |
+| Multi-file changes | analyzer + domain | Discovery patterns, dependency mapping | sequential, context7 | Complex | Discovery, impact assessment |
+| Code refactoring | refactorer | Refactoring patterns, safety protocols | sequential, context7 | Moderate | Code quality, regression |
+| Quality assurance | qa | Testing strategies, validation frameworks | playwright, sequential | Moderate | Comprehensive testing |
+
+**Agent Selection Rule**: When multiple patterns match, prefer the agent with strongest domain expertise and most comprehensive quality standards.
 
 ### Domain Classification
 
@@ -232,23 +260,27 @@ graph TD
 
 ### Complexity & Coordination Rules
 
-**Complexity Classification**:
-- **Simple**: Single file, basic CRUD, <3 steps, isolated changes
-- **Moderate**: 2-5 files, analysis tasks, 3-10 steps, cross-component changes
-- **Complex**: >5 files, architectural decisions, >10 steps, system-wide impact
+**Complexity Classification** (Agent utilization recommended for ALL levels):
+- **Routine**: Well-documented patterns, file reading, basic formatting (Agent: domain-specific for quality)
+- **Moderate**: 1-5 files, component creation, analysis tasks, cross-component changes (Agent: domain-specific)
+- **Complex**: >5 files, architectural decisions, system-wide impact (Agent: multi-agent coordination)
 
-**Multi-Agent Triggers**:
-- Complex classification + multiple domains
-- >5 files affected OR cross-module changes
-- Enterprise scale, architectural decisions
-- Explicit user request for comprehensive approach
+**Multi-Agent Triggers** (Prefer collaboration over single-agent when):
+- Multiple domains involved (frontend + backend, architecture + implementation)
+- >3 files affected OR cross-module changes (lowered threshold)
+- Quality requirements spanning multiple specializations
+- User stories requiring diverse expertise (UX + security + performance)
+- Architectural decisions with implementation implications
 
-**Agent Coordination Strategies**:
+**Agent Coordination Strategies** (Always prefer agent-mediated approaches):
 ```yaml
-sequential: "Single agent with MCP support (simple/moderate, single domain)"
-collaborative: "Multiple agents with shared context (complex, specialized expertise)"
-systematic: "Full discovery process (>5 files, architectural changes)"
+agent-first: "Single domain agent with MCP support (routine/moderate, leverages specialization)"
+collaborative: "Multiple agents with shared context (multi-domain, specialized expertise)"
+systematic: "Full discovery process with agent coordination (>3 files, architectural changes)"
+direct-execution: "ONLY when agents unavailable or for trivial operations (requires justification)"
 ```
+
+**Strategy Selection Priority**: agent-first → collaborative → systematic → direct-execution (last resort)
 
 ## Universal Workflow & Quality Standards
 
@@ -272,6 +304,7 @@ graph LR
 
 | Gate | Trigger | Requirements | Tools |
 |------|---------|-------------|-------|
+| **Agent Utilization** | All non-trivial tasks | Agent delegation preferred, justification for direct execution | Agent selection matrix |
 | **Syntax** | All code changes | Zero errors, proper formatting | Language parsers, Context7 |
 | **Lint** | All code changes | Style consistency, quality standards | Context7, automated tools |
 | **Test** | All code changes | Pass existing tests, coverage thresholds | Playwright, test frameworks |
@@ -528,18 +561,22 @@ Workflow Phase: Feature Breakdown → User Stories
 
 ## Quick Reference Summary
 
-### Agent Selection Decision Tree
-1. **Analyze Request**: Extract keywords, identify file patterns, assess scope
-2. **Classify Complexity**: Simple (1 file), Moderate (2-5 files), Complex (>5 files/architectural)
-3. **Select Strategy**: Sequential (single agent), Collaborative (multi-agent), Systematic (>5 files)
-4. **Execute Workflow**: Understand → Context → Execute → Test → Verify
-5. **Apply Quality Gates**: Mandatory (syntax, lint, test) + Conditional (type, performance, docs)
+### Agent-First Decision Tree
+1. **Agent Utilization Check**: Can any agent handle this task? (Default: YES)
+2. **Agent Selection**: Match domain expertise, complexity handling, quality standards
+3. **Strategy Selection**: agent-first → collaborative → systematic → direct-execution (last resort)
+4. **Execute Workflow**: Understand → Context → Execute → Test → Verify (with agent expertise)
+5. **Apply Quality Gates**: Agent utilization + Mandatory (syntax, lint, test) + Conditional (type, performance, docs)
+6. **Validate Agent Value**: Confirm agent expertise was leveraged effectively
 
 ### Essential Patterns
+- **Agent-first approach**: Prefer specialized agent expertise over direct execution
+- **Agent expertise validation**: Confirm agent selection matches task requirements
 - **Read before write**, validate before commit, document decisions
 - **Context preservation** during handoffs with complete state transfer
 - **Systematic change management** for complex/multi-file operations
 - **Error recovery** with graceful degradation and transparent communication
+- **Direct execution justification**: Document rationale when bypassing agents
 
 
 

@@ -44,7 +44,11 @@ You are a technical architect specializing in translating business requirements 
 
 ## Output Format
 
-Generate a comprehensive TRD document:
+Generate a comprehensive TRD document and save it to the `.ai/docs/` directory with the filename format: `TRD-{project-name}-{YYYY-MM-DD}.json`
+
+**File Location**: `.ai/docs/TRD-{project-name}-{YYYY-MM-DD}.json`
+
+**Document Structure**:
 
 ```json
 {
