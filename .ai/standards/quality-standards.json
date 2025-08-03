@@ -21,6 +21,25 @@
           "Shared type definitions in libs/shared/types"
         ]
       },
+      "python": {
+        "configuration": {
+          "pythonVersion": "3.11+",
+          "typeChecking": "mypy with strict mode",
+          "formatting": "black with 88 character line length",
+          "linting": "ruff with comprehensive rule set",
+          "importSorting": "isort with black profile"
+        },
+        "requirements": [
+          "All functions must have type hints for parameters and return values",
+          "Pydantic models for all data structures and API schemas",
+          "No 'Any' types without explicit justification",
+          "Comprehensive type definitions for LLM responses",
+          "Proper typing for async functions and coroutines",
+          "Strong typing for LangChain components and tools",
+          "Type-safe Google Cloud AI SDK integration",
+          "Shared type definitions in libs/ai/types"
+        ]
+      },
       "linting": {
         "nextjs": {
           "tools": ["ESLint", "Prettier", "@next/eslint-config-next"],
@@ -118,6 +137,45 @@
           "Test Next.js middleware functionality",
           "Validate edge runtime performance"
         ]
+      },
+      "pythonAI": {
+        "frameworks": ["pytest", "pytest-asyncio", "pytest-cov", "Factory Boy"],
+        "types": [
+          "Unit tests for LangChain agents and tools",
+          "Unit tests for Google Cloud AI SDK integration",
+          "Unit tests for data processing pipelines",
+          "E2E tests for agent workflows",
+          "Performance tests for AI endpoints"
+        ],
+        "requirements": [
+          "Mock all LLM API calls to avoid costs and ensure deterministic tests",
+          "Test agent execution with controlled inputs and outputs",
+          "Test error handling for AI service failures",
+          "Test async/await patterns for AI operations",
+          "Validate Pydantic model serialization/deserialization",
+          "Test OpenTelemetry instrumentation for AI operations",
+          "Mock vector database operations for unit tests"
+        ],
+        "aiSpecificPatterns": {
+          "agentTesting": [
+            "Mock LangChain LLM responses",
+            "Test tool invocation and chaining",
+            "Validate agent state management",
+            "Test conversation memory persistence"
+          ],
+          "modelTesting": [
+            "Mock Google Cloud AI client responses",
+            "Test structured output parsing",
+            "Validate token usage tracking",
+            "Test rate limiting and retry logic"
+          ],
+          "pipelineTesting": [
+            "Test document processing workflows",
+            "Mock vector store operations",
+            "Test RAG pipeline components",
+            "Validate data transformation steps"
+          ]
+        }
       },
       "e2eTesting": {
         "framework": "Playwright for web application E2E testing",

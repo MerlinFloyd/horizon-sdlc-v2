@@ -4,6 +4,7 @@
       "baseImages": {
         "approved": [
           "node:18-alpine for Node.js applications",
+          "python:3.11-alpine for Python AI services",
           "nginx:alpine for static content serving",
           "postgres:15-alpine for PostgreSQL",
           "redis:7-alpine for Redis"

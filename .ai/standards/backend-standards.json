@@ -2,14 +2,14 @@
   "backendStandards": {
     "technologyStack": {
       "runtime": {
-        "approved": ["Node.js 18+", "TypeScript 4.9+"],
-        "preferred": "Node.js with TypeScript",
-        "restrictions": ["No CommonJS for new projects", "TypeScript required"]
+        "approved": ["Node.js 18+", "TypeScript 4.9+", "Python 3.11+"],
+        "preferred": "Node.js with TypeScript for web services, Python for AI middleware",
+        "restrictions": ["No CommonJS for new projects", "TypeScript required for Node.js", "Python 3.11+ required for AI applications"]
       },
       "frameworks": {
-        "approved": ["Express.js 4.18+", "Next.js API Routes"],
-        "preferred": "Next.js API Routes with TypeScript",
-        "rationale": "Full-stack framework unification, built-in API optimization, serverless-ready"
+        "approved": ["Express.js 4.18+", "Next.js API Routes", "FastAPI 0.100+", "LangChain 0.1+"],
+        "preferred": "Next.js API Routes with TypeScript for web APIs, FastAPI with LangChain for AI services",
+        "rationale": "Full-stack framework unification, built-in API optimization, serverless-ready for web; FastAPI for high-performance async Python APIs, LangChain for AI agent orchestration"
       },
       "databases": {
         "primary": {
@@ -21,6 +21,34 @@
           "approved": ["Redis"],
           "rationale": "High-performance caching and session storage"
         }
+      }
+    },
+    "aiMiddleware": {
+      "agentFrameworks": {
+        "primary": "LangChain with LangGraph for agent orchestration",
+        "patterns": {
+          "agentOrchestration": "LangGraph for complex multi-agent workflows",
+          "modelIntegration": "Google Cloud AI SDK for model access",
+          "memoryManagement": "LangChain memory components for conversation state",
+          "toolIntegration": "LangChain tools for external system integration"
+        },
+        "rationale": "LangChain provides standardized interfaces for LLM interactions, LangGraph enables complex agent workflows"
+      },
+      "modelIntegration": {
+        "primary": "Google Cloud AI SDK (google-genai)",
+        "patterns": {
+          "clientInitialization": "Vertex AI client with project and location configuration",
+          "structuredOutput": "Pydantic models for type-safe LLM responses",
+          "functionCalling": "Tool integration for external system access",
+          "streaming": "Async streaming for real-time responses"
+        },
+        "rationale": "Official Google SDK ensures compatibility and optimal performance with GCP AI services"
+      },
+      "dataProcessing": {
+        "pipelines": "LangChain document loaders and text splitters for data ingestion",
+        "vectorStores": "LangChain vector stores with Google Cloud integration",
+        "embeddings": "Google Cloud Vertex AI embeddings for semantic search",
+        "retrieval": "RAG patterns with LangChain retrievers"
       }
     },
     "apiDesign": {
@@ -170,10 +198,10 @@
     },
     "testing": {
       "unitTesting": {
-        "framework": "Jest for unit testing",
+        "framework": "Jest for Node.js/TypeScript, pytest for Python",
         "coverage": "80% code coverage minimum",
-        "mocking": "Proper mocking of external dependencies",
-        "testData": "Test data factories and fixtures"
+        "mocking": "Proper mocking of external dependencies (unittest.mock for Python)",
+        "testData": "Test data factories and fixtures (Factory Boy for Python)"
       },
       "integrationTesting": {
         "apiTesting": "API endpoint testing with supertest",

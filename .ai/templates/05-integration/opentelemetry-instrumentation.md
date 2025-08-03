@@ -1,7 +1,7 @@
 # OpenTelemetry Instrumentation Template
 
 ## Overview
-This template provides comprehensive OpenTelemetry instrumentation patterns following our observability standards with structured logging, distributed tracing, and metrics collection for Node.js, Go applications, GitHub Actions CI/CD, PostgreSQL databases, and Kubernetes clusters. All telemetry data is sent to Elastic Cloud as our centralized observability platform.
+This template provides comprehensive OpenTelemetry instrumentation patterns following our observability standards with structured logging, distributed tracing, and metrics collection for Node.js, Python AI services, Go applications, GitHub Actions CI/CD, PostgreSQL databases, and Kubernetes clusters. All telemetry data is sent to Elastic Cloud as our centralized observability platform.
 
 ## Core OpenTelemetry Setup
 
@@ -1441,6 +1441,345 @@ data:
     }, 30000);
 
     module.exports = { sdk };
+```
+
+## Python AI Services Instrumentation
+
+### 1. Python OpenTelemetry Setup
+```python
+# src/observability/instrumentation.py
+from opentelemetry import trace, metrics
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.semconv.resource import ResourceAttributes
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+from opentelemetry.instrumentation.redis import RedisInstrumentor
+from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
+import os
+import logging
+
+logger = logging.getLogger(__name__)
+
+def setup_telemetry(service_name: str, service_version: str = "1.0.0"):
+    """Initialize OpenTelemetry for Python AI services."""
+
+    # Resource configuration
+    resource = Resource.create({
+        ResourceAttributes.SERVICE_NAME: service_name,
+        ResourceAttributes.SERVICE_VERSION: service_version,
+        ResourceAttributes.DEPLOYMENT_ENVIRONMENT: os.getenv("ENVIRONMENT", "development"),
+        ResourceAttributes.SERVICE_NAMESPACE: "horizon-ai",
+        ResourceAttributes.SERVICE_INSTANCE_ID: os.getenv("HOSTNAME", "unknown"),
+    })
+
+    # Trace provider setup
+    trace_provider = TracerProvider(resource=resource)
+    trace.set_tracer_provider(trace_provider)
+
+    # OTLP trace exporter for Elastic Cloud
+    otlp_trace_exporter = OTLPSpanExporter(
+        endpoint=os.getenv("ELASTIC_APM_SERVER_URL", "http://localhost:4317"),
+        headers={"Authorization": f"Bearer {os.getenv('ELASTIC_APM_SECRET_TOKEN')}"},
+        insecure=os.getenv("ENVIRONMENT") == "development"
+    )
+
+    span_processor = BatchSpanProcessor(otlp_trace_exporter)
+    trace_provider.add_span_processor(span_processor)
+
+    # Metrics provider setup
+    otlp_metric_exporter = OTLPMetricExporter(
+        endpoint=os.getenv("ELASTIC_APM_SERVER_URL", "http://localhost:4317"),
+        headers={"Authorization": f"Bearer {os.getenv('ELASTIC_APM_SECRET_TOKEN')}"},
+        insecure=os.getenv("ENVIRONMENT") == "development"
+    )
+
+    metric_reader = PeriodicExportingMetricReader(
+        exporter=otlp_metric_exporter,
+        export_interval_millis=30000  # 30 seconds
+    )
+
+    metrics_provider = MeterProvider(
+        resource=resource,
+        metric_readers=[metric_reader]
+    )
+    metrics.set_meter_provider(metrics_provider)
+
+    # Auto-instrumentation
+    FastAPIInstrumentor.instrument()
+    HTTPXClientInstrumentor.instrument()
+    RedisInstrumentor.instrument()
+    SQLAlchemyInstrumentor.instrument()
+
+    logger.info(f"OpenTelemetry initialized for service: {service_name}")
+```
+
+### 2. AI-Specific Instrumentation
+```python
+# src/observability/ai_instrumentation.py
+from opentelemetry import trace, metrics
+from opentelemetry.trace import Status, StatusCode
+from functools import wraps
+from typing import Dict, Any, Optional, Callable
+import time
+import logging
+
+logger = logging.getLogger(__name__)
+tracer = trace.get_tracer(__name__)
+meter = metrics.get_meter(__name__)
+
+# AI-specific metrics
+llm_request_counter = meter.create_counter(
+    "ai_llm_requests_total",
+    description="Total number of LLM requests",
+    unit="1"
+)
+
+llm_request_duration = meter.create_histogram(
+    "ai_llm_request_duration_seconds",
+    description="Duration of LLM requests",
+    unit="s"
+)
+
+llm_token_usage = meter.create_histogram(
+    "ai_llm_tokens_used",
+    description="Number of tokens used in LLM requests",
+    unit="1"
+)
+
+agent_execution_counter = meter.create_counter(
+    "ai_agent_executions_total",
+    description="Total number of agent executions",
+    unit="1"
+)
+
+agent_execution_duration = meter.create_histogram(
+    "ai_agent_execution_duration_seconds",
+    description="Duration of agent executions",
+    unit="s"
+)
+
+def trace_llm_call(model_name: str, operation: str = "generate"):
+    """Decorator for tracing LLM API calls."""
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            with tracer.start_as_current_span(f"llm.{operation}") as span:
+                start_time = time.time()
+
+                # Set span attributes
+                span.set_attribute("ai.model.name", model_name)
+                span.set_attribute("ai.operation", operation)
+                span.set_attribute("ai.provider", "google_cloud")
+
+                try:
+                    result = await func(*args, **kwargs)
+
+                    # Record success metrics
+                    duration = time.time() - start_time
+                    llm_request_counter.add(1, {
+                        "model": model_name,
+                        "operation": operation,
+                        "status": "success"
+                    })
+                    llm_request_duration.record(duration, {
+                        "model": model_name,
+                        "operation": operation
+                    })
+
+                    # Extract token usage if available
+                    if hasattr(result, 'usage_metadata'):
+                        input_tokens = getattr(result.usage_metadata, 'prompt_token_count', 0)
+                        output_tokens = getattr(result.usage_metadata, 'candidates_token_count', 0)
+
+                        span.set_attribute("ai.tokens.input", input_tokens)
+                        span.set_attribute("ai.tokens.output", output_tokens)
+                        span.set_attribute("ai.tokens.total", input_tokens + output_tokens)
+
+                        llm_token_usage.record(input_tokens + output_tokens, {
+                            "model": model_name,
+                            "token_type": "total"
+                        })
+
+                    span.set_status(Status(StatusCode.OK))
+                    return result
+
+                except Exception as e:
+                    # Record error metrics
+                    llm_request_counter.add(1, {
+                        "model": model_name,
+                        "operation": operation,
+                        "status": "error"
+                    })
+
+                    span.record_exception(e)
+                    span.set_status(Status(StatusCode.ERROR, str(e)))
+                    logger.error(f"LLM call failed: {e}")
+                    raise
+
+        return wrapper
+    return decorator
+
+def trace_agent_execution(agent_name: str):
+    """Decorator for tracing agent executions."""
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            with tracer.start_as_current_span(f"agent.{agent_name}") as span:
+                start_time = time.time()
+
+                # Set span attributes
+                span.set_attribute("ai.agent.name", agent_name)
+                span.set_attribute("ai.agent.type", "langchain")
+
+                try:
+                    result = await func(*args, **kwargs)
+
+                    # Record success metrics
+                    duration = time.time() - start_time
+                    agent_execution_counter.add(1, {
+                        "agent": agent_name,
+                        "status": "success"
+                    })
+                    agent_execution_duration.record(duration, {
+                        "agent": agent_name
+                    })
+
+                    # Add result metadata
+                    if isinstance(result, dict) and 'output' in result:
+                        span.set_attribute("ai.agent.output_length", len(str(result['output'])))
+
+                    span.set_status(Status(StatusCode.OK))
+                    return result
+
+                except Exception as e:
+                    # Record error metrics
+                    agent_execution_counter.add(1, {
+                        "agent": agent_name,
+                        "status": "error"
+                    })
+
+                    span.record_exception(e)
+                    span.set_status(Status(StatusCode.ERROR, str(e)))
+                    logger.error(f"Agent execution failed: {e}")
+                    raise
+
+        return wrapper
+    return decorator
+
+class AIMetrics:
+    """Centralized AI metrics collection."""
+
+    @staticmethod
+    def record_rag_query(
+        query_type: str,
+        documents_retrieved: int,
+        relevance_score: float,
+        duration: float
+    ):
+        """Record RAG query metrics."""
+        rag_query_counter = meter.create_counter(
+            "ai_rag_queries_total",
+            description="Total RAG queries processed"
+        )
+
+        rag_documents_retrieved = meter.create_histogram(
+            "ai_rag_documents_retrieved",
+            description="Number of documents retrieved for RAG"
+        )
+
+        rag_relevance_score = meter.create_histogram(
+            "ai_rag_relevance_score",
+            description="RAG relevance scores"
+        )
+
+        rag_query_counter.add(1, {"query_type": query_type})
+        rag_documents_retrieved.record(documents_retrieved, {"query_type": query_type})
+        rag_relevance_score.record(relevance_score, {"query_type": query_type})
+
+    @staticmethod
+    def record_vector_search(
+        collection_name: str,
+        query_vector_size: int,
+        results_count: int,
+        search_duration: float
+    ):
+        """Record vector search metrics."""
+        vector_search_counter = meter.create_counter(
+            "ai_vector_searches_total",
+            description="Total vector searches performed"
+        )
+
+        vector_search_duration = meter.create_histogram(
+            "ai_vector_search_duration_seconds",
+            description="Vector search duration"
+        )
+
+        vector_search_counter.add(1, {"collection": collection_name})
+        vector_search_duration.record(search_duration, {"collection": collection_name})
+```
+
+### 3. FastAPI Integration with AI Tracing
+```python
+# src/api/middleware/telemetry.py
+from fastapi import FastAPI, Request, Response
+from opentelemetry import trace
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.propagate import extract
+import time
+import logging
+
+logger = logging.getLogger(__name__)
+tracer = trace.get_tracer(__name__)
+
+def setup_fastapi_telemetry(app: FastAPI):
+    """Setup FastAPI-specific telemetry."""
+
+    @app.middleware("http")
+    async def telemetry_middleware(request: Request, call_next):
+        """Custom telemetry middleware for AI-specific tracking."""
+
+        # Extract trace context from headers
+        context = extract(request.headers)
+
+        with tracer.start_as_current_span(
+            f"{request.method} {request.url.path}",
+            context=context
+        ) as span:
+            start_time = time.time()
+
+            # Set request attributes
+            span.set_attribute("http.method", request.method)
+            span.set_attribute("http.url", str(request.url))
+            span.set_attribute("http.user_agent", request.headers.get("user-agent", ""))
+
+            # Add AI-specific attributes
+            if "ai" in request.url.path or "agent" in request.url.path:
+                span.set_attribute("service.type", "ai")
+                span.set_attribute("ai.request.type", "api")
+
+            try:
+                response = await call_next(request)
+
+                # Set response attributes
+                span.set_attribute("http.status_code", response.status_code)
+                span.set_attribute("http.response_time", time.time() - start_time)
+
+                return response
+
+            except Exception as e:
+                span.record_exception(e)
+                span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
+                logger.error(f"Request failed: {e}")
+                raise
+
+    # Instrument FastAPI
+    FastAPIInstrumentor.instrument_app(app)
 ```
 
 ## Go Language Instrumentation

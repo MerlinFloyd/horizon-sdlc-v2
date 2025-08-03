@@ -9,6 +9,8 @@
             "web-marketplace/": "Next.js marketplace application with src/, Dockerfile, k8s/",
             "api-core/": "Node.js backend services with src/, Dockerfile, k8s/",
             "api-payments/": "Node.js payment services with src/, Dockerfile, k8s/",
+            "ai-agents/": "Python AI agent services with src/, Dockerfile, k8s/, pyproject.toml",
+            "ai-pipeline/": "Python data processing pipeline with src/, Dockerfile, k8s/, pyproject.toml",
             "blockchain-deployer/": "Smart contract deployment app with src/, Dockerfile, k8s/"
           }
         },
@@ -29,6 +31,13 @@
             "database/": "Database utilities & models",
             "auth/": "Authentication logic",
             "services/": "Business logic services"
+          },
+          "ai/": {
+            "agents/": "LangChain agent definitions and orchestration",
+            "models/": "Model integration and configuration",
+            "tools/": "Custom tools and function definitions",
+            "memory/": "Conversation and context management",
+            "pipelines/": "Data processing and RAG pipelines"
           },
           "blockchain/": {
             "contracts/": "Smart contract interfaces",
@@ -156,6 +165,10 @@
           "folders": ["contracts/", "scripts/", "test/", "deploy/", "k8s/"],
           "configFiles": ["hardhat.config.ts", "foundry.toml", "Dockerfile", "project.json"]
         },
+        "pythonAiService": {
+          "folders": ["src/", "tests/", "k8s/", "docs/"],
+          "configFiles": ["pyproject.toml", "Dockerfile", "project.json", "requirements.txt"]
+        },
         "sharedLibrary": {
           "folders": ["src/", "test/"],
           "configFiles": ["tsconfig.json", "project.json", "README.md"]
@@ -179,6 +192,13 @@
           "Deployment script templates",
           "Test file templates with coverage examples",
           "Integration examples with frontend libraries"
+        ],
+        "pythonAiService": [
+          "FastAPI server setup with LangChain integration",
+          "Agent orchestration with LangGraph",
+          "Google Cloud AI SDK client configuration",
+          "OpenTelemetry instrumentation for AI services",
+          "Pytest test templates for AI components"
         ],
         "sharedLibrary": [
           "index.ts with proper exports",
