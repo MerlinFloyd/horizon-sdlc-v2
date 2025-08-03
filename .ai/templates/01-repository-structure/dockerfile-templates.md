@@ -1,0 +1,478 @@
+# Dockerfile Templates
+
+## Overview
+This template provides Dockerfile examples for different application types following our containerization standards with Alpine-based images, multi-stage builds, and security best practices.
+
+## Next.js Application Dockerfile
+
+### Production-Optimized Multi-Stage Build
+```dockerfile
+# Build stage
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies first (for better caching)
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig.base.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npx nx build web-dashboard --prod
+
+# Production stage
+FROM node:18-alpine AS runner
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/web-dashboard/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/web-dashboard/.next/static ./apps/web-dashboard/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/web-dashboard/public ./apps/web-dashboard/public
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Start the application
+CMD ["node", "apps/web-dashboard/server.js"]
+```
+
+## Node.js API Dockerfile
+
+### Express/Fastify API Container
+```dockerfile
+# Build stage
+FROM node:18-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig.base.json ./
+
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npx nx build api-core --prod
+
+# Production stage
+FROM node:18-alpine AS runner
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 apiuser
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application and production dependencies
+COPY --from=builder --chown=apiuser:nodejs /app/dist/apps/api-core ./
+COPY --from=builder --chown=apiuser:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=apiuser:nodejs /app/package*.json ./
+
+# Switch to non-root user
+USER apiuser
+
+# Expose port
+EXPOSE 3001
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3001/health || exit 1
+
+# Start the application
+CMD ["node", "main.js"]
+```
+
+## Smart Contract Deployment Dockerfile
+
+### Foundry-based Blockchain Deployer
+```dockerfile
+# Build stage
+FROM node:18-alpine AS node-builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig.base.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build TypeScript components
+RUN npx nx build blockchain-deployer --prod
+
+# Foundry stage
+FROM ghcr.io/foundry-rs/foundry:latest AS foundry-builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy contract source
+COPY contracts/ ./contracts/
+COPY foundry.toml ./
+
+# Compile contracts
+RUN forge build
+
+# Production stage
+FROM node:18-alpine AS runner
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Create non-root user
+RUN addgroup --system --gid 1001 blockchain
+RUN adduser --system --uid 1001 deployer
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application
+COPY --from=node-builder --chown=deployer:blockchain /app/dist/apps/blockchain-deployer ./
+COPY --from=node-builder --chown=deployer:blockchain /app/node_modules ./node_modules
+
+# Copy compiled contracts
+COPY --from=foundry-builder --chown=deployer:blockchain /app/out ./contracts/out
+
+# Switch to non-root user
+USER deployer
+
+# Expose port
+EXPOSE 3002
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3002
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3002/health || exit 1
+
+# Start the application
+CMD ["node", "main.js"]
+```
+
+## Storybook Documentation Dockerfile
+
+### Shared UI Library Documentation
+```dockerfile
+# Build stage
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig.base.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build Storybook
+RUN npx nx build-storybook shared-ui
+
+# Production stage
+FROM nginx:alpine AS runner
+
+# Copy built Storybook
+COPY --from=builder /app/dist/storybook/shared-ui /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create non-root user
+RUN adduser -D -s /bin/sh nginx-user
+
+# Change ownership of nginx directories
+RUN chown -R nginx-user:nginx-user /usr/share/nginx/html
+RUN chown -R nginx-user:nginx-user /var/cache/nginx
+RUN chown -R nginx-user:nginx-user /var/log/nginx
+RUN chown -R nginx-user:nginx-user /etc/nginx/conf.d
+
+# Switch to non-root user
+USER nginx-user
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080 || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+## Database Migration Dockerfile
+
+### Prisma Migration Runner
+```dockerfile
+FROM node:18-alpine AS runner
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Create non-root user
+RUN addgroup --system --gid 1001 prisma
+RUN adduser --system --uid 1001 migrator
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy Prisma schema and migrations
+COPY libs/api/database/prisma ./prisma/
+COPY libs/api/database/src/migrations ./migrations/
+
+# Copy migration scripts
+COPY tools/scripts/migrate.sh ./
+
+# Make script executable
+RUN chmod +x migrate.sh
+
+# Switch to non-root user
+USER migrator
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Run migrations
+CMD ["./migrate.sh"]
+```
+
+## Development Dockerfile
+
+### Development Environment with Hot Reload
+```dockerfile
+FROM node:18-alpine
+
+# Install development tools
+RUN apk add --no-cache git curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig.base.json ./
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose ports for different services
+EXPOSE 3000 3001 3002 4200 6006
+
+# Set environment variables
+ENV NODE_ENV=development
+
+# Start development server
+CMD ["npm", "run", "dev"]
+```
+
+## Docker Compose Integration
+
+### Local Development Stack
+```yaml
+version: '3.8'
+
+services:
+  web-dashboard:
+    build:
+      context: .
+      dockerfile: apps/web-dashboard/Dockerfile
+      target: runner
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://user:password@postgres:5432/horizon
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./apps/web-dashboard:/app/apps/web-dashboard
+      - /app/node_modules
+
+  api-core:
+    build:
+      context: .
+      dockerfile: apps/api-core/Dockerfile
+      target: runner
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://user:password@postgres:5432/horizon
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./apps/api-core:/app/apps/api-core
+      - /app/node_modules
+
+  storybook:
+    build:
+      context: .
+      dockerfile: libs/shared/ui/Dockerfile
+      target: runner
+    ports:
+      - "6006:8080"
+    volumes:
+      - ./libs/shared/ui:/app/libs/shared/ui
+      - /app/node_modules
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=horizon
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+## Security Best Practices
+
+### 1. Non-Root User
+- Always create and use non-root users
+- Set appropriate file ownership
+- Use system users with no shell access
+
+### 2. Multi-Stage Builds
+- Separate build and runtime stages
+- Only include production dependencies in final image
+- Minimize attack surface
+
+### 3. Health Checks
+- Include health check endpoints in applications
+- Configure Docker health checks
+- Use appropriate timeouts and retry logic
+
+### 4. Environment Variables
+- Use environment variables for configuration
+- Never hardcode secrets in Dockerfiles
+- Set appropriate defaults
+
+### 5. Image Optimization
+- Use Alpine-based images for smaller size
+- Leverage Docker layer caching
+- Clean up package caches
+
+## Build Scripts
+
+### Build All Images
+```bash
+#!/bin/bash
+# build-images.sh
+
+# Build web applications
+docker build -f apps/web-dashboard/Dockerfile -t horizon/web-dashboard:latest .
+docker build -f apps/web-marketplace/Dockerfile -t horizon/web-marketplace:latest .
+
+# Build API services
+docker build -f apps/api-core/Dockerfile -t horizon/api-core:latest .
+docker build -f apps/api-payments/Dockerfile -t horizon/api-payments:latest .
+
+# Build blockchain services
+docker build -f apps/blockchain-deployer/Dockerfile -t horizon/blockchain-deployer:latest .
+
+# Build documentation
+docker build -f libs/shared/ui/Dockerfile -t horizon/storybook:latest .
+
+echo "All images built successfully!"
+```
+
+### Push to Registry
+```bash
+#!/bin/bash
+# push-images.sh
+
+REGISTRY="ghcr.io/horizon"
+TAG=${1:-latest}
+
+# Tag and push all images
+for service in web-dashboard web-marketplace api-core api-payments blockchain-deployer storybook; do
+  docker tag horizon/$service:latest $REGISTRY/$service:$TAG
+  docker push $REGISTRY/$service:$TAG
+done
+
+echo "All images pushed to registry!"
+```
+
+This template provides production-ready Dockerfile configurations following our security and optimization standards.
