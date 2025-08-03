@@ -411,6 +411,121 @@ evaluation_criteria:
 
 ---
 
+## 🎯 Intelligent Asset Loading Decision Table
+
+**Purpose**: This decision table enables the OpenCode AI agent to intelligently determine which standards files, templates, agents, and MCP servers to load based on user request context.
+
+### Context Pattern Analysis
+
+The agent analyzes user requests using the following pattern matching hierarchy:
+
+#### 1. Primary Context Patterns
+
+| Context Pattern | Keywords/Triggers | Standards Files | Template Categories | Primary Agent(s) | MCP Servers | Workflow Phase |
+|----------------|-------------------|-----------------|-------------------|------------------|-------------|----------------|
+| **Frontend Development** | "frontend", "UI", "component", "React", "Next.js", "ShadCN", "Tailwind", "styling", "responsive" | `frontend-standards.json`, `technology-stack.json`, `quality-standards.json` | `02-code-patterns` (shadcn, nextjs, framer-motion), `03-testing` | frontend, qa | magic, context7, sequential | Feature Breakdown → User Stories |
+| **Backend Development** | "backend", "API", "server", "database", "microservice", "endpoint", "authentication", "middleware" | `backend-standards.json`, `technology-stack.json`, `security-standards.json`, `quality-standards.json` | `02-code-patterns` (api-design, database-integration, authentication), `04-infrastructure` | backend, architect | context7, sequential | Technical Requirements → Feature Breakdown |
+| **AI/ML Integration** | "AI", "ML", "LangChain", "agent", "LLM", "embedding", "vector", "RAG", "model", "inference" | `backend-standards.json`, `technology-stack.json`, `operational-standards.json` | `02-code-patterns` (python-ai-service), `05-integration` | backend, architect | context7, sequential | Technical Requirements → Feature Breakdown |
+| **Blockchain Development** | "blockchain", "smart contract", "Web3", "DeFi", "Ethereum", "Solana", "wallet", "token", "NFT" | `blockchain-standards.json`, `technology-stack.json`, `security-standards.json` | `02-code-patterns` (blockchain-integration), `04-infrastructure` | backend, architect | context7, sequential | Technical Requirements → Feature Breakdown |
+| **Infrastructure/DevOps** | "infrastructure", "deployment", "Docker", "Kubernetes", "CI/CD", "monitoring", "observability", "Terraform" | `infrastructure-standards.json`, `containerization-standards.json`, `operational-standards.json` | `04-infrastructure`, `01-repository-structure` (dockerfile, helm) | architect | context7, sequential | Technical Requirements → Feature Breakdown |
+| **Database Operations** | "database", "migration", "schema", "PostgreSQL", "MongoDB", "Redis", "query", "indexing", "performance" | `backend-standards.json`, `technology-stack.json`, `operational-standards.json` | `02-code-patterns` (database-integration), `04-infrastructure` | backend, architect | context7, sequential | Technical Requirements → Feature Breakdown |
+| **Testing Strategy** | "test", "testing", "unit test", "E2E", "Playwright", "Jest", "coverage", "QA", "validation" | `quality-standards.json`, `development-workflow.json` | `03-testing` | qa, frontend, backend | playwright, context7 | Feature Breakdown → User Stories |
+| **Security Implementation** | "security", "authentication", "authorization", "encryption", "vulnerability", "compliance", "audit" | `security-standards.json`, `backend-standards.json`, `operational-standards.json` | `02-code-patterns` (authentication-security), `04-infrastructure` | backend, architect | context7, sequential | Technical Requirements → Feature Breakdown |
+| **Monorepo Management** | "monorepo", "NX", "workspace", "library", "shared", "dependency", "build", "project structure" | `nx-monorepo-standards.json`, `development-workflow.json`, `architectural-patterns.json` | `01-repository-structure`, `02-code-patterns` | architect | context7, sequential | PRD → Technical Requirements |
+| **Architecture Design** | "architecture", "design", "pattern", "scalability", "performance", "system design", "microservices" | `architectural-patterns.json`, `technology-stack.json`, `infrastructure-standards.json` | `02-code-patterns` (comprehensive-design, event-driven), `04-infrastructure` | architect | sequential, context7 | PRD → Technical Requirements |
+
+#### 2. Workflow Phase-Specific Loading
+
+| Workflow Phase | Auto-Load Standards | Auto-Load Templates | Primary Agent | Secondary Agents | MCP Priority |
+|----------------|-------------------|-------------------|---------------|------------------|--------------|
+| **PRD Generation** | `technology-stack.json`, `development-workflow.json` | None (business focus) | product-owner | architect | sequential |
+| **Technical Requirements** | `architectural-patterns.json`, `technology-stack.json`, `infrastructure-standards.json` | `01-repository-structure`, `04-infrastructure` | architect | backend, frontend | sequential, context7 |
+| **Feature Breakdown** | All relevant domain standards based on features | All relevant template categories | architect + domain-specific | qa | sequential, context7 |
+| **User Stories** | Domain-specific standards + `quality-standards.json` | Domain-specific templates + `03-testing` | Domain-specific + qa | scribe | All MCP servers |
+
+#### 3. Technology Stack-Specific Loading
+
+| Technology Mention | Additional Standards | Additional Templates | Notes |
+|-------------------|---------------------|-------------------|-------|
+| **TypeScript** | `frontend-standards.json`, `backend-standards.json` | `02-code-patterns` (typescript-patterns) | Always load for TS projects |
+| **Next.js** | `frontend-standards.json`, `containerization-standards.json` | `02-code-patterns` (nextjs-fullstack), `01-repository-structure` | Full-stack considerations |
+| **Python** | `backend-standards.json` | `02-code-patterns` (python-ai-service, python-project-config) | AI/ML context likely |
+| **Go** | `backend-standards.json`, `blockchain-standards.json` | `02-code-patterns` (api-design) | High-performance backend |
+| **GCP** | `infrastructure-standards.json`, `operational-standards.json` | `04-infrastructure` | Cloud-native patterns |
+| **Kubernetes** | `containerization-standards.json`, `operational-standards.json` | `01-repository-structure` (helm), `04-infrastructure` | Container orchestration |
+
+#### 4. Complexity-Based Loading Rules
+
+| Complexity Level | Standards Loading Strategy | Template Loading Strategy | Agent Strategy |
+|-----------------|---------------------------|--------------------------|----------------|
+| **Simple** (1-2 files) | Domain-specific + quality standards | Specific pattern templates only | Single domain agent |
+| **Moderate** (3-5 files) | Domain + architectural + quality standards | Domain templates + testing | Primary + QA agents |
+| **Complex** (>5 files, system-wide) | All relevant standards | All relevant template categories | Multi-agent coordination |
+
+#### 5. Fallback and Priority Rules
+
+**Priority Order for Overlapping Contexts:**
+1. **Explicit technology mentions** (highest priority)
+2. **Workflow phase requirements**
+3. **Domain-specific patterns**
+4. **General architectural patterns** (lowest priority)
+
+**Fallback Rules for Ambiguous Requests:**
+- **Unknown domain**: Load `technology-stack.json`, `development-workflow.json`, `quality-standards.json`
+- **No clear phase**: Default to Feature Breakdown phase loading
+- **Multiple domains**: Load all relevant standards, use architect for coordination
+- **Legacy/migration context**: Add `operational-standards.json`, `development-workflow.json`
+
+#### 6. Context Enhancement Rules
+
+**Always Load Together:**
+- `quality-standards.json` + any domain-specific standards
+- `technology-stack.json` + any infrastructure work
+- `development-workflow.json` + any multi-file changes
+- `03-testing` templates + any code generation
+
+**Never Load Together (Conflicts):**
+- Frontend-only templates with backend-only templates (unless full-stack)
+- Blockchain templates with traditional web templates (unless Web3 integration)
+
+#### 7. MCP Server Selection Logic
+
+| Request Type | Primary MCP | Secondary MCP | Rationale |
+|-------------|-------------|---------------|-----------|
+| **Research/Documentation** | context7 | sequential | Documentation lookup + analysis |
+| **Code Generation** | magic | context7 | Component generation + pattern research |
+| **Problem Solving** | sequential | context7 | Structured thinking + research |
+| **Testing/Validation** | playwright | sequential | Browser automation + analysis |
+| **Complex Architecture** | sequential | context7 | Multi-step analysis + documentation |
+
+#### 8. Dynamic Loading Triggers
+
+**Load Additional Assets When:**
+- User mentions specific technologies not in initial context
+- Complexity increases during conversation
+- New domains emerge during feature breakdown
+- Integration requirements become apparent
+- Performance/security concerns are raised
+
+**Example Decision Flow:**
+```
+User Request: "Create a Next.js dashboard with authentication and real-time updates"
+
+Context Analysis:
+- Primary: Frontend Development (Next.js, dashboard, UI)
+- Secondary: Backend Development (authentication, real-time)
+- Technology: Next.js, TypeScript (implied)
+
+Asset Loading Decision:
+Standards: frontend-standards.json, backend-standards.json, technology-stack.json, security-standards.json, quality-standards.json
+Templates: 02-code-patterns (nextjs-fullstack, authentication-security), 03-testing
+Agents: frontend (primary), backend (secondary), qa
+MCP Servers: magic (primary), context7 (secondary), sequential
+Workflow Phase: Feature Breakdown → User Stories
+```
+
+---
+
 ## Quick Reference Summary
 
 ### Agent Selection Decision Tree
