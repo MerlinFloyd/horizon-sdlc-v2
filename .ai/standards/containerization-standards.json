@@ -1,0 +1,170 @@
+{
+  "containerizationStandards": {
+    "dockerStandards": {
+      "baseImages": {
+        "approved": [
+          "node:18-alpine for Node.js applications",
+          "nginx:alpine for static content serving",
+          "postgres:15-alpine for PostgreSQL",
+          "redis:7-alpine for Redis"
+        ],
+        "rationale": "Alpine-based images for minimal attack surface and smaller image sizes",
+        "restrictions": [
+          "No latest tags in production",
+          "No root user in containers",
+          "No unnecessary packages or tools"
+        ]
+      },
+      "dockerfilePatterns": {
+        "multiStage": "Multi-stage builds for production optimization",
+        "layerOptimization": "Optimize Docker layers for caching efficiency",
+        "securityScanning": "Security scanning for all container images",
+        "nonRootUser": "Run containers as non-root user"
+      },
+      "buildOptimization": {
+        "strategy": "Optimize for build speed over image size",
+        "caching": "Leverage Docker layer caching",
+        "dependencies": "Cache dependency installation layers",
+        "artifacts": "Minimize final image artifacts"
+      },
+      "coLocationStrategy": {
+        "approach": "Co-located Dockerfiles with applications (not centralized)",
+        "location": "Dockerfile in each application root directory",
+        "customization": "Application-specific Docker configurations",
+        "maintenance": "Application teams maintain their own Dockerfiles"
+      }
+    },
+    "containerSecurity": {
+      "imageScanning": {
+        "tools": "Trivy or Snyk for vulnerability scanning",
+        "frequency": "Scan on every build and weekly for deployed images",
+        "thresholds": "Block deployment for high/critical vulnerabilities",
+        "reporting": "Security scan reports in CI/CD pipeline"
+      },
+      "runtimeSecurity": {
+        "nonRootUser": "All containers run as non-root user",
+        "readOnlyFilesystem": "Read-only root filesystem where possible",
+        "capabilities": "Drop unnecessary Linux capabilities",
+        "seccomp": "Apply seccomp profiles for syscall filtering"
+      },
+      "secretsManagement": {
+        "noSecretsInImages": "No secrets embedded in container images",
+        "environmentVariables": "Secrets injected via environment variables",
+        "secretsStore": "Integration with Kubernetes secrets or external secret stores",
+        "rotation": "Support for secret rotation without container restart"
+      },
+      "networkSecurity": {
+        "networkPolicies": "Kubernetes network policies for traffic control",
+        "serviceMesh": "Service mesh for encrypted inter-service communication",
+        "ingressSecurity": "Secure ingress configuration with TLS",
+        "egressControl": "Control outbound traffic from containers"
+      }
+    },
+    "kubernetesOrchestration": {
+      "deploymentPatterns": {
+        "deployments": "Kubernetes Deployments for stateless applications",
+        "statefulSets": "StatefulSets for stateful applications (databases)",
+        "daemonSets": "DaemonSets for node-level services (monitoring, logging)",
+        "jobs": "Jobs and CronJobs for batch processing"
+      },
+      "resourceManagement": {
+        "requests": "CPU and memory requests for all containers",
+        "limits": "CPU and memory limits to prevent resource exhaustion",
+        "qos": "Quality of Service classes (Guaranteed, Burstable, BestEffort)",
+        "hpa": "Horizontal Pod Autoscaling based on metrics"
+      },
+      "configurationManagement": {
+        "configMaps": "ConfigMaps for application configuration",
+        "secrets": "Kubernetes Secrets for sensitive data",
+        "volumes": "Persistent volumes for stateful data",
+        "initContainers": "Init containers for setup tasks"
+      },
+      "serviceDiscovery": {
+        "services": "Kubernetes Services for internal communication",
+        "ingress": "Ingress controllers for external access",
+        "dns": "Kubernetes DNS for service discovery",
+        "loadBalancing": "Built-in load balancing for services"
+      }
+    },
+    "helmChartManagement": {
+      "chartStructure": {
+        "templates": "Kubernetes resource templates",
+        "values": "Environment-specific configuration values",
+        "helpers": "Template helpers for common patterns",
+        "tests": "Helm tests for deployment validation"
+      },
+      "versioningStrategy": {
+        "chartVersioning": "Semantic versioning for Helm charts",
+        "appVersioning": "Application version tracking in charts",
+        "dependencies": "Chart dependencies and version constraints",
+        "repositories": "Helm chart repositories for distribution"
+      },
+      "deploymentStrategy": {
+        "rollingUpdates": "Rolling updates for zero-downtime deployments",
+        "blueGreen": "Blue-green deployments for critical services",
+        "canary": "Canary deployments for gradual rollouts",
+        "rollback": "Automated rollback on deployment failures"
+      }
+    },
+    "containerRegistry": {
+      "registryChoice": {
+        "approved": "GitHub Container Registry (ghcr.io)",
+        "rationale": "Integrated with GitHub, secure, cost-effective",
+        "authentication": "GitHub token-based authentication",
+        "permissions": "Repository-based access control"
+      },
+      "imageManagement": {
+        "tagging": "Semantic versioning and Git SHA tags",
+        "retention": "Image retention policies to manage storage costs",
+        "promotion": "Image promotion between environments",
+        "scanning": "Automated security scanning in registry"
+      },
+      "cicdIntegration": {
+        "buildPipeline": "Automated image building in CI/CD",
+        "pushStrategy": "Push images on successful builds",
+        "pullStrategy": "Pull images for deployment",
+        "caching": "Registry caching for faster deployments"
+      }
+    },
+    "monitoringAndLogging": {
+      "containerMonitoring": {
+        "metrics": "Container resource usage metrics",
+        "healthChecks": "Container health checks and readiness probes",
+        "performance": "Application performance monitoring",
+        "alerting": "Automated alerting on container issues"
+      },
+      "logManagement": {
+        "structured": "Structured logging in JSON format",
+        "aggregation": "Log aggregation with Elastic Stack",
+        "retention": "Log retention policies",
+        "correlation": "Correlation IDs for distributed tracing"
+      },
+      "observability": {
+        "tracing": "Distributed tracing across containers",
+        "metrics": "Custom application metrics",
+        "dashboards": "Monitoring dashboards for container health",
+        "sla": "SLA monitoring and reporting"
+      }
+    },
+    "developmentWorkflow": {
+      "localDevelopment": {
+        "dockerCompose": "Docker Compose for local development",
+        "hotReloading": "Volume mounts for hot reloading",
+        "debugging": "Container debugging capabilities",
+        "testing": "Local testing with containers"
+      },
+      "cicdIntegration": {
+        "buildAutomation": "Automated container builds",
+        "testing": "Container testing in CI/CD",
+        "deployment": "Automated deployment to Kubernetes",
+        "rollback": "Automated rollback on failures"
+      },
+      "qualityGates": {
+        "securityScanning": "Security scanning before deployment",
+        "performanceTesting": "Performance testing of containerized applications",
+        "complianceChecks": "Compliance validation for containers",
+        "approvalProcess": "Manual approval for production deployments"
+      }
+    }
+  }
+}

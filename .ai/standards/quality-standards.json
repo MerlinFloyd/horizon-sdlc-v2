@@ -15,9 +15,10 @@
           "Interface definitions for all data structures",
           "No 'any' types without justification",
           "Comprehensive type definitions for API responses",
-          "Proper typing for Next.js page and layout components", 
+          "Proper typing for React components and props",
           "Strong typing for ShadCN component props",
-          "Type-safe Framer Motion animation variants"
+          "Type-safe Framer Motion animation variants",
+          "Shared type definitions in libs/shared/types"
         ]
       },
       "linting": {
@@ -119,17 +120,30 @@
         ]
       },
       "e2eTesting": {
-        "framework": "Playwright",
-        "scope": "Critical user journeys and cross-browser compatibility",
-        "scenarios": [
-          "Create and complete a task with animations",
-          "Generate and access a share link",
-          "Responsive behavior across devices",
-          "Performance testing with animation load",
-          "Accessibility testing with screen readers"
-        ],
-        "browsers": ["Chromium", "Firefox", "Safari"],
-        "devices": ["Desktop", "Mobile", "Tablet"]
+        "framework": "Playwright for web application E2E testing",
+        "coverage": "80% coverage for critical user journeys",
+        "environment": "Ephemeral test environments created from scratch",
+        "scope": "End-to-end user workflows within applications",
+        "automation": "GitHub Actions trigger E2E tests upon build completion",
+        "browsers": ["Chromium only (cross-browser testing excluded)"],
+        "testData": "All test data co-located with test code in source repository"
+      },
+      "crossProjectTesting": {
+        "unitTesting": {
+          "framework": "Jest for JavaScript/TypeScript, Foundry for Solidity",
+          "coverage": "80% coverage for all public methods across all projects",
+          "organization": "Co-located tests with source code",
+          "naming": "*.test.ts, *.spec.ts for unit tests",
+          "nxIntegration": "nx affected:test runs tests for impacted components and dependencies"
+        },
+        "testMaintenance": {
+          "requirements": "Developers must maintain tests as applications are modified",
+          "flakyTestPolicy": {
+            "unitTests": "Remove flaky tests only if coverage remains above 80%",
+            "e2eTests": "Update flaky tests to reduce flakiness (removal not acceptable for critical tests)"
+          },
+          "parallelization": "Maximize test parallelization, especially for E2E tests"
+        }
       },
       "performanceTesting": {
         "tools": ["Lighthouse CI", "@next/bundle-analyzer"],

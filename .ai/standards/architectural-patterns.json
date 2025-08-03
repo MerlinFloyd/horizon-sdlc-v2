@@ -1,55 +1,60 @@
 {
   "architecturalPatterns": {
-    "applicationArchitecture": {
-      "pattern": "Next.js Full-Stack Application with Static Generation",
-      "rationale": "Unified frontend/backend framework, optimized performance, SEO benefits, edge deployment capability",
+    "overallArchitecture": {
+      "pattern": "NX Monorepo with Microservices and Event-Driven Architecture",
+      "rationale": "Unified workspace for multiple applications, shared libraries, independent deployment, and scalable event-driven communication",
       "components": {
-        "frontend": "Next.js with App Router, SSG/ISR for pages, CSR for dynamic interactions",
-        "backend": "Next.js API Routes with TypeScript",
-        "database": "MongoDB document store"
+        "workspace": "NX monorepo with domain-driven organization",
+        "applications": "Multiple applications (web-dashboard, api-core, blockchain-deployer)",
+        "sharedLibraries": "Shared libraries for UI, utilities, and types",
+        "infrastructure": "Containerized deployment on Google Kubernetes Engine",
+        "messaging": "Event-driven communication via Google Cloud Pub/Sub"
       },
-      "renderingStrategy": {
-        "homepage": "SSG - Static generation for fast loading",
-        "taskPages": "ISR - Incremental regeneration for shared tasks",
-        "dashboard": "CSR - Client-side rendering for dynamic interactions",
-        "apiRoutes": "Edge Runtime where possible for performance"
+      "deploymentStrategy": {
+        "containerization": "Docker containers for all applications",
+        "orchestration": "Kubernetes with Helm charts for deployment",
+        "environments": "Two-environment model (test and production)",
+        "cicd": "GitHub Actions with NX affected commands for optimization"
       }
     },
-    "frontendPatterns": {
-      "approved": [
-        "Next.js App Router with layouts and loading states",
-        "React Server Components for static content",
-        "Client Components for interactive elements",
-        "ShadCN/ui components for consistent design system",
-        "Framer Motion for smooth animations and transitions",
-        "Custom hooks for shared client-side logic",
-        "Zustand for lightweight global state management"
-      ],
-      "discouraged": [
-        "Pages Router for new development",
-        "Class components for new development", 
-        "Prop drilling beyond 2-3 levels",
-        "Direct DOM manipulation",
-        "Heavy animation libraries for simple transitions"
-      ],
-      "folderStructure": {
-        "pattern": "Next.js App Router structure with feature organization",
-        "structure": {
-          "app/": "Next.js App Router root",
-          "app/layout.tsx": "Root layout with providers",
-          "app/page.tsx": "Homepage (SSG)",
-          "app/tasks/": "Task-related pages and layouts",
-          "app/shared/[token]/": "Shared task pages (ISR)",
-          "app/api/": "API route handlers",
-          "components/": "Reusable UI components",
-          "components/ui/": "ShadCN/ui component customizations",
-          "lib/": "Utility functions and configurations",
-          "lib/animations.ts": "Framer Motion animation variants",
-          "lib/utils.ts": "General utility functions",
-          "hooks/": "Custom React hooks",
-          "stores/": "Zustand store definitions",
-          "types/": "TypeScript type definitions"
-        }
+    "nxMonorepoPatterns": {
+      "workspaceOrganization": {
+        "structure": "Domain-driven organization with clear boundaries",
+        "applications": [
+          "apps/web-dashboard - Next.js frontend application",
+          "apps/api-core - Node.js backend services",
+          "apps/blockchain-deployer - Blockchain interaction services"
+        ],
+        "sharedLibraries": [
+          "libs/shared/ui - ShadCN/ui components and design system",
+          "libs/shared/utils - Common utility functions",
+          "libs/shared/types - TypeScript type definitions"
+        ],
+        "buildOrchestration": "NX task graph with dependency-aware execution"
+      },
+      "crossProjectCommunication": {
+        "internalAPIs": "Well-defined TypeScript interfaces for internal communication",
+        "messagingPatterns": "Event-driven communication via Google Cloud Pub/Sub",
+        "sharedInfrastructure": "Common infrastructure patterns in shared libraries"
+      },
+    "microservicesPatterns": {
+      "webDashboard": {
+        "pattern": "Next.js frontend application with API routes",
+        "responsibilities": "User interface, client-side logic, web API endpoints",
+        "dependencies": ["shared/ui", "shared/utils", "shared/types"],
+        "communication": "HTTP APIs to api-core, event consumption from Pub/Sub"
+      },
+      "apiCore": {
+        "pattern": "Node.js microservice with Express.js",
+        "responsibilities": "Core business logic, data persistence, external API integration",
+        "dependencies": ["shared/utils", "shared/types"],
+        "communication": "REST APIs, event publishing to Pub/Sub"
+      },
+      "blockchainDeployer": {
+        "pattern": "Node.js service for blockchain interaction",
+        "responsibilities": "Smart contract deployment, blockchain monitoring, transaction processing",
+        "dependencies": ["shared/utils", "shared/types"],
+        "communication": "Event-driven via Pub/Sub, blockchain RPC connections"
       },
       "componentPatterns": {
         "uiComponents": {
@@ -77,15 +82,24 @@
         }
       }
     },
-    "backendPatterns": {
-      "approved": [
-        "Next.js API Routes with TypeScript",
-        "Middleware pattern with Next.js middleware",
-        "Repository pattern with Mongoose models",
-        "Service layer for business logic",
-        "Error handling with Next.js error boundaries",
-        "Edge Runtime for simple operations"
-      ],
+    "containerizationPatterns": {
+      "dockerStandards": {
+        "baseImages": "Alpine-based images for minimal attack surface",
+        "multiStage": "Multi-stage builds for production optimization",
+        "security": "Non-root user, read-only filesystem where possible",
+        "coLocation": "Dockerfiles co-located with applications"
+      },
+      "kubernetesOrchestration": {
+        "platform": "Google Kubernetes Engine (GKE) with Autopilot",
+        "deployments": "Kubernetes Deployments for stateless applications",
+        "services": "Kubernetes Services for internal communication",
+        "ingress": "Ingress controllers for external access"
+      },
+      "helmCharts": {
+        "structure": "Helm charts for deployment management",
+        "versioning": "Semantic versioning for charts and applications",
+        "environments": "Environment-specific values files"
+      },
       "apiDesign": {
         "pattern": "RESTful API Routes following Next.js conventions",
         "endpoints": {
@@ -119,54 +133,94 @@
         }
       }
     },
-    "dataPatterns": {
-      "modelDesign": {
-        "Task": {
-          "fields": {
-            "_id": "ObjectId (auto-generated)",
-            "title": "String (required, max 200 chars)",
-            "description": "String (optional, max 1000 chars)",
-            "status": "Enum ['pending', 'completed']",
-            "createdBy": "String (user name, max 100 chars)",
-            "shareToken": "String (optional, for sharing)",
-            "createdAt": "Date (auto-generated)",
-            "updatedAt": "Date (auto-generated)"
-          },
-          "indexes": ["shareToken", "createdAt", "createdBy"]
-        }
+    "eventDrivenArchitecture": {
+      "messagingPlatform": {
+        "service": "Google Cloud Pub/Sub exclusively",
+        "rationale": "Unified messaging platform with strong consistency and scalability",
+        "topicOrganization": "{env}-{domain}-{event-type} naming convention"
       },
-      "validation": {
-        "clientSide": "React Hook Form with Zod schema validation",
-        "serverSide": "Zod validation in API routes",
-        "database": "Mongoose schema validation as final safety net"
+      "messageContracts": {
+        "baseContract": "Standardized base message contract with required and optional fields",
+        "domainExtensions": "Domain-specific extensions for client, blockchain, and application context",
+        "versionManagement": "Message contract versioning for backward compatibility"
       },
-      "caching": {
-        "staticGeneration": "ISR for shared task pages with 1 hour revalidation",
-        "apiRoutes": "SWR for client-side caching of task data",
-        "edgeCache": "Edge caching for shared task access"
+      "eventProcessing": {
+        "publishers": "Applications publish events to appropriate topics",
+        "subscribers": "Event consumption with proper error handling and retry logic",
+        "deadLetterQueues": "Dead letter queue handling for failed messages"
       }
     },
-    "integrationPatterns": {
-      "externalAPIs": {
-        "pattern": "Service layer abstraction with Next.js API routes",
-        "implementation": "Dedicated service functions for external APIs",
-        "errorHandling": "Graceful degradation with fallback UI states",
-        "caching": "Next.js caching for external API responses"
+    "blockchainIntegrationPatterns": {
+      "multiNetworkSupport": {
+        "networks": ["Ethereum", "Polygon", "Solana"],
+        "networkSelection": "Choose network based on transaction volume, cost, and performance",
+        "fallback": "Graceful fallback when primary network is unavailable"
       },
-      "urlSharing": {
-        "tokenGeneration": "Crypto-random tokens for share URLs",
-        "pageGeneration": "ISR for shared task pages at /shared/[token]", 
-        "expirationPolicy": "No expiration (permanent sharing)",
-        "accessControl": "Public access via share token with ISR optimization"
+      "smartContractInteraction": {
+        "ethereum": "ethers.js for Ethereum and Polygon interaction",
+        "solana": "@solana/web3.js for Solana interaction",
+        "eventListening": "Smart contract event listening and processing",
+        "transactionHandling": "Transaction submission and confirmation tracking"
       },
-      "stateManagement": {
-        "pattern": "Zustand for global state, React state for local",
-        "implementation": [
-          "Task list state in Zustand store",
-          "UI state (modals, loading) in local React state",
-          "Form state with React Hook Form",
-          "Optimistic updates for better UX"
-        ]
+      "deploymentPatterns": {
+        "upgradeability": "Proxy pattern for upgradeable contracts",
+        "packageBased": "Package-based deployment with version coordination",
+        "testing": "Comprehensive testing before deployment"
+      }
+    },
+    "infrastructurePatterns": {
+      "infrastructureAsCode": {
+        "strategy": "Distributed Terraform with application-level configs plus global platform",
+        "stateManagement": "Remote state storage in GCS with state locking",
+        "modules": "Shared Terraform modules for common patterns"
+      },
+      "environmentManagement": {
+        "environments": "Two-environment model: test and production only",
+        "accessControl": "Restrictive for prod, permissive for test",
+        "resourceTagging": "Mandatory tagging for cost attribution"
+      },
+      "monitoringAndObservability": {
+        "platform": "Elastic Cloud for unified monitoring",
+        "dataIngestion": "Cloud Logging → Pub/Sub → Elastic Cloud",
+        "indexOrganization": "{env}-{type}-{application}-{date} pattern",
+        "alerting": "Comprehensive alerting across all layers"
+      }
+    },
+    "dataPatterns": {
+      "databasePatterns": {
+        "postgresql": "Prisma ORM for relational data with ACID compliance",
+        "mongodb": "Mongoose ODM for document-based flexible schemas",
+        "redis": "Caching layer for performance optimization and session storage"
+      },
+      "apiDesignPatterns": {
+        "restful": "RESTful API design following OpenAPI 3.0 specification",
+        "validation": "Comprehensive input validation using Zod or Joi",
+        "errorHandling": "Consistent error response format across all APIs",
+        "versioning": "API versioning abstracted through libraries"
+      },
+      "cachingPatterns": {
+        "applicationLevel": "Redis for API response caching",
+        "blockchainData": "Aggressive caching of blockchain data for performance",
+        "sessionStorage": "Redis-backed session storage for authentication"
+      }
+    },
+    "testingPatterns": {
+      "unitTesting": {
+        "javascript": "Jest for JavaScript/TypeScript with 80% coverage",
+        "solidity": "Foundry for smart contract testing with 90% coverage",
+        "organization": "Co-located tests with source code",
+        "nxIntegration": "nx affected:test for optimized test execution"
+      },
+      "e2eTesting": {
+        "framework": "Playwright for end-to-end testing",
+        "environment": "Ephemeral test environments created from scratch",
+        "coverage": "80% coverage for critical user journeys",
+        "automation": "GitHub Actions trigger E2E tests upon build completion"
+      },
+      "componentTesting": {
+        "framework": "React Testing Library for component behavior testing",
+        "documentation": "Storybook for component documentation and visual testing",
+        "accessibility": "Automated accessibility testing for all components"
       }
     }
   }

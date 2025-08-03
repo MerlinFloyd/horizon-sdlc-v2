@@ -1,0 +1,439 @@
+{
+  "monorepoStandards": {
+    "workspaceOrganization": {
+      "mandatoryFolderStructure": {
+        "apps/": {
+          "purpose": "Deployable applications",
+          "applications": {
+            "web-dashboard/": "Next.js frontend application with src/, Dockerfile, k8s/, helm/",
+            "web-marketplace/": "Next.js marketplace application with src/, Dockerfile, k8s/",
+            "api-core/": "Node.js backend services with src/, Dockerfile, k8s/",
+            "api-payments/": "Node.js payment services with src/, Dockerfile, k8s/",
+            "blockchain-deployer/": "Smart contract deployment app with src/, Dockerfile, k8s/"
+          }
+        },
+        "libs/": {
+          "purpose": "Shared libraries organized by category",
+          "shared/": {
+            "ui/": "ShadCN components & design system with src/, Dockerfile for Storybook",
+            "utils/": "Common utilities",
+            "types/": "TypeScript type definitions",
+            "config/": "Shared configurations"
+          },
+          "web/": {
+            "components/": "Web-specific components",
+            "hooks/": "React hooks",
+            "stores/": "State management"
+          },
+          "api/": {
+            "database/": "Database utilities & models",
+            "auth/": "Authentication logic",
+            "services/": "Business logic services"
+          },
+          "blockchain/": {
+            "contracts/": "Smart contract interfaces",
+            "sdk/": "Blockchain interaction SDK",
+            "utils/": "Blockchain utilities"
+          }
+        },
+        "contracts/": {
+          "purpose": "Smart contract source code",
+          "ethereum/": "Ethereum/Polygon contracts with src/, Dockerfile, k8s/",
+          "solana/": "Solana programs with src/, Dockerfile",
+          "shared/": "Cross-chain utilities"
+        },
+        "tools/": {
+          "purpose": "Development tools",
+          "generators/": "NX generators",
+          "scripts/": "Build/deployment scripts",
+          "linters/": "Custom linting rules"
+        },
+        "docs/": {
+          "purpose": "Documentation",
+          "architecture/": "System architecture docs",
+          "apis/": "API documentation",
+          "guides/": "Developer guides"
+        },
+        "rootFiles": {
+          "docker-compose.yml": "Local development orchestration",
+          "docker-compose.override.yml": "Local development overrides (git ignored)",
+          "nx.json": "NX workspace configuration",
+          "package.json": "Dependencies and scripts"
+        }
+      },
+      "dockerIntegration": {
+        "coLocationPrinciple": "Dockerfiles live with their applications (not centralized)",
+        "structureExamples": [
+          "apps/web-dashboard/Dockerfile",
+          "apps/api-core/Dockerfile",
+          "contracts/ethereum/Dockerfile",
+          "libs/shared/ui/Dockerfile (for Storybook deployment)"
+        ],
+        "kubernetesManifests": "Co-located with applications in k8s/ directories",
+        "localDevelopment": "docker-compose.yml in workspace root for development dependencies"
+      },
+      "projectNaming": {
+        "applications": {
+          "pattern": "{domain}-{purpose}",
+          "examples": ["web-dashboard", "web-marketplace", "api-core", "api-payments", "blockchain-deployer"]
+        },
+        "libraries": {
+          "pattern": "{scope}/{domain}",
+          "examples": ["shared/ui", "shared/utils", "web/components", "api/database", "blockchain/sdk"]
+        },
+        "contracts": {
+          "pattern": "{chain}/{purpose}",
+          "examples": ["ethereum/token-contract", "ethereum/marketplace-contract", "solana/nft-program"]
+        }
+      },
+      "domainOrganization": {
+        "pattern": "Domain-driven organization with clear boundaries",
+        "domains": [
+          "Web applications (user interfaces)",
+          "API services (backend logic)",
+          "Blockchain services (smart contract interaction)",
+          "Shared utilities (cross-domain code)"
+        ]
+      }
+    },
+    "configurationStandards": {
+      "mandatoryNxPlugins": {
+        "@nx/react": {
+          "purpose": "Next.js application support",
+          "required": true,
+          "version": "Latest stable"
+        },
+        "@nx/node": {
+          "purpose": "Node.js API service support",
+          "required": true,
+          "version": "Latest stable"
+        },
+        "@nx/jest": {
+          "purpose": "Testing framework integration",
+          "required": true,
+          "version": "Latest stable"
+        },
+        "@nx/eslint": {
+          "purpose": "Code quality and linting",
+          "required": true,
+          "version": "Latest stable"
+        },
+        "@nx/playwright": {
+          "purpose": "E2E testing framework",
+          "required": true,
+          "version": "Latest stable"
+        }
+      },
+      "optionalPlugins": [
+        "@nx/storybook - Component documentation"
+      ],
+      "workspaceConfiguration": {
+        "defaultProject": "web-dashboard",
+        "cli": {
+          "packageManager": "npm",
+          "analytics": false
+        },
+        "generators": {
+          "@nx/react": {
+            "application": {
+              "style": "css",
+              "linter": "eslint",
+              "bundler": "webpack"
+            }
+          }
+        }
+      },
+      "projectStructureTemplates": {
+        "nextjsApp": {
+          "folders": ["src/app/", "src/components/", "src/lib/", "src/hooks/", "public/", "k8s/"],
+          "configFiles": ["next.config.js", "tailwind.config.js", "tsconfig.json", "Dockerfile", "project.json"]
+        },
+        "nodejsApi": {
+          "folders": ["src/routes/", "src/middleware/", "src/services/", "src/models/", "k8s/"],
+          "configFiles": ["tsconfig.json", "Dockerfile", "project.json"]
+        },
+        "smartContractProject": {
+          "folders": ["contracts/", "scripts/", "test/", "deploy/", "k8s/"],
+          "configFiles": ["hardhat.config.ts", "foundry.toml", "Dockerfile", "project.json"]
+        },
+        "sharedLibrary": {
+          "folders": ["src/", "test/"],
+          "configFiles": ["tsconfig.json", "project.json", "README.md"]
+        }
+      },
+      "codeTemplates": {
+        "nextjsApp": [
+          "Basic layout.tsx with ShadCN/ui integration",
+          "page.tsx with TypeScript and Tailwind setup",
+          "API route examples with proper error handling",
+          "Component examples using shared/ui library"
+        ],
+        "nodejsApi": [
+          "Express server setup with TypeScript",
+          "Basic route structure and middleware",
+          "Database connection setup (MongoDB/PostgreSQL)",
+          "Health check and error handling endpoints"
+        ],
+        "smartContractProject": [
+          "Basic contract template with security patterns",
+          "Deployment script templates",
+          "Test file templates with coverage examples",
+          "Integration examples with frontend libraries"
+        ],
+        "sharedLibrary": [
+          "index.ts with proper exports",
+          "TypeScript configuration inheritance",
+          "Jest test setup and example tests",
+          "README with usage examples"
+        ]
+      },
+      "workflowScaffolding": {
+        "cicdSetup": {
+          "includes": ["GitHub Actions workflow templates", "Docker build and test configurations", "Deployment pipeline setup"],
+          "autoGenerated": true,
+          "templates": [".github/workflows/ci.yml", ".github/workflows/cd.yml", ".github/workflows/docker.yml"]
+        },
+        "testingSetup": {
+          "includes": ["Jest configuration with NX integration", "Playwright E2E test setup", "Test file templates and examples"],
+          "autoGenerated": true,
+          "configFiles": ["jest.config.js", "playwright.config.ts"]
+        },
+        "dockerSetup": {
+          "includes": ["Multi-stage Dockerfile optimized for project type", "Kubernetes manifest templates"],
+          "autoGenerated": true,
+          "templates": ["Dockerfile", "k8s/deployment.yaml", "k8s/service.yaml"]
+        }
+      },
+      "externalPlatformIntegrations": {
+        "githubActions": {
+          "integration": "NX Cloud for distributed caching",
+          "workflows": "Auto-generated CI/CD workflows",
+          "affected": "Automated affected project detection",
+          "required": true
+        },
+        "containerRegistries": {
+          "integration": "GitHub Container Registry (primary)",
+          "automation": "Automated image builds and pushes",
+          "tagging": "Semantic versioning and branch-based tags",
+          "required": true
+        },
+        "deploymentPlatforms": {
+          "integration": "Kubernetes clusters via GitOps",
+          "automation": "Automated deployment workflows",
+          "manifests": "Co-located Kubernetes manifests",
+          "required": true
+        }
+      }
+    },
+    "projectTypeStructures": {
+      "projectStructure": {
+        "applications": {
+          "webApps": {
+            "purpose": "User-facing frontend applications",
+            "examples": ["web-dashboard", "web-marketplace"],
+            "structure": {
+              "folders": ["src/app/", "src/components/", "src/lib/", "src/hooks/", "public/", "k8s/"],
+              "configFiles": ["project.json", "Dockerfile"]
+            },
+            "dependencies": ["shared/ui", "shared/utils", "shared/types", "web/components", "web/hooks"]
+          },
+          "apiServices": {
+            "purpose": "Backend services and APIs",
+            "examples": ["api-core", "api-payments"],
+            "structure": {
+              "folders": ["src/routes/", "src/middleware/", "src/services/", "src/models/", "k8s/"],
+              "configFiles": ["project.json", "Dockerfile"]
+            },
+            "dependencies": ["shared/utils", "shared/types", "api/database", "api/auth", "api/services"]
+          },
+          "blockchainApps": {
+            "purpose": "Smart contract deployment and management",
+            "examples": ["blockchain-deployer"],
+            "structure": {
+              "folders": ["contracts/", "scripts/", "test/", "deploy/", "k8s/"],
+              "configFiles": ["project.json", "Dockerfile"]
+            },
+            "dependencies": ["shared/utils", "shared/types", "blockchain/contracts", "blockchain/sdk"]
+          }
+        },
+        "libraries": {
+          "sharedLibraries": {
+            "purpose": "Cross-domain shared code",
+            "examples": ["shared/ui", "shared/utils", "shared/types", "shared/config"],
+            "structure": {
+              "folders": ["src/", "test/"],
+              "configFiles": ["project.json", "README.md"]
+            }
+          },
+          "domainLibraries": {
+            "purpose": "Domain-specific shared code",
+            "examples": ["web/components", "api/database", "blockchain/sdk"],
+            "structure": {
+              "folders": ["src/", "test/"],
+              "configFiles": ["project.json", "README.md"]
+            }
+          }
+        }
+      }
+    },
+    "testingIntegration": {
+      "affectedTesting": {
+        "command": "nx affected:test runs tests for impacted components and dependencies",
+        "dependencyTracking": "NX automatically identifies component dependencies",
+        "optimization": "Only test projects affected by changes"
+      },
+      "testCaching": {
+        "caching": "Test result caching for unchanged components",
+        "parallelization": "Parallel unit test execution across projects",
+        "distribution": "Distributed testing across multiple machines with NX Cloud"
+      },
+      "testOrchestration": {
+        "taskDependencies": "Tests run after successful builds",
+        "crossProjectTesting": "Integration tests coordinate across multiple projects",
+        "testReporting": "Unified test reporting across all projects"
+      }
+    },
+    "featureFlaggingSupport": {
+      "approvedStyle": "LaunchDarkly-style tools",
+      "rationale": "Enable safe deployments, A/B testing, gradual rollouts",
+      "toolSelection": "Specific tool selection pending evaluation",
+      "requirements": {
+        "realTimeUpdates": "Flags should update without deployment",
+        "targeting": "Support user/group targeting",
+        "rollback": "Instant rollback capability",
+        "analytics": "Flag usage analytics and impact measurement"
+      },
+      "integrationPoints": {
+        "frontend": "React hooks for feature flag evaluation",
+        "backend": "Middleware for API feature gating",
+        "infrastructure": "Infrastructure-level feature toggles"
+      }
+    },
+    "versioningCoordination": {
+      "independentVersioning": {
+        "approach": "Each NX project maintains its own semantic version independently",
+        "coordination": "NX dependency graph ensures version compatibility",
+        "automation": "Automated version bumping based on affected project analysis"
+      },
+      "crossProjectDependencies": {
+        "dependencyTracking": "NX tracks dependencies between projects automatically",
+        "versionConstraints": "Semantic version constraints for internal dependencies",
+        "updateCoordination": "Coordinated updates across dependent projects"
+      },
+      "featureFlagCoordination": {
+        "purpose": "Manage functional changes that depend on other NX projects",
+        "versionAwareness": "Feature flags conditional upon specific dependency versions",
+        "integration": "Feature flag tools interrogate NX dependency graph"
+      }
+    },
+    "buildOrchestration": {
+      "taskDependenciesAndExecutionOrder": {
+        "buildOrder": {
+          "phase1": "shared/* libraries (parallel)",
+          "phase2": "domain libraries (web/*, api/*, blockchain/*) (parallel within domain)",
+          "phase3": "applications (parallel)",
+          "rationale": "Dependency-aware execution ensures libraries are built before consumers"
+        },
+        "taskTypes": {
+          "build": {
+            "dependencies": ["lint", "type-check"],
+            "parallelizable": true,
+            "cacheable": true
+          },
+          "test": {
+            "dependencies": ["build"],
+            "parallelizable": true,
+            "cacheable": true
+          },
+          "docker-build": {
+            "dependencies": ["build", "test"],
+            "parallelizable": true,
+            "cacheable": false
+          },
+          "e2e": {
+            "dependencies": ["docker-build"],
+            "parallelizable": false,
+            "cacheable": false
+          },
+          "deploy": {
+            "dependencies": ["docker-build", "e2e"],
+            "parallelizable": false,
+            "cacheable": false
+          }
+        }
+      },
+      "cicdIntegration": {
+        "cloudIntegration": "NX Cloud for distributed caching and build coordination",
+        "affectedProjectDetection": "Use @nrwl/nx-set-shas for affected project detection in CI/CD",
+        "parallelExecution": {
+          "matrixBuilds": "Parallel execution for independent projects",
+          "taskDistribution": "Distribute tasks across multiple CI/CD agents",
+          "caching": "Leverage NX computation caching for faster builds"
+        },
+        "workflowOptimization": {
+          "affectedOnly": "Run CI/CD only for projects impacted by changes",
+          "dependencyAware": "Build and test in dependency order",
+          "incrementalDeployment": "Deploy only affected applications"
+        }
+      },
+      "caching": {
+        "buildCaching": "NX distributed build cache for faster builds",
+        "computationCaching": "Cache task results to avoid redundant work",
+        "cloudCaching": "NX Cloud for distributed caching across team",
+        "localCaching": "Local caching for individual developer machines"
+      },
+      "taskGraphOptimization": {
+        "pattern": "Dependency-aware build orchestration",
+        "implementation": "NX task graph with automatic dependency resolution",
+        "benefits": "Parallel execution of independent tasks, sequential execution of dependent tasks"
+      },
+      "incrementalBuilds": {
+        "pattern": "Build only what changed",
+        "implementation": "NX affected commands with computation caching",
+        "optimization": "Skip unchanged projects and their dependents"
+      },
+      "affectedProjectDetection": {
+        "pattern": "Automatic detection of projects impacted by changes",
+        "implementation": "Git diff analysis with dependency graph traversal",
+        "scope": "Tests, builds, and deployments run only for affected projects"
+      }
+    },
+    "localDevelopment": {
+      "workspaceSetup": {
+        "location": "docker-compose.yml in workspace root",
+        "purpose": "Orchestrate development dependencies for all NX projects",
+        "overrides": {
+          "file": "docker-compose.override.yml",
+          "purpose": "Developer-specific customizations",
+          "gitIgnore": true
+        }
+      },
+      "developmentWorkflow": {
+        "startup": "docker-compose up -d (start shared dependencies)",
+        "development": "nx serve <app> (start individual NX applications)",
+        "testing": "nx test <project> (run tests for specific NX projects)",
+        "affectedDevelopment": "nx affected:serve (start only affected applications)",
+        "cleanup": "docker-compose down (stop all shared services)"
+      }
+    },
+    "interProjectCommunication": {
+      "internalAPIs": {
+        "pattern": "Well-defined TypeScript interfaces for internal NX project communication",
+        "implementation": "Shared type definitions in libs/shared/types",
+        "dependencies": "NX tracks API dependencies between projects automatically",
+        "versioning": "Versioned interfaces with backward compatibility across NX projects"
+      },
+      "sharedLibraryPatterns": {
+        "pattern": "Common patterns implemented in shared NX libraries",
+        "implementation": "Database access, authentication, logging in libs/shared/*",
+        "consistency": "Unified patterns across all NX applications",
+        "dependencyManagement": "NX ensures proper dependency resolution"
+      },
+      "crossProjectCoordination": {
+        "buildCoordination": "NX coordinates builds across dependent projects",
+        "testCoordination": "Integration tests span multiple NX projects",
+        "deploymentCoordination": "Coordinated deployment of dependent applications"
+      }
+    }
+  }
+}

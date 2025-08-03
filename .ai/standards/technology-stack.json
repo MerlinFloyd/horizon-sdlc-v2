@@ -1,9 +1,26 @@
 {
   "technologyStack": {
+    "workspaceOrganization": {
+      "monorepo": {
+        "approved": ["NX Workspace"],
+        "preferred": "NX Workspace with domain-driven organization",
+        "rationale": "Unified workspace for multiple applications with shared libraries, build orchestration, and dependency management",
+        "structure": {
+          "apps": "Application projects (web-dashboard, api-core, blockchain-deployer)",
+          "libs": "Shared libraries (shared/ui, shared/utils, shared/types)",
+          "tools": "Build tools, generators, and development utilities"
+        }
+      },
+      "packageManager": {
+        "approved": ["npm", "yarn", "pnpm"],
+        "preferred": "npm",
+        "rationale": "Consistent with NX workspace defaults and Node.js ecosystem compatibility"
+      }
+    },
     "frontend": {
       "approved": ["Next.js 14+", "React 18+", "TypeScript 4.9+"],
-      "preferred": "Next.js 14+ with TypeScript",
-      "rationale": "Full-stack React framework with SSR/SSG, built-in optimization, excellent developer experience and ecosystem",
+      "preferred": "Next.js 14+ with TypeScript in NX workspace",
+      "rationale": "Full-stack React framework with SSR/SSG, built-in optimization, excellent developer experience and NX integration",
       "restrictions": ["No jQuery", "No plain JavaScript for new development"],
       "buildTools": {
         "approved": ["Next.js built-in (Webpack + SWC)", "Turbopack"],
@@ -42,10 +59,16 @@
       }
     },
     "backend": {
-      "approved": ["Node.js 18+", "Express.js 4.18+", "TypeScript 4.9+", "Next.js API Routes"],
-      "preferred": "Next.js API Routes with TypeScript",
-      "rationale": "Full-stack framework unification, built-in API optimization, serverless-ready",
-      "restrictions": ["No CommonJS for new projects", "TypeScript required"],
+      "approved": ["Node.js 18+", "TypeScript 4.9+", "Go 1.21+", "Next.js API Routes"],
+      "preferred": "Node.js with TypeScript for services, Next.js API Routes for web APIs",
+      "rationale": "Node.js for microservices, Go for performance-critical services, Next.js for web application APIs",
+      "restrictions": ["No CommonJS for new projects", "TypeScript required for Node.js"],
+      "golang": {
+        "useCase": "Performance-critical backend services and blockchain libraries",
+        "frameworks": ["Gin", "Echo", "Fiber"],
+        "preferred": "Gin for REST APIs, native Go for blockchain integration",
+        "rationale": "High performance, excellent concurrency, strong blockchain ecosystem"
+      },
       "middleware": {
         "approved": ["helmet", "cors", "express-rate-limit", "express-validator", "Next.js middleware"],
         "preferred": "Next.js middleware for edge cases, Express.js patterns for complex logic",
@@ -58,20 +81,90 @@
       }
     },
     "database": {
-      "approved": ["MongoDB 6+", "Mongoose 7+", "Prisma with MongoDB"],
-      "preferred": "MongoDB with Mongoose ODM",
-      "rationale": "Document-based storage suitable for flexible task data, excellent Node.js integration",
-      "restrictions": ["No direct MongoDB driver usage", "Always use ODM/ORM"],
+      "relational": {
+        "approved": ["PostgreSQL 15+", "Prisma ORM"],
+        "preferred": "PostgreSQL with Prisma ORM",
+        "rationale": "ACID compliance for critical data, excellent TypeScript integration, robust ecosystem"
+      },
+      "document": {
+        "approved": ["MongoDB 6+", "Mongoose 7+"],
+        "preferred": "MongoDB with Mongoose ODM",
+        "rationale": "Document-based storage for flexible schemas, excellent Node.js integration"
+      },
+      "caching": {
+        "approved": ["Redis 7+"],
+        "preferred": "Redis for caching and session storage",
+        "rationale": "High-performance in-memory data structure store",
+        "useCases": [
+          "Application-level caching for API responses",
+          "Session storage for user authentication",
+          "Blockchain data caching for performance optimization",
+          "Rate limiting and throttling"
+        ],
+        "hosting": "Google Memorystore for Redis"
+      },
+      "restrictions": ["No direct database driver usage", "Always use ORM/ODM"],
       "hosting": {
-        "approved": ["MongoDB Atlas", "Self-hosted MongoDB"],
-        "preferred": "MongoDB Atlas",
-        "rationale": "Managed service, automatic scaling, built-in security, backup management"
+        "approved": ["Google Cloud SQL", "MongoDB Atlas", "Google Memorystore"],
+        "preferred": "Managed cloud services",
+        "rationale": "Managed services, automatic scaling, built-in security, backup management"
       }
     },
-    "packageManagement": {
-      "approved": ["npm", "yarn", "pnpm"],
-      "preferred": "pnpm",
-      "rationale": "Faster installs, disk efficient, better monorepo support, Node.js ecosystem compatibility"
+    "blockchain": {
+      "networks": {
+        "approved": ["Ethereum", "Polygon", "Solana"],
+        "preferred": "Multi-network support based on use case requirements",
+        "rationale": "Ethereum for ecosystem maturity, Polygon for cost efficiency, Solana for performance"
+      },
+      "smartContracts": {
+        "ethereum": {
+          "language": "Solidity 0.8.19+",
+          "framework": "Foundry",
+          "rationale": "Modern tooling with fast compilation and comprehensive testing"
+        },
+        "solana": {
+          "language": "Rust with Anchor framework",
+          "framework": "Anchor",
+          "rationale": "Idiomatic Rust development with safety and productivity features"
+        }
+      },
+      "libraries": {
+        "approved": ["ethers.js", "web3.js", "@solana/web3.js", "@project-serum/anchor"],
+        "preferred": "ethers.js for Ethereum/Polygon, @solana/web3.js for Solana",
+        "rationale": "Comprehensive blockchain interaction libraries with TypeScript support"
+      }
+    },
+    "infrastructure": {
+      "cloudProvider": {
+        "approved": ["Google Cloud Platform (GCP)"],
+        "preferred": "GCP exclusively",
+        "rationale": "Unified cloud platform for consistency, cost optimization, and operational simplicity"
+      },
+      "containerization": {
+        "approved": ["Docker", "Kubernetes", "Helm"],
+        "preferred": "Docker with Google Kubernetes Engine (GKE) and Helm charts",
+        "rationale": "Industry-standard containerization with managed Kubernetes and deployment automation",
+        "registry": {
+          "approved": ["GitHub Container Registry (ghcr.io)"],
+          "preferred": "GitHub Container Registry",
+          "rationale": "Integrated with GitHub, secure, cost-effective with repository-based access control"
+        }
+      },
+      "infrastructureAsCode": {
+        "approved": ["Terraform"],
+        "preferred": "Terraform with GCP provider",
+        "rationale": "Declarative infrastructure management with version control and automation"
+      },
+      "messaging": {
+        "approved": ["Google Cloud Pub/Sub"],
+        "preferred": "Google Cloud Pub/Sub exclusively",
+        "rationale": "Unified messaging platform with strong consistency and scalability"
+      },
+      "monitoring": {
+        "approved": ["Elastic Cloud", "Google Cloud Monitoring"],
+        "preferred": "Elastic Cloud for unified monitoring platform",
+        "rationale": "Comprehensive monitoring, logging, and observability across all systems"
+      }
     },
     "thirdPartyServices": {
       "urlShortening": {
@@ -92,9 +185,21 @@
         "rationale": "Consistent formatting, Tailwind class sorting"
       },
       "testing": {
-        "approved": ["Jest", "Vitest", "React Testing Library", "Playwright"],
-        "preferred": "Vitest + React Testing Library for unit/integration, Playwright for E2E",
-        "rationale": "Fast test execution, excellent Next.js integration"
+        "unitTesting": {
+          "approved": ["Jest", "Foundry"],
+          "preferred": "Jest for JavaScript/TypeScript, Foundry for Solidity",
+          "rationale": "Jest for comprehensive JavaScript testing, Foundry for smart contract testing"
+        },
+        "e2eTesting": {
+          "approved": ["Playwright"],
+          "preferred": "Playwright for end-to-end testing",
+          "rationale": "Reliable cross-browser testing with excellent developer experience"
+        },
+        "componentTesting": {
+          "approved": ["React Testing Library", "Storybook"],
+          "preferred": "React Testing Library for component testing, Storybook for documentation",
+          "rationale": "Testing library focused on user behavior, Storybook for component documentation"
+        }
       }
     }
   }

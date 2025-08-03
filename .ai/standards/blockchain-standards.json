@@ -1,0 +1,180 @@
+{
+  "blockchainStandards": {
+    "supportedNetworks": {
+      "ethereum": {
+        "mainnet": "Ethereum Mainnet for production",
+        "testnet": "Sepolia for testing and development",
+        "rationale": "Most mature ecosystem with extensive tooling and community support"
+      },
+      "polygon": {
+        "mainnet": "Polygon Mainnet for production",
+        "testnet": "Mumbai for testing and development", 
+        "rationale": "Lower transaction costs and faster confirmation times"
+      },
+      "solana": {
+        "mainnet": "Solana Mainnet for production",
+        "testnet": "Devnet for testing and development",
+        "rationale": "High throughput and low latency for performance-critical applications"
+      },
+      "networkSelection": {
+        "criteria": "Choose network based on transaction volume, cost, and performance requirements",
+        "multiChain": "Support for multi-chain deployments and cross-chain interactions",
+        "fallback": "Graceful fallback when primary network is unavailable"
+      }
+    },
+    "smartContractDevelopment": {
+      "ethereum": {
+        "language": "Solidity 0.8.19+",
+        "framework": "Foundry for development and testing",
+        "rationale": "Modern tooling with fast compilation and comprehensive testing capabilities"
+      },
+      "polygon": {
+        "language": "Solidity 0.8.19+ (Ethereum compatible)",
+        "framework": "Foundry with Polygon configuration",
+        "rationale": "Leverage Ethereum tooling with Polygon-specific optimizations"
+      },
+      "solana": {
+        "language": "Rust with Anchor framework",
+        "framework": "Anchor for Solana program development",
+        "rationale": "Idiomatic Rust development with Anchor's safety and productivity features"
+      },
+      "developmentPrinciples": {
+        "security": "Security-first development with comprehensive testing",
+        "gasOptimization": "Gas optimization for cost-effective transactions",
+        "upgradeability": "Proxy patterns for upgradeable contracts",
+        "documentation": "Comprehensive documentation for all smart contracts"
+      }
+    },
+    "testingStrategy": {
+      "unitTesting": {
+        "ethereum": "Foundry tests with 90% coverage requirement",
+        "solana": "Rust unit tests with cargo test",
+        "coverage": "90% test coverage for all smart contract code",
+        "mocking": "Mock external dependencies and oracles"
+      },
+      "integrationTesting": {
+        "localNetworks": "Local blockchain networks for integration testing",
+        "testnetDeployment": "Testnet deployment for end-to-end testing",
+        "crossChain": "Cross-chain interaction testing",
+        "performance": "Gas usage and performance testing"
+      },
+      "securityTesting": {
+        "staticAnalysis": "Static analysis tools (Slither, Mythril)",
+        "fuzzTesting": "Fuzz testing for edge cases and vulnerabilities",
+        "auditPreparation": "Code preparation for security audits",
+        "vulnerabilityScanning": "Automated vulnerability scanning"
+      }
+    },
+    "deploymentStrategy": {
+      "upgradePatterns": {
+        "proxyPattern": "Proxy pattern for upgradeable contracts",
+        "implementation": "Separate proxy and implementation contracts",
+        "upgradeProcess": "Deploy new implementation, update proxy pointer",
+        "stateCompatibility": "Ensure contract state compatibility during upgrades"
+      },
+      "packageBasedDeployment": {
+        "deploymentPackage": {
+          "contracts": "Compiled smart contract bytecode",
+          "migrations": "Contract deployment and upgrade scripts",
+          "configuration": "Network-specific contract addresses",
+          "version": "Package version matching application version"
+        },
+        "rollbackStrategy": {
+          "proxyRollback": "Update proxy to point to previous implementation",
+          "stateConsiderations": "Ensure contract state compatibility",
+          "coordination": "Rollback coordinated with application rollback"
+        }
+      },
+      "networkConfiguration": {
+        "testEnvironment": {
+          "networks": ["Ethereum Sepolia", "Polygon Mumbai", "Solana Devnet"],
+          "purpose": "Testing and development"
+        },
+        "productionEnvironment": {
+          "networks": ["Ethereum Mainnet", "Polygon Mainnet", "Solana Mainnet"],
+          "purpose": "Live customer transactions"
+        }
+      }
+    },
+    "integrationPatterns": {
+      "backendIntegration": {
+        "rpcConnections": "Reliable RPC endpoint connections with fallback",
+        "eventListening": "Smart contract event listening and processing",
+        "transactionHandling": "Transaction submission and confirmation tracking",
+        "errorHandling": "Comprehensive error handling for blockchain interactions"
+      },
+      "frontendIntegration": {
+        "walletConnection": "Multi-wallet support (MetaMask, WalletConnect, Phantom)",
+        "transactionSigning": "Secure transaction signing workflows",
+        "networkSwitching": "Automatic network switching in DApps",
+        "userExperience": "Intuitive user experience for blockchain interactions"
+      },
+      "messagingIntegration": {
+        "eventPublishing": "Blockchain events published to Google Cloud Pub/Sub",
+        "contractEvents": "Smart contract events as separate message type",
+        "eventProcessing": "Reliable event processing with retry mechanisms",
+        "monitoring": "Blockchain event monitoring and alerting"
+      }
+    },
+    "securityStandards": {
+      "smartContractSecurity": {
+        "bestPractices": "Follow established smart contract security best practices",
+        "accessControl": "Proper access control and permission management",
+        "inputValidation": "Comprehensive input validation and sanitization",
+        "reentrancyProtection": "Protection against reentrancy attacks"
+      },
+      "keyManagement": {
+        "privateKeys": "Secure private key storage and management",
+        "multiSig": "Multi-signature wallets for critical operations",
+        "keyRotation": "Regular key rotation procedures",
+        "backupRecovery": "Secure backup and recovery procedures"
+      },
+      "auditRequirements": {
+        "codeAudits": "Professional security audits for production contracts",
+        "auditReports": "Public audit reports and remediation tracking",
+        "continuousMonitoring": "Continuous security monitoring of deployed contracts",
+        "incidentResponse": "Incident response procedures for security issues"
+      }
+    },
+    "performanceOptimization": {
+      "gasOptimization": {
+        "codeOptimization": "Optimize smart contract code for gas efficiency",
+        "batchOperations": "Batch multiple operations to reduce gas costs",
+        "storageOptimization": "Optimize storage usage and access patterns",
+        "gasEstimation": "Accurate gas estimation for transactions"
+      },
+      "scalabilityPatterns": {
+        "layerTwoSolutions": "Layer 2 scaling solutions where appropriate",
+        "stateChannels": "State channels for high-frequency interactions",
+        "sidechains": "Sidechain integration for specific use cases",
+        "crossChainBridges": "Cross-chain bridges for asset transfers"
+      },
+      "cachingStrategies": {
+        "blockchainData": "Aggressive caching of blockchain data",
+        "rpcCaching": "RPC response caching to reduce API calls",
+        "eventCaching": "Event data caching for faster retrieval",
+        "offlineSupport": "Graceful degradation when blockchain is unavailable"
+      }
+    },
+    "monitoringAndObservability": {
+      "blockchainMonitoring": {
+        "rpcEndpoints": "Monitor blockchain RPC endpoint health and latency",
+        "transactionTracking": "Track transaction status and confirmation times",
+        "contractEvents": "Monitor smart contract events and gas usage",
+        "networkStatus": "Monitor blockchain network health and sync status"
+      },
+      "applicationMonitoring": {
+        "walletConnections": "Monitor wallet connection success rates",
+        "transactionFailures": "Track and alert on transaction failures",
+        "gasUsage": "Monitor gas usage patterns and optimization opportunities",
+        "userExperience": "Monitor user experience metrics for blockchain interactions"
+      },
+      "alertingStrategy": {
+        "criticalAlerts": "Immediate alerts for contract security issues",
+        "performanceAlerts": "Alerts for performance degradation",
+        "networkAlerts": "Alerts for blockchain network issues",
+        "gasAlerts": "Alerts for unusual gas usage patterns"
+      }
+    }
+  }
+}

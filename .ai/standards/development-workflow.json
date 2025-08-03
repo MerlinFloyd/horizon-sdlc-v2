@@ -1,59 +1,64 @@
 {
   "developmentWorkflow": {
     "versionControl": {
-      "strategy": "Git Flow simplified",
+      "strategy": "Trunk-based development with feature branches",
       "branches": {
-        "main": "Production-ready code, protected branch",
-        "develop": "Integration branch for features",
-        "feature/*": "Feature development branches",
-        "hotfix/*": "Critical production fixes"
+        "main": "Always deployable main branch, protected branch",
+        "feature/*": "Short-lived feature branches for development"
       },
       "commitConventions": {
         "format": "type(scope): description",
         "types": ["feat", "fix", "docs", "style", "refactor", "test", "chore"],
         "examples": [
-          "feat(tasks): add task sharing with animations",
-          "fix(api): handle validation errors in API routes",
-          "docs(readme): update Next.js setup instructions",
-          "style(ui): update ShadCN component styling"
-        ]
+          "feat(web-dashboard): add task sharing with animations",
+          "fix(api-core): handle validation errors in API routes",
+          "docs(shared-ui): update component documentation",
+          "style(shared-ui): update ShadCN component styling"
+        ],
+        "automation": "Conventional commits for automated versioning"
       },
       "pullRequests": {
+        "reviewProcess": "Repository-wide single review process for all PRs",
+        "automatedApproval": "PR approval conditional on automated checks",
         "requirements": [
-          "All checks must pass (build, tests, linting, type-check)",
-          "Minimum one peer review required",
-          "Up-to-date with target branch",
-          "Meaningful description and linked issues",
-          "Visual regression testing for UI changes"
-        ]
+          "Branch must build successfully",
+          "All unit tests must pass",
+          "Code quality gates must pass",
+          "Automated approval if all checks pass"
+        ],
+        "githubActions": "GitHub Actions run on PR creation and updates"
       }
     },
     "cicdPipeline": {
       "platform": "GitHub Actions",
       "triggers": [
         "Pull request creation/updates",
-        "Pushes to main/develop branches", 
+        "Pushes to main branch",
         "Manual deployment triggers"
       ],
+      "nxIntegration": {
+        "affectedProjectDetection": "nx affected commands in GitHub Actions",
+        "optimization": "Run CI/CD only for projects impacted by changes",
+        "dependencies": "Include dependent projects in affected analysis",
+        "parallelization": "Parallel execution of independent project builds and tests"
+      },
       "stages": {
         "build": {
-          "nextjs": [
-            "Install dependencies (pnpm install --frozen-lockfile)",
-            "TypeScript type checking (next build --debug)",
-            "Build production bundle (next build)",
-            "Verify bundle size and Core Web Vitals",
-            "Generate static exports for deployment readiness"
+          "nxBuild": [
+            "Install dependencies (npm install --frozen-lockfile)",
+            "NX affected build (nx affected:build)",
+            "TypeScript type checking across affected projects",
+            "Container image building for affected applications",
+            "Artifact generation and storage"
           ]
         },
         "test": {
           "sequence": [
-            "Run unit tests with Vitest (coverage report)",
-            "Component testing with React Testing Library",
-            "API route testing with Next.js test helpers",
-            "E2E testing with Playwright (critical paths)",
-            "Visual regression testing for components",
+            "Run unit tests (nx affected:test) with coverage report",
+            "E2E testing with Playwright (nx affected:e2e)",
             "Security vulnerability scan (npm audit)",
-            "Code quality checks (ESLint + next/core-web-vitals)",
+            "Code quality checks (nx affected:lint)",
+            "Container security scanning",
             "Dependency audit and license compliance"
           ]
         },
@@ -70,24 +75,25 @@
           ]
         },
         "deploy": {
-          "staging": {
-            "trigger": "Merge to develop branch",
-            "platform": "Vercel Preview Deployments",
+          "ephemeralTesting": {
+            "trigger": "E2E tests triggered upon completion of application builds",
             "process": [
-              "Deploy to Vercel staging environment",
-              "Run smoke tests on deployed application",
-              "Performance monitoring setup",
-              "Notify team with preview URL"
+              "Create ephemeral test environments from scratch",
+              "Complete infrastructure deployment using Terraform",
+              "Full application component deployment",
+              "Database and data store setup with test data",
+              "Run E2E tests against ephemeral environment",
+              "Tear down environment after test completion"
             ]
           },
           "production": {
-            "trigger": "Manual approval after staging validation",
-            "platform": "Vercel Production",
+            "trigger": "Manual approval after successful testing",
+            "platform": "Google Kubernetes Engine (GKE)",
             "process": [
-              "Create release tag with version",
-              "Deploy to Vercel production",
-              "Run production smoke tests",
-              "Monitor Core Web Vitals and error rates",
+              "Deploy applications to GKE using ArgoCD",
+              "Package-based deployment with Helm charts",
+              "Health check verification",
+              "Monitor application and infrastructure metrics",
               "Update deployment documentation"
             ]
           }
