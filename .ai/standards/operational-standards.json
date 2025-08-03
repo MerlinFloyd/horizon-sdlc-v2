@@ -190,6 +190,43 @@
         "business": "Business metric dashboards for stakeholder visibility",
         "performance": "Performance dashboards for optimization analysis",
         "security": "Security dashboards for threat monitoring"
+      },
+      "performanceMonitoringViaLogs": {
+        "durationLogging": {
+          "requirement": "All service calls and task execution must log duration metrics",
+          "format": "Structured JSON logs with duration field in milliseconds",
+          "fields": [
+            "timestamp (ISO 8601)",
+            "service_name",
+            "operation_name",
+            "duration_ms",
+            "status (success/error)",
+            "correlation_id"
+          ]
+        },
+        "logFormat": {
+          "standard": "JSON format for all performance-related logs",
+          "example": {
+            "timestamp": "2024-01-15T10:30:00.000Z",
+            "service": "api-core",
+            "operation": "user_authentication",
+            "duration_ms": 150,
+            "status": "success",
+            "correlation_id": "req-123-456"
+          }
+        },
+        "analysisRequirements": {
+          "aggregation": "Performance analysis conducted through Elastic Cloud log aggregation",
+          "metrics": "P50, P95, P99 response times calculated from log data",
+          "alerting": "Performance degradation alerts based on log analysis",
+          "trending": "Performance trend analysis over time periods"
+        },
+        "integrationPoints": {
+          "elasticCloud": "All performance logs ingested into Elastic Cloud",
+          "dashboards": "Performance dashboards built from log aggregation",
+          "alerting": "Performance alerts triggered from log analysis",
+          "optimization": "Performance optimization guided by log insights"
+        }
       }
     },
     "documentationManagement": {

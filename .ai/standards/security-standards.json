@@ -113,20 +113,6 @@
         "incidentResponse": "Incident response procedures for security issues"
       }
     },
-    "complianceFramework": {
-      "regulatoryCompliance": {
-        "gdpr": "GDPR compliance for data protection and privacy",
-        "dataRetention": "Data retention policies and automated cleanup",
-        "rightToErasure": "Implementation of right to erasure requests",
-        "dataPortability": "Data portability and export capabilities"
-      },
-      "industryStandards": {
-        "soc2": "SOC 2 Type II compliance preparation",
-        "iso27001": "ISO 27001 security management framework alignment",
-        "nistFramework": "NIST Cybersecurity Framework implementation",
-        "owasp": "OWASP Top 10 vulnerability prevention"
-      }
-    },
     "securityMonitoring": {
       "threatDetection": {
         "monitoring": "Real-time security monitoring and threat detection",

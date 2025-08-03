@@ -110,29 +110,9 @@
         "rationale": "Managed services, automatic scaling, built-in security, backup management"
       }
     },
-    "blockchain": {
-      "networks": {
-        "approved": ["Ethereum", "Polygon", "Solana"],
-        "preferred": "Multi-network support based on use case requirements",
-        "rationale": "Ethereum for ecosystem maturity, Polygon for cost efficiency, Solana for performance"
-      },
-      "smartContracts": {
-        "ethereum": {
-          "language": "Solidity 0.8.19+",
-          "framework": "Foundry",
-          "rationale": "Modern tooling with fast compilation and comprehensive testing"
-        },
-        "solana": {
-          "language": "Rust with Anchor framework",
-          "framework": "Anchor",
-          "rationale": "Idiomatic Rust development with safety and productivity features"
-        }
-      },
-      "libraries": {
-        "approved": ["ethers.js", "web3.js", "@solana/web3.js", "@project-serum/anchor"],
-        "preferred": "ethers.js for Ethereum/Polygon, @solana/web3.js for Solana",
-        "rationale": "Comprehensive blockchain interaction libraries with TypeScript support"
-      }
+    "blockchainReference": {
+      "note": "All blockchain technology standards defined in blockchain-standards.json",
+      "summary": "Multi-network support (Ethereum, Polygon, Solana) with Solidity and Rust development"
     },
     "infrastructure": {
       "cloudProvider": {

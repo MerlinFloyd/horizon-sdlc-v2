@@ -73,6 +73,28 @@
         "resourceQuotas": "Resource quotas and limits for cost control",
         "networkPolicies": "Network policies for traffic segmentation",
         "podSecurity": "Pod security standards and policies"
+      },
+      "serviceMesh": {
+        "platform": "Istio as standard service mesh for GKE",
+        "rationale": "Service discovery, load balancing, security, and observability for microservices",
+        "features": {
+          "serviceDiscovery": "Automatic service discovery and registration",
+          "loadBalancing": "Intelligent load balancing with circuit breakers",
+          "security": "mTLS encryption for inter-service communication",
+          "observability": "Distributed tracing and metrics collection"
+        },
+        "configuration": {
+          "installation": "Istio installed via GKE service mesh add-on",
+          "ingress": "Istio Ingress Gateway for external traffic",
+          "sidecarInjection": "Automatic sidecar injection for all application pods",
+          "policies": "Traffic policies and security rules via Istio CRDs"
+        },
+        "integration": {
+          "monitoring": "Istio metrics integrated with Elastic Cloud",
+          "tracing": "Distributed tracing via Jaeger integrated with observability stack",
+          "security": "Service-to-service authentication and authorization",
+          "deployment": "Blue-green and canary deployments via Istio traffic splitting"
+        }
       }
     },
     "messagingInfrastructure": {

@@ -83,6 +83,36 @@
         "relationships": "Clear relationship definitions and foreign keys",
         "constraints": "Database constraints for data integrity",
         "validation": "Database-level validation as final safety net"
+      },
+      "migrationStandards": {
+        "documentDatabases": {
+          "strategy": "Schema evolution strategy for MongoDB document databases",
+          "versioningApproach": "Document-level schema versioning with backward compatibility",
+          "migrationProcess": [
+            "Add new fields with default values for backward compatibility",
+            "Maintain old field names during transition period",
+            "Use application-level migration scripts for data transformation",
+            "Implement gradual migration with rollback capability"
+          ],
+          "backwardCompatibility": {
+            "required": "All schema changes must maintain backward compatibility for 2 versions",
+            "fieldAddition": "New fields must have default values or be optional",
+            "fieldRemoval": "Deprecated fields maintained for 2 major versions before removal",
+            "dataTransformation": "Gradual data transformation with validation"
+          },
+          "rollbackProcedures": {
+            "strategy": "Application-level rollback with data consistency checks",
+            "validation": "Pre-migration validation and post-migration verification",
+            "backupRequirement": "Full database backup before any schema migration",
+            "testingRequirement": "Migration testing in ephemeral environments before production"
+          }
+        },
+        "migrationTools": {
+          "mongodb": "Custom migration scripts with Mongoose schema versioning",
+          "postgresql": "Prisma migrations for schema evolution",
+          "validation": "Schema validation at application startup",
+          "monitoring": "Migration performance and success rate monitoring"
+        }
       }
     },
     "authentication": {

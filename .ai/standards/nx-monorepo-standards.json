@@ -294,19 +294,34 @@
       }
     },
     "featureFlaggingSupport": {
-      "approvedStyle": "LaunchDarkly-style tools",
-      "rationale": "Enable safe deployments, A/B testing, gradual rollouts",
-      "toolSelection": "Specific tool selection pending evaluation",
+      "recommendedTool": "Unleash",
+      "rationale": "Open-source, Kubernetes-native, excellent Next.js/Node.js integration",
+      "deployment": {
+        "platform": "Unleash deployed on GKE as containerized service",
+        "database": "PostgreSQL backend for flag configuration storage",
+        "integration": "Unleash Admin UI and API deployed in shared infrastructure"
+      },
+      "implementation": {
+        "frontend": "unleash-proxy-client-js for Next.js applications",
+        "backend": "unleash-client for Node.js services",
+        "configuration": "Environment-specific Unleash instances (test/prod)"
+      },
       "requirements": {
-        "realTimeUpdates": "Flags should update without deployment",
-        "targeting": "Support user/group targeting",
-        "rollback": "Instant rollback capability",
-        "analytics": "Flag usage analytics and impact measurement"
+        "realTimeUpdates": "Flags update via Unleash proxy without deployment",
+        "targeting": "User/group targeting via Unleash strategies",
+        "rollback": "Instant rollback via Unleash Admin UI",
+        "analytics": "Flag usage analytics via Unleash metrics"
       },
       "integrationPoints": {
-        "frontend": "React hooks for feature flag evaluation",
-        "backend": "Middleware for API feature gating",
-        "infrastructure": "Infrastructure-level feature toggles"
+        "frontend": "React hooks with unleash-proxy-client-js",
+        "backend": "Express middleware for API feature gating",
+        "infrastructure": "Kubernetes deployment toggles via Unleash",
+        "monitoring": "Unleash metrics integrated with Elastic Cloud"
+      },
+      "nxIntegration": {
+        "libraries": "Feature flag utilities in libs/shared/feature-flags",
+        "configuration": "Environment-specific Unleash configuration",
+        "testing": "Feature flag testing utilities and mocks"
       }
     },
     "versioningCoordination": {

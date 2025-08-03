@@ -1,5 +1,13 @@
 {
   "architecturalPatterns": {
+    "terminologyDefinitions": {
+      "smartContract": "An application deployed onto a blockchain network",
+      "blockchainContract": "Synonym for smart contract - an application compiled and deployed onto a blockchain",
+      "contract": "An interface or data shape agreement between two systems (not blockchain-related)",
+      "application": "A complete business application consisting of multiple deployable components",
+      "app": "A single deployable component (web app, service app, etc.)",
+      "service": "A single backend component or microservice"
+    },
     "overallArchitecture": {
       "pattern": "NX Monorepo with Microservices and Event-Driven Architecture",
       "rationale": "Unified workspace for multiple applications, shared libraries, independent deployment, and scalable event-driven communication",
@@ -221,6 +229,64 @@
         "framework": "React Testing Library for component behavior testing",
         "documentation": "Storybook for component documentation and visual testing",
         "accessibility": "Automated accessibility testing for all components"
+      }
+    },
+    "decisionTrees": {
+      "infrastructureSelection": {
+        "gcpServices": {
+          "compute": {
+            "condition": "Containerized applications",
+            "choice": "Google Kubernetes Engine (GKE)",
+            "alternative": "Cloud Run for serverless containers"
+          },
+          "database": {
+            "structured": "Cloud SQL (PostgreSQL) for ACID compliance",
+            "document": "MongoDB Atlas for flexible schemas",
+            "caching": "Memorystore (Redis) for high-performance caching"
+          },
+          "messaging": {
+            "choice": "Google Cloud Pub/Sub exclusively",
+            "rationale": "Unified messaging platform with strong consistency"
+          }
+        }
+      },
+      "architecturalPatterns": {
+        "serviceArchitecture": {
+          "monolith": {
+            "condition": "Single application with shared database",
+            "choice": "Next.js full-stack application",
+            "when": "Simple applications, rapid prototyping"
+          },
+          "microservices": {
+            "condition": "Multiple independent services",
+            "choice": "NX monorepo with separate applications",
+            "when": "Complex applications, team scaling, independent deployment"
+          }
+        },
+        "communicationPatterns": {
+          "synchronous": {
+            "choice": "REST APIs with Next.js API routes",
+            "when": "Request-response patterns, immediate data needs"
+          },
+          "asynchronous": {
+            "choice": "Google Cloud Pub/Sub messaging",
+            "when": "Event-driven workflows, decoupled services, eventual consistency"
+          }
+        }
+      },
+      "databaseSelection": {
+        "postgresql": {
+          "when": "ACID compliance required, complex relationships, financial data",
+          "choice": "Cloud SQL with Prisma ORM"
+        },
+        "mongodb": {
+          "when": "Flexible schemas, rapid development, document-based data",
+          "choice": "MongoDB Atlas with Mongoose ODM"
+        },
+        "redis": {
+          "when": "High-performance caching, session storage, rate limiting",
+          "choice": "Memorystore for Redis"
+        }
       }
     }
   }

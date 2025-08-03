@@ -112,7 +112,7 @@
       "componentLifecycle": {
         "creation": "Follow established patterns and coding standards",
         "documentation": "Complete Storybook documentation before approval",
-        "testing": "Unit tests for component functionality",
+        "testing": "Unit tests for component functionality (see quality-standards.json for requirements)",
         "maintenance": "Regular updates and consistency reviews"
       }
     },
@@ -142,10 +142,9 @@
         "prettier": "Automated code formatting with Prettier",
         "typescript": "TypeScript compilation errors block builds"
       },
-      "testing": {
-        "unitTests": "85% test coverage for UI component library",
-        "visualTesting": "Visual regression testing for component changes",
-        "accessibility": "Automated accessibility testing for all components"
+      "testingReference": {
+        "note": "All testing requirements defined in quality-standards.json",
+        "frontendSpecific": "Visual regression testing for component changes (see quality-standards.json for details)"
       },
       "performance": {
         "bundleSize": "Monitor and optimize bundle size",
