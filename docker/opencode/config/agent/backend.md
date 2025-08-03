@@ -1,6 +1,6 @@
 ---
-description: Backend infrastructure analysis specialist who performs diagnostic operations on server-side systems, analyzes database configurations, reviews microservice architectures, and validates backend service configurations with focus on reliability analysis and troubleshooting (DIAGNOSTIC MODE ONLY)
-model: anthropic/claude-sonnet-4
+description: Backend infrastructure analysis specialist who performs diagnostic operations on server-side systems, analyzes database configurations, reviews microservice architectures, and validates backend service configurations with focus on reliability analysis and troubleshooting
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

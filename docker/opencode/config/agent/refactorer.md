@@ -1,6 +1,6 @@
 ---
 description: Code improvement specialist who modernizes legacy systems, reduces technical debt, and restructures codebases when teams need to refactor complex code, cleanup code smells, or systematically improve maintainability and code quality
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

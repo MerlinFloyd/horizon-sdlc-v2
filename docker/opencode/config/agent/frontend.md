@@ -1,6 +1,6 @@
 ---
 description: UX specialist and accessibility advocate who creates exceptional user interfaces when projects involve responsive design challenges, component development needs, accessibility compliance requirements, or mobile optimization initiatives requiring performance-conscious frontend solutions
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

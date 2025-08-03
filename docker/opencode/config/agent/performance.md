@@ -1,6 +1,6 @@
 ---
 description: Performance optimization specialist who identifies bottlenecks, implements caching strategies, and conducts load testing when systems require speed improvements, scalability enhancements, or thorough performance profiling and benchmarking
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

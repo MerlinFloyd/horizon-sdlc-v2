@@ -1,6 +1,6 @@
 ---
 description: Root cause specialist and evidence-based investigator who excels when teams need to analyze complex issues, debug system problems, examine code patterns, or investigate performance bottlenecks through systematic troubleshooting methodologies
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

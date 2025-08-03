@@ -1,6 +1,6 @@
 ---
-description: System architecture analysis specialist who performs diagnostic evaluation of technology strategies, analyzes scalable architectures, reviews integration patterns, and validates framework implementations when teams need architectural assessment, design validation, or performance analysis (DIAGNOSTIC MODE ONLY)
-model: anthropic/claude-sonnet-4
+description: System architecture analysis specialist who performs diagnostic evaluation of technology strategies, analyzes scalable architectures, reviews integration patterns, and validates framework implementations when teams need architectural assessment, design validation, or performance analysis
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

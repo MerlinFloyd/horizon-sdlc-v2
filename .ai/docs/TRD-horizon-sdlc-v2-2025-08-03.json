@@ -1,0 +1,377 @@
+{
+  "trd": {
+    "productContext": {
+      "projectName": "Horizon SDLC v2 - Development Environment Bootstrapper",
+      "applicationTypes": ["containerized-cli-tool", "kubernetes-deployment", "infrastructure-automation"],
+      "businessRequirements": ["BR001", "BR002", "BR003", "BR004", "BR005"],
+      "userJourneys": ["JM001", "JM002"],
+      "complexityAssessment": "high",
+      "integrationScope": "Docker runtime integration, OpenCode AI container deployment, GitHub Actions workflow deployment, API key management for AI services"
+    },
+    "selectedStandards": {
+      "technologyStack": {
+        "source": "technology-stack.json",
+        "infrastructure": {
+          "approved": ["Google Cloud Platform (GCP)", "Docker", "Kubernetes", "Helm", "Terraform"],
+          "selected": ["GCP", "Google Kubernetes Engine", "Docker", "Helm", "Terraform"],
+          "rationale": "Containerized bootstrapper requires Kubernetes orchestration for OpenCode deployment with infrastructure as code management"
+        },
+        "containerization": {
+          "approved": ["Docker", "GitHub Container Registry", "Kubernetes"],
+          "selected": ["Docker", "GitHub Container Registry", "GKE"],
+          "rationale": "Industry-standard containerization with managed Kubernetes and integrated container registry"
+        },
+        "backend": {
+          "approved": ["Node.js 18+", "TypeScript 5+"],
+          "selected": ["Node.js 18+", "TypeScript"],
+          "rationale": "For any API components or CLI utilities that require JavaScript runtime"
+        },
+        "monitoring": {
+          "approved": ["Elastic Cloud", "Google Cloud Monitoring"],
+          "selected": ["Elastic Cloud"],
+          "rationale": "Unified monitoring platform for deployment tracking and system observability"
+        },
+        "cicd": {
+          "approved": ["GitHub Actions"],
+          "selected": ["GitHub Actions"],
+          "rationale": "Mandatory platform integrated with GitHub, supports container workflows and deployment automation"
+        }
+      },
+      "architecturalPatterns": {
+        "source": "architectural-patterns.json",
+        "primary": ["containerization-patterns", "infrastructure-as-code"],
+        "secondary": ["api-design-patterns"],
+        "rationale": "Infrastructure deployment tool requires containerization expertise with IaC management, minimal API requirements"
+      },
+      "qualityStandards": {
+        "source": "quality-standards.json",
+        "testing": {
+          "unit": "Jest with 80% coverage for JavaScript/TypeScript components",
+          "e2e": "Playwright for deployment workflow testing",
+          "integration": "Container deployment testing with real environments"
+        },
+        "codeQuality": ["ESLint", "Prettier", "TypeScript strict mode"],
+        "security": ["Container security scanning", "API key management", "OWASP compliance"]
+      }
+    },
+    "selectedTemplates": {
+      "repositoryStructure": {
+        "source": ".ai/templates/01-repository-structure/",
+        "template": "dockerfile-templates",
+        "applications": [
+          {
+            "name": "horizon-bootstrapper", 
+            "type": "containerized-cli-tool",
+            "template": "dockerfile-templates"
+          },
+          {
+            "name": "opencode-deployment-service",
+            "type": "kubernetes-deployment", 
+            "template": "helm-chart-templates"
+          }
+        ],
+        "libraries": [
+          {
+            "name": "deployment-utilities",
+            "type": "utility-library",
+            "template": "typescript-patterns"
+          }
+        ]
+      },
+      "codePatterns": {
+        "source": ".ai/templates/02-code-patterns/",
+        "patterns": [
+          {
+            "name": "authentication-security-patterns",
+            "applicableTo": ["horizon-bootstrapper", "opencode-deployment-service"],
+            "rationale": "API key management for OpenRouter and GitHub services"
+          },
+          {
+            "name": "typescript-patterns",
+            "applicableTo": ["deployment-utilities"],
+            "rationale": "Type-safe development for CLI and utility components"
+          }
+        ]
+      },
+      "infrastructure": {
+        "source": ".ai/templates/04-infrastructure/",
+        "templates": [
+          {
+            "name": "gcp-terraform-configurations",
+            "components": ["GKE cluster", "Secret Manager", "VPC"],
+            "rationale": "GCP infrastructure for container deployment and secret management"
+          },
+          {
+            "name": "container-security-patterns", 
+            "applicableTo": "all-applications",
+            "rationale": "Security compliance for containerized deployment system"
+          },
+          {
+            "name": "kubernetes-istio-manifests",
+            "components": ["GKE deployments", "Service discovery"],
+            "rationale": "Container orchestration with service mesh capabilities"
+          },
+          {
+            "name": "environment-management-patterns",
+            "components": ["Test environment", "Production environment"],
+            "rationale": "Two-environment model for bootstrapper deployment"
+          }
+        ]
+      },
+      "integration": {
+        "source": ".ai/templates/05-integration/",
+        "templates": [
+          {
+            "name": "github-actions-workflows",
+            "components": ["CI/CD pipeline", "Container builds", "Deployment automation"],
+            "rationale": "Automated deployment pipeline for containerized system"
+          },
+          {
+            "name": "opentelemetry-instrumentation",
+            "applicableTo": "all-applications",
+            "rationale": "Deployment tracking and monitoring integration"
+          },
+          {
+            "name": "sla-slo-monitoring-patterns",
+            "metrics": ["Deployment success rate", "Setup time"],
+            "rationale": "Achieving 95% deployment success rate and performance monitoring"
+          }
+        ]
+      },
+      "testing": {
+        "source": ".ai/templates/03-testing/",
+        "templates": [
+          {
+            "name": "jest-unit-testing",
+            "applicableTo": ["horizon-bootstrapper", "deployment-utilities"],
+            "rationale": "Unit testing for JavaScript/TypeScript components"
+          },
+          {
+            "name": "playwright-e2e-testing", 
+            "applicableTo": ["deployment-workflows"],
+            "rationale": "End-to-end testing of bootstrapping and OpenCode deployment"
+          }
+        ]
+      }
+    },
+    "componentBreakdown": {
+      "applications": [
+        {
+          "name": "horizon-bootstrapper",
+          "type": "containerized-cli-tool",
+          "purpose": "Main CLI tool that executes single-command environment deployment for any target project",
+          "businessRequirements": ["BR001", "BR002", "BR004", "BR005"],
+          "dependencies": ["deployment-utilities", "api-key-management"],
+          "infrastructure": ["Container image in GitHub Registry", "Execution on target developer machines"],
+          "selectedTemplate": "dockerfile-templates",
+          "estimatedComplexity": "high"
+        },
+        {
+          "name": "opencode-deployment-service", 
+          "type": "kubernetes-deployment",
+          "purpose": "Deploys and manages OpenCode AI assistance containers via Kubernetes orchestration",
+          "businessRequirements": ["BR003"],
+          "dependencies": ["GKE cluster", "Secret Manager", "OpenCode container images"],
+          "infrastructure": ["GKE deployment", "Helm charts", "Service discovery"],
+          "selectedTemplate": "kubernetes-istio-manifests",
+          "estimatedComplexity": "medium"
+        }
+      ],
+      "services": [
+        {
+          "name": "standards-repository-service",
+          "type": "version-controlled-repository",
+          "purpose": "Maintains and distributes organizational development standards, templates, and best practices",
+          "businessRequirements": ["BR004"],
+          "dependencies": ["GitHub repository", "Version control"],
+          "infrastructure": ["GitHub repository", "GitHub Actions for distribution"],
+          "selectedTemplate": "github-actions-workflows",
+          "estimatedComplexity": "medium"
+        }
+      ],
+      "libraries": [
+        {
+          "name": "deployment-utilities",
+          "type": "utility-library", 
+          "purpose": "Shared utilities for container deployment, workspace mounting, and configuration management",
+          "dependencies": ["Docker SDK", "Kubernetes client", "Node.js runtime"],
+          "selectedTemplate": "typescript-patterns",
+          "estimatedComplexity": "medium"
+        },
+        {
+          "name": "api-key-management",
+          "type": "security-library",
+          "purpose": "Secure handling and injection of API keys for OpenRouter and GitHub services",
+          "dependencies": ["Google Secret Manager", "Environment variables"],
+          "selectedTemplate": "authentication-security-patterns", 
+          "estimatedComplexity": "medium"
+        }
+      ],
+      "externalIntegrations": [
+        {
+          "name": "OpenCode AI Integration",
+          "type": "Container deployment",
+          "purpose": "Deploy OpenCode AI development assistant as containerized service",
+          "implementation": "Kubernetes deployment with API key injection",
+          "selectedTemplate": "kubernetes-istio-manifests"
+        },
+        {
+          "name": "GitHub Actions Integration",
+          "type": "Workflow deployment",
+          "purpose": "Deploy CI/CD workflows to target project repositories",
+          "implementation": "GitHub API integration for workflow file creation",
+          "selectedTemplate": "github-actions-workflows"
+        },
+        {
+          "name": "Docker Runtime Integration",
+          "type": "Container orchestration",
+          "purpose": "Execute container operations on target developer machines", 
+          "implementation": "Docker socket access and container lifecycle management",
+          "selectedTemplate": "container-security-patterns"
+        }
+      ]
+    },
+    "infrastructureRequirements": {
+      "gcpResources": {
+        "source": "infrastructure-standards.json",
+        "compute": [
+          {
+            "service": "Google Kubernetes Engine (GKE)",
+            "purpose": "Container orchestration for OpenCode deployment and bootstrapper management",
+            "configuration": "GKE Autopilot with VPC-native networking and Workload Identity",
+            "selectedTemplate": "gcp-terraform-configurations",
+            "resourceTags": {
+              "application": "horizon-bootstrapper",
+              "environment": "test|prod", 
+              "project": "horizon-sdlc-v2"
+            }
+          }
+        ],
+        "storage": [
+          {
+            "service": "Cloud Storage",
+            "purpose": "Storage for standards repository artifacts and container image caching",
+            "configuration": "Multi-regional storage with lifecycle management",
+            "selectedTemplate": "gcp-terraform-configurations",
+            "resourceTags": {
+              "application": "standards-repository",
+              "environment": "test|prod",
+              "project": "horizon-sdlc-v2"
+            }
+          }
+        ],
+        "security": [
+          {
+            "service": "Google Secret Manager",
+            "purpose": "Secure storage of API keys for OpenRouter and GitHub integration", 
+            "configuration": "Environment-specific secret storage with IAM access control",
+            "selectedTemplate": "authentication-security-patterns",
+            "resourceTags": {
+              "application": "api-key-management",
+              "environment": "test|prod",
+              "project": "horizon-sdlc-v2"
+            }
+          }
+        ],
+        "networking": [
+          {
+            "service": "Shared VPC",
+            "purpose": "Network isolation and centralized network management",
+            "configuration": "Environment-based VPC with service project separation", 
+            "selectedTemplate": "gcp-terraform-configurations"
+          }
+        ]
+      },
+      "observability": {
+        "source": "infrastructure-standards.json",
+        "platform": "Elastic Stack (ELK) on Elastic Cloud",
+        "implementation": "OpenTelemetry instrumentation for deployment tracking and success rate monitoring",
+        "components": ["Elasticsearch", "Logstash", "Kibana"],
+        "selectedTemplate": "opentelemetry-instrumentation"
+      },
+      "security": {
+        "source": "security-standards.json",
+        "authentication": "Service account authentication for GCP resources",
+        "authorization": "IAM-based access control with principle of least privilege",
+        "networkSecurity": "VPC firewall rules and Kubernetes network policies",
+        "selectedTemplates": ["container-security-patterns", "authentication-security-patterns"]
+      }
+    },
+    "deploymentPipeline": {
+      "source": "infrastructure-standards.json and containerization-standards.json",
+      "environments": ["test", "production"],
+      "cicdPlatform": "GitHub Actions (mandatory)",
+      "containerRegistry": "GitHub Container Registry",
+      "deploymentStrategy": "Rolling updates with Helm charts and Kubernetes",
+      "terraformBackend": "Google Cloud Storage with state locking",
+      "stages": [
+        {
+          "stage": "build-and-test",
+          "description": "Build container images, security scan, and unit test bootstrapper logic",
+          "actions": ["npm install", "npm run build", "docker build", "trivy scan", "jest test"],
+          "qualityGates": ["unit tests 80% coverage", "security scan passes", "TypeScript compilation", "container vulnerability scan"],
+          "selectedTemplate": "github-actions-workflows"
+        },
+        {
+          "stage": "test-deployment", 
+          "description": "Deploy bootstrapper to test environment and validate deployment workflows",
+          "actions": ["terraform plan", "terraform apply", "helm upgrade", "kubectl deploy", "e2e test"],
+          "qualityGates": ["deployment health checks", "bootstrapper deployment tests", "OpenCode integration tests"],
+          "selectedTemplate": "environment-management-patterns"
+        },
+        {
+          "stage": "production-deployment",
+          "description": "Deploy to production with approval and comprehensive monitoring",
+          "actions": ["manual approval", "terraform plan", "terraform apply", "helm upgrade", "monitoring validation"],
+          "qualityGates": ["manual approval", "deployment health", "95% success rate monitoring", "performance validation"],
+          "selectedTemplate": "sla-slo-monitoring-patterns"
+        }
+      ]
+    },
+    "agentCoordination": {
+      "technicalArchitect": {
+        "responsibilities": [
+          "Container orchestration architecture design using containerization-patterns",
+          "Component integration planning for Docker and Kubernetes deployment", 
+          "OpenCode AI integration architecture validation"
+        ],
+        "deliverables": [
+          "System architecture diagrams for containerized deployment",
+          "Kubernetes manifests and service specifications",
+          "Container integration contracts and API definitions"
+        ],
+        "standardsToReview": ["architectural-patterns.json", "containerization-standards.json", "technology-stack.json"]
+      },
+      "devopsAgent": {
+        "responsibilities": [
+          "GKE infrastructure design using infrastructure-standards",
+          "CI/CD pipeline implementation for container deployment automation",
+          "Terraform configurations for GCP resources and environment management"
+        ],
+        "deliverables": [
+          "Terraform configurations for GCP infrastructure",
+          "GitHub Actions workflows for containerized deployments", 
+          "Helm charts for Kubernetes application deployment",
+          "Environment management automation scripts"
+        ],
+        "standardsToReview": ["infrastructure-standards.json", "containerization-standards.json"],
+        "templatesToUse": ["gcp-terraform-configurations", "container-security-patterns", "github-actions-workflows", "kubernetes-istio-manifests"]
+      },
+      "qaAgent": {
+        "responsibilities": [
+          "Testing strategy for achieving 95% deployment success rate using quality-standards",
+          "E2E testing automation for bootstrapper workflow validation",
+          "Performance monitoring for <5 minute setup time requirements"
+        ],
+        "deliverables": [
+          "Automated testing strategy for container deployment workflows",
+          "Performance benchmarks and success rate monitoring", 
+          "E2E test automation for bootstrapper validation",
+          "Quality gates for deployment reliability"
+        ],
+        "standardsToReview": ["quality-standards.json"],
+        "templatesToUse": ["playwright-e2e-testing", "jest-unit-testing", "sla-slo-monitoring-patterns"]
+      }
+    }
+  }
+}

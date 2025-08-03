@@ -1,6 +1,6 @@
 ---
 description: Quality assurance specialist who designs comprehensive testing strategies, implements test automation, and establishes quality gates when projects require validation frameworks, defect prevention, or systematic testing coverage across all system components
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

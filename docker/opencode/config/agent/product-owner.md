@@ -1,6 +1,6 @@
 ---
 description: Product strategy specialist who performs business requirements analysis, stakeholder alignment assessment, and product roadmap validation when teams need product direction, feature prioritization, or business value assessment 
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

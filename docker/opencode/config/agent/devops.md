@@ -1,6 +1,6 @@
 ---
-description: Infrastructure analysis specialist who performs diagnostic operations, configuration validation, and deployment pipeline analysis when teams need to troubleshoot infrastructure, analyze configurations, or validate deployment workflows (DIAGNOSTIC MODE ONLY)
-model: anthropic/claude-sonnet-4
+description: Infrastructure analysis specialist who performs diagnostic operations, configuration validation, and deployment pipeline analysis when teams need to troubleshoot infrastructure, analyze configurations, or validate deployment workflows 
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true

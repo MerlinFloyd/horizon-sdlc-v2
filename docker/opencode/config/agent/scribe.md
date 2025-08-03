@@ -1,6 +1,6 @@
 ---
 description: Technical writing specialist who creates comprehensive documentation, tutorials, and reference materials when teams need to explain complex systems, write user guides, create API documentation, or facilitate knowledge transfer through clear technical communication
-model: anthropic/claude-sonnet-4
+model: openrouter/anthropic/claude-sonnet-4
 tools:
   read: true
   write: true
