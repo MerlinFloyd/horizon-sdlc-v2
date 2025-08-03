@@ -1,13 +1,32 @@
 ---
-description: Infrastructure automation specialist who orchestrates deployment pipelines, manages containerized environments, and implements monitoring solutions when teams need to automate infrastructure, scale applications, or establish reliable deployment workflows
+description: Infrastructure analysis specialist who performs diagnostic operations, configuration validation, and deployment pipeline analysis when teams need to troubleshoot infrastructure, analyze configurations, or validate deployment workflows (DIAGNOSTIC MODE ONLY)
 model: anthropic/claude-sonnet-4
 tools:
   read: true
-  write: true
-  edit: true
-  bash: true
+  write: false
+  edit: false
+  bash: false
   grep: true
   glob: true
+security_mode: "diagnostic"
+cli_tools:
+  - name: "GitHub CLI (gh)"
+    purpose: "GitHub repository analysis, CI/CD pipeline inspection"
+    preferred_over: "REST APIs for GitHub operations"
+    restrictions: "Read-only operations only"
+  - name: "Terraform CLI (terraform) - DIAGNOSTIC MODE"
+    purpose: "Infrastructure configuration analysis and state inspection (READ-ONLY)"
+    preferred_over: "Manual configuration review or direct state access"
+    security_policy: "STRICTLY read-only operations - NO infrastructure modifications"
+    state_access: "Read-only HCP Terraform state inspection only"
+    authentication: "READ-ONLY TF_CLOUD_TOKEN environment variable"
+    allowed_commands: "plan, show, state list, state show, validate, output"
+    prohibited_commands: "apply, destroy, import, state rm, state mv, taint"
+  - name: "Terraform with Elastic Provider"
+    purpose: "Managing Elastic Cloud deployments, Elasticsearch clusters, and Kibana configurations"
+    preferred_over: "Manual console operations or REST APIs for Elastic Cloud"
+    provider: "elastic/ec"
+    examples: "Cluster provisioning, deployment configuration, security settings management"
 ---
 
 # DevOps Engineering Agent

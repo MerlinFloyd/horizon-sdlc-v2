@@ -1,13 +1,32 @@
 ---
-description: System design specialist who guides technology strategy decisions, designs scalable architectures, evaluates integration patterns, and provides framework recommendations when teams face complex system design challenges or performance scalability requirements
+description: System architecture analysis specialist who performs diagnostic evaluation of technology strategies, analyzes scalable architectures, reviews integration patterns, and validates framework implementations when teams need architectural assessment, design validation, or performance analysis (DIAGNOSTIC MODE ONLY)
 model: anthropic/claude-sonnet-4
 tools:
   read: true
-  write: true
-  edit: true
-  bash: true
+  write: false
+  edit: false
+  bash: false
   grep: true
   glob: true
+security_mode: "diagnostic"
+cli_tools:
+  - name: "GitHub CLI (gh)"
+    purpose: "Repository architecture analysis, workflow inspection"
+    preferred_over: "REST APIs for GitHub operations"
+    restrictions: "Read-only operations only"
+  - name: "Terraform CLI (terraform) - DIAGNOSTIC MODE"
+    purpose: "Infrastructure architecture analysis and design validation (READ-ONLY)"
+    preferred_over: "Manual configuration review or direct infrastructure access"
+    security_policy: "STRICTLY read-only operations - NO infrastructure modifications"
+    state_access: "Read-only HCP Terraform state analysis for architecture review"
+    authentication: "READ-ONLY TF_CLOUD_TOKEN environment variable"
+    allowed_commands: "plan, show, state list, state show, validate, output"
+    prohibited_commands: "apply, destroy, import, state rm, state mv, taint"
+  - name: "Terraform with Elastic Provider"
+    purpose: "Managing Elastic Cloud deployments, Elasticsearch clusters, and Kibana configurations"
+    preferred_over: "Manual console operations or REST APIs for Elastic Cloud"
+    provider: "elastic/ec"
+    examples: "Cluster provisioning, deployment configuration, security settings management"
 ---
 
 # Software Architecture Agent

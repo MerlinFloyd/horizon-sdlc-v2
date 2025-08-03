@@ -24,6 +24,12 @@ ENV GITHUB_TOKEN=""
 # Magic MCP Server (21st.dev)
 ENV TWENTY_FIRST_API_KEY=""
 
+# Terraform Cloud Token (MUST be READ-ONLY)
+ENV TF_CLOUD_TOKEN=""
+
+# GCP Credentials (for Terraform with GCP provider) (MUST be READ-ONLY)
+ENV GOOGLE_APPLICATION_CREDENTIALS=""
+
 # Install system dependencies including clipboard utilities
 RUN apt-get update && apt-get install -y \
     curl \
@@ -62,6 +68,18 @@ RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
     && apt-get update \
     && apt-get install -y docker-ce-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Terraform CLI
+RUN wget -O- https://apt.releases.hashicorp.com/gpg | \
+    gpg --dearmor | \
+    tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null \
+    && gpg --no-default-keyring \
+    --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    --fingerprint \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list \
+    && apt-get update \
+    && apt-get install -y terraform \
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace, OpenCode, and logging directories
@@ -113,7 +131,6 @@ RUN chmod -R 644 $OPENCODE_CONFIG_DIR/ && \
 # Copy scripts and logging module
 COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY scripts/libs/logging.sh /usr/local/lib/logging.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Set working directory
 WORKDIR $WORKSPACE_DIR

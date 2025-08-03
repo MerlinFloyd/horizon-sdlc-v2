@@ -6,6 +6,197 @@
 
 **Standards Compliance**: ALWAYS read `/workspace/.ai/standards/*.json` and ensure all output adheres to defined standards.
 
+## Available CLI Tools
+
+The OpenCode agent has access to three primary CLI tools for platform interactions:
+
+### GitHub CLI (gh)
+- **Purpose**: GitHub repository management, issue tracking, PR operations
+- **Usage**: Preferred method for all GitHub interactions over REST APIs
+- **Authentication**: Uses `GITHUB_TOKEN` environment variable
+- **Examples**: `gh repo clone`, `gh pr create`, `gh issue list`
+
+### Terraform CLI (terraform) - DIAGNOSTIC MODE ONLY
+- **Purpose**: Infrastructure configuration analysis, validation, and state inspection (READ-ONLY)
+- **Usage**: STRICTLY LIMITED to diagnostic operations - NO infrastructure modifications allowed
+- **Security Policy**: Terraform is configured for analysis and troubleshooting ONLY
+- **State Access**: Read-only access to HCP Terraform state for inspection and validation
+- **Authentication**: Uses READ-ONLY TF_CLOUD_TOKEN environment variable
+- **Allowed Operations**: `terraform plan`, `terraform show`, `terraform state list`, `terraform validate`
+- **PROHIBITED**: `terraform apply`, `terraform destroy`, `terraform import`, state modifications
+
+### Terraform with Elastic Provider
+- **Purpose**: Managing Elastic Cloud deployments, Elasticsearch clusters, and Kibana configurations
+- **Usage**: Preferred method for all Elastic Cloud infrastructure changes over manual console operations
+- **Provider**: Use the official Elastic Terraform provider (`elastic/ec`)
+- **Authentication**: Integrates with Elastic Cloud API keys and credentials
+- **Examples**: Cluster provisioning, deployment configuration, security settings management
+
+### Terraform with GCP Provider
+- **Purpose**: Managing Google Cloud Platform (GCP) resources, including compute, storage, and networking
+- **Usage**: Preferred method for all GCP infrastructure changes over manual console operations
+- **Provider**: Use the official GCP Terraform provider (`google`)
+- **Authentication**: Integrates with GCP service account keys and credentials
+- **Examples**: Compute instance provisioning, storage bucket creation, network configuration
+
+**CLI-First Approach**: When interacting with GitHub, Terraform infrastructure, or GCP resources, always prefer these CLI tools over REST APIs or other methods for better reliability, authentication handling, and feature completeness.
+
+## 🔒 Command Restrictions and Security Policy
+
+**SECURITY ENFORCEMENT**: The OpenCode agent implements strict command restrictions to prevent destructive operations and ensure safe diagnostic-only usage.
+
+### Restricted Commands (Require Approval)
+**Terraform Destructive Operations:**
+- `terraform apply` - Infrastructure deployment
+- `terraform destroy` - Infrastructure destruction
+- `terraform import` - State modification
+- `terraform state rm` - State manipulation
+- `terraform state mv` - State manipulation
+- `terraform taint` - Resource marking for replacement
+
+**File System Operations:**
+- `rm -rf`, `rm -r` - Recursive file deletion
+- `chmod 777`, `chmod -R` - Permission changes
+- `chown -R` - Ownership changes
+
+**Network and Security:**
+- `curl http*`, `wget http*` - External network requests
+- `sudo`, `su` - Privilege escalation
+- `ssh`, `scp`, `rsync` - Remote access
+
+**Package Installation:**
+- `apt install`, `pip install`, `npm install -g` - Software installation
+- `systemctl`, `service` - System service control
+
+### Allowed Commands (No Approval Required)
+**Terraform Read-Only Operations:**
+- `terraform plan` - Configuration analysis
+- `terraform show` - State inspection
+- `terraform state list` - Resource listing
+- `terraform validate` - Configuration validation
+- `terraform output` - Output inspection
+
+**Safe File Operations:**
+- `ls`, `pwd`, `cat`, `head`, `tail` - File inspection
+- `grep`, `find` - Text search and file discovery
+- `git status`, `git diff`, `git log` - Version control inspection
+
+### Security Rationale
+- **Prevent Accidental Changes**: Blocks destructive operations during analysis
+- **Audit Compliance**: All restricted commands require explicit approval
+- **Defense in Depth**: Multiple layers of security controls
+- **Diagnostic Focus**: Maintains focus on analysis rather than modification
+
+## 🔒 SECURITY POLICY - DIAGNOSTIC MODE ONLY
+
+**CRITICAL**: The OpenCode agent operates in DIAGNOSTIC MODE ONLY. It is designed for analysis, validation, and troubleshooting - NOT for infrastructure deployment or modification.
+
+### Separation of Concerns
+- **OpenCode Agent**: Diagnostic operations, configuration analysis, state inspection, troubleshooting
+- **Deployment Operations**: Performed in separate, isolated containers/processes with proper security controls
+- **Security Rationale**: Prevents accidental or malicious infrastructure changes during analysis
+
+### Prohibited Operations
+**Terraform Commands (BLOCKED):**
+- `terraform apply` - Infrastructure deployment
+- `terraform destroy` - Infrastructure destruction
+- `terraform import` - State modification
+- `terraform state rm` - State manipulation
+- `terraform state mv` - State manipulation
+- `terraform taint` - Resource marking for replacement
+- `terraform apply -replace` - Forced resource replacement
+- `terraform state replace-provider` - Provider changes
+
+**Shell Commands (BLOCKED):**
+- `rm` (especially with -rf) - File deletion
+- `mv`, `cp` with system directories - File system modification
+- `chmod`, `chown` on system files - Permission changes
+- `curl`, `wget` to external URLs - Data exfiltration risk
+- `ssh`, `scp`, `rsync` - Remote access/transfer
+- `sudo`, `su` - Privilege escalation
+- Package installation commands (`apt install`, `pip install`, etc.)
+
+### Allowed Operations
+**Terraform Commands (SAFE):**
+- `terraform plan` - Configuration analysis
+- `terraform plan -destroy` - Impact analysis (read-only)
+- `terraform show` - State inspection
+- `terraform state show <resource>` - Resource details
+- `terraform state list` - Resource inventory
+- `terraform output` - Output inspection
+- `terraform validate` - Configuration validation
+- `terraform fmt` - Code formatting
+- `terraform version` - Version information
+
+**Shell Commands (SAFE):**
+- File reading: `cat`, `head`, `tail`, `less`
+- Directory listing: `ls`, `find` (restricted)
+- Text processing: `grep`, `awk`, `sed` (read-only)
+- File inspection: `file`, `stat`, `wc`
+- Utilities: `echo`, `date`, `pwd`
+
+## HCP Terraform State Management - READ-ONLY ACCESS
+
+**SECURITY POLICY**: All HCP Terraform access is READ-ONLY for diagnostic purposes only. No state modifications are permitted.
+
+### Read-Only State Access
+The OpenCode agent accesses HCP Terraform state for:
+- Configuration analysis and validation
+- State inspection and troubleshooting
+- Resource inventory and documentation
+- Impact analysis (plan operations only)
+
+### Workspace Organization (Read-Only)
+- **State Inspection**: Read-only access to existing workspaces for analysis
+- **Naming Convention**: Workspace identification follows `{repository-name}` pattern
+- **Environment Analysis**: Multi-environment state inspection for troubleshooting
+- **NO CREATION**: Agent cannot create or modify workspaces
+
+### Authentication & Security (Read-Only)
+- **Environment Variable**: Use READ-ONLY `TF_CLOUD_TOKEN` for HCP Terraform authentication
+- **Token Restrictions**: MUST be read-only tokens with NO write permissions
+- **Token Validation**: Agent validates token permissions and rejects write-capable tokens
+- **Security Enforcement**: All write operations are blocked at the configuration level
+
+### Backend Configuration Template (Read-Only)
+```hcl
+terraform {
+  cloud {
+    organization = "your-organization"
+    workspaces {
+      name = "repository-name"
+    }
+  }
+}
+```
+
+### State Management Best Practices (Read-Only)
+- **State Inspection**: Read-only access to state for analysis and troubleshooting
+- **Version History**: Review HCP Terraform's state versioning for change analysis
+- **Backup Analysis**: Inspect backup strategies and recovery procedures
+- **Security Compliance**: Ensure all access is read-only and properly audited
+
+### Deployment Operations (Separate Containers)
+**IMPORTANT**: Actual infrastructure deployment occurs in separate, isolated containers with:
+- **Dedicated Deployment Containers**: Isolated environments with write permissions
+- **Proper Security Controls**: Full authentication, authorization, and audit logging
+- **Change Management**: Formal approval processes for infrastructure changes
+- **Rollback Capabilities**: Automated rollback procedures for failed deployments
+
+### Troubleshooting Guide
+**When Users Need Deployment Operations:**
+1. **Analysis Phase**: Use OpenCode agent for configuration analysis and validation
+2. **Planning Phase**: Generate read-only plans to understand proposed changes
+3. **Deployment Phase**: Switch to dedicated deployment containers/processes
+4. **Validation Phase**: Return to OpenCode agent for post-deployment analysis
+
+**Common Diagnostic Operations:**
+- Validate Terraform configurations: `terraform validate`
+- Analyze proposed changes: `terraform plan`
+- Inspect current state: `terraform show`
+- Review resource details: `terraform state show <resource>`
+- Check output values: `terraform output`
+
 ## Agent Selection & Orchestration
 
 ### Quick Selection Matrix

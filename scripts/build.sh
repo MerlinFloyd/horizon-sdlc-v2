@@ -24,6 +24,8 @@ OPTIONS:
     -o, --openrouter-api-key KEY  Set OPENROUTER_API_KEY (required)
     -g, --github-token TOKEN      Set GITHUB_TOKEN (optional)
     -m, --magic-key KEY          Set TWENTY_FIRST_API_KEY (optional)
+    -tf, --terraform-token TOKEN Set TF_CLOUD_TOKEN (optional, READ-ONLY)
+    -gcp, --gcp-credentials PATH Set GOOGLE_APPLICATION_CREDENTIALS (optional, READ-ONLY)
     -t, --tag TAG                Docker image tag (default: latest)
     -n, --no-cache               Build without Docker cache
     -h, --help                   Show this help message
@@ -31,6 +33,10 @@ OPTIONS:
 EXAMPLES:
     $0 --openrouter-api-key "your-api-key"
     $0 -o "your-api-key" -g "your-github-token" --no-cache
+    $0 -o "your-api-key" -tf "your-readonly-tf-token" -gcp "/path/to/service-account.json"
+
+SECURITY NOTE:
+    Terraform and GCP credentials MUST be READ-ONLY for security compliance.
 
 After building, start OpenCode: ./scripts/start-opencode.sh
 EOF
@@ -96,7 +102,7 @@ build_image() {
 
 # Create environment file
 create_env_file() {
-    local api_key="$1" github_token="$2" magic_key="$3"
+    local api_key="$1" github_token="$2" magic_key="$3" tf_token="$4" gcp_credentials="$5"
     local env_file="$PROJECT_ROOT/.env"
 
     cat > "$env_file" << EOF
@@ -104,6 +110,14 @@ create_env_file() {
 OPENROUTER_API_KEY=$api_key
 GITHUB_TOKEN=${github_token:-}
 TWENTY_FIRST_API_KEY=${magic_key:-}
+
+# Terraform Cloud integration (READ-ONLY)
+TF_CLOUD_TOKEN=${tf_token:-}
+
+# Google Cloud Platform credentials (READ-ONLY)
+GOOGLE_APPLICATION_CREDENTIALS=${gcp_credentials:-}
+
+# Container configuration
 NODE_ENV=production
 LOG_LEVEL=info
 MCP_SERVER_TIMEOUT=30000
@@ -112,6 +126,19 @@ EOF
 
     chmod 600 "$env_file" 2>/dev/null || log_warn "env_setup" "Could not secure .env file permissions"
     log_info "env_setup" "Environment file created: $env_file"
+
+    # Validate credentials if provided
+    if [[ -n "$tf_token" ]]; then
+        log_info "env_setup" "Terraform Cloud token configured (ensure it's READ-ONLY)"
+    fi
+
+    if [[ -n "$gcp_credentials" ]]; then
+        if [[ -f "$gcp_credentials" ]]; then
+            log_info "env_setup" "GCP credentials file configured: $gcp_credentials"
+        else
+            log_warn "env_setup" "GCP credentials file not found: $gcp_credentials"
+        fi
+    fi
 }
 
 # Comprehensive container cleanup function
@@ -165,7 +192,7 @@ test_container() {
 
 # === MAIN EXECUTION ===
 main() {
-    local api_key="" github_token="" magic_key="" tag="latest" no_cache="false"
+    local api_key="" github_token="" magic_key="" tf_token="" gcp_credentials="" tag="latest" no_cache="false"
 
     # Parse arguments
     while [[ $# -gt 0 ]]; do
@@ -173,6 +200,8 @@ main() {
             -o|--openrouter-api-key) api_key="$2"; shift 2 ;;
             -g|--github-token) github_token="$2"; shift 2 ;;
             -m|--magic-key) magic_key="$2"; shift 2 ;;
+            -tf|--terraform-token) tf_token="$2"; shift 2 ;;
+            -gcp|--gcp-credentials) gcp_credentials="$2"; shift 2 ;;
             -t|--tag) tag="$2"; shift 2 ;;
             -n|--no-cache) no_cache="true"; shift ;;
             -h|--help) usage; exit 0 ;;
@@ -184,6 +213,8 @@ main() {
     api_key="${api_key:-$OPENROUTER_API_KEY}"
     github_token="${github_token:-$GITHUB_TOKEN}"
     magic_key="${magic_key:-$TWENTY_FIRST_API_KEY}"
+    tf_token="${tf_token:-$TF_CLOUD_TOKEN}"
+    gcp_credentials="${gcp_credentials:-$GOOGLE_APPLICATION_CREDENTIALS}"
 
     log_info "build_start" "Starting OpenCode container build..."
 
@@ -191,7 +222,7 @@ main() {
     check_prerequisites
     validate_and_setup "$api_key"
     build_image "$tag" "$no_cache"
-    create_env_file "$api_key" "$github_token" "$magic_key"
+    create_env_file "$api_key" "$github_token" "$magic_key" "$tf_token" "$gcp_credentials"
     test_container
 
     log_info "build_complete" "Build completed successfully!"
