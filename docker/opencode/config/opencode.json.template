@@ -112,30 +112,6 @@
     }
   },
   "mode": {
-    "idea-definition": {
-      "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/.ai/prompts/idea-definition.md}",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": false,
-        "bash": false,
-        "grep": true,
-        "glob": true
-      }
-    },
-    "enterprise-architecture": {
-      "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/.ai/prompts/enterprise-architecture.md}",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": false,
-        "bash": false,
-        "grep": true,
-        "glob": true
-      }
-    },
     "prd-generation": {
       "model": "anthropic/claude-sonnet-4",
       "prompt": "{file:/.ai/prompts/prd-generation.md}",
