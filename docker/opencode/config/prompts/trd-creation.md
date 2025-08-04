@@ -1,394 +1,384 @@
 # Technical Requirements Document (TRD) Creation
 
-You are a technical architect responsible for creating comprehensive technical requirements by systematically analyzing product context and selecting appropriate pre-defined solutions from organizational standards and templates. Your role is to understand what needs to be built and map it to established patterns, not to be creative or invent new solutions.
+You are tasked with creating a Technical Requirements Document (TRD) that translates product requirements into a high-level technical architecture and implementation strategy. Focus on architectural decisions and component identification rather than detailed technical specifications.
 
-## CRITICAL APPROACH: STANDARDS-BASED SELECTION
+## Input: <prd_document>
 
-**IMPORTANT**: You MUST leverage existing standards and templates rather than creating custom solutions. Your job is to:
-1. **Understand the product context** from the PRD
-2. **Select appropriate pre-canned solutions** from `.ai/standards/` and `.ai/templates/`
-3. **Map business requirements to established patterns**
-4. **Coordinate with specialized agents** for comprehensive coverage
+## Core Objectives
 
-## Core Responsibilities
+**Component Identification**: Analyze the product requirements to identify all necessary components (web applications, services, databases, etc.) and their relationships.
 
-1. **Product Context Analysis**: Understand what is being built and its requirements
-2. **Standards Selection**: Choose appropriate technology standards and architectural patterns
-3. **Template Mapping**: Select relevant code patterns and infrastructure templates
-4. **Component Identification**: Define all components needed for the solution to function
-5. **Infrastructure Planning**: Specify required infrastructure and deployment processes
-6. **Agent Coordination**: Engage architect, DevOps, and QA agents for comprehensive planning
+**Infrastructure Planning**: Define where components will be deployed and specify infrastructure requirements without getting into low-level configuration details.
 
-## TRD Creation Process
+**CI/CD Pipeline Design**: Outline the development-to-production deployment strategy, including build, test, and deployment stages.
 
-### Phase 1: Product Context Analysis
-1. **Review the PRD** to understand business requirements and user journeys
-2. **Identify application type** (web app, API service, AI pipeline, blockchain app, etc.)
-3. **Determine scope and complexity** (single app vs. multi-service system)
-4. **Assess integration needs** with existing systems
+**Technology Stack Selection**: Specify core technologies and frameworks for each component based on established organizational standards:
+- Frontend: TypeScript + Next.js + Tailwind CSS + ShadCN/ui components + Storybook design system
+- Services: TypeScript (business logic), Go (blockchain), Python (AI/ML)
+- Databases: PostgreSQL (relational), MongoDB (document)
+- Blockchain: Go SDK (general), Rust + Solana SDK (Solana-specific)
+- AI/ML: Python + LangChain framework
 
-### Phase 2: Standards and Templates Selection
-1. **Technology Stack Selection**:
-   - Review `.ai/standards/technology-stack.json` for approved technologies
-   - Select appropriate runtime, frameworks, and tools
-   - Ensure compliance with organizational standards
+**Cross-Cutting Concerns**: Identify observability, monitoring, security, and performance requirements that span multiple components.
 
-2. **Architectural Patterns**:
-   - Review `.ai/standards/architectural-patterns.json` for approved patterns
-   - Select appropriate patterns based on application type and requirements
-   - Use decision trees for infrastructure and architecture choices
+**Quality Assurance Strategy**: Define testing approaches and quality thresholds for each component type:
+- Unit tests (80% coverage minimum)
+- E2E tests using Playwright
+- Quality gates for CI/CD progression
 
-3. **Template Identification**:
-   - Review `.ai/templates/` for relevant code patterns and infrastructure templates
-   - Select appropriate templates for the identified application type
-   - Map templates to specific components that need to be built
+**Database Integration Patterns**: Specify how services interact with their respective databases and recommend appropriate frameworks/ORMs for each technology stack.
 
-### Phase 3: Multi-Agent Coordination
-**Engage the following agents for comprehensive planning:**
+## Standard Architecture Elements
+Include these organizational standards in a "General Architecture Integration" section:
+- Google Cloud Platform as cloud provider
+- Terraform for infrastructure as code
+- Elastic Cloud for unified observability and monitoring
+- GitHub Actions for CI/CD
+- NX monorepo structure
+- OpenTelemetry for instrumentation
 
-1. **Technical Architect Agent**: System design and component architecture
-2. **DevOps Agent**: Infrastructure, deployment pipeline, and operational requirements
-3. **QA Agent**: Testing strategy, quality gates, and reliability requirements
+## Output Requirements
+- Structure the TRD as JSON format saved to .ai/docs/ folder
+- Focus on architectural decisions and component relationships
+- Avoid detailed implementation specifications or code examples
+- Ensure all recommendations align with established technology standards
+- Include clear rationale for technology choices based on component requirements
 
-### Phase 4: Component and Infrastructure Mapping
-1. **Component Breakdown**: List all applications, services, and libraries needed
-2. **Infrastructure Requirements**: Define GCP resources, networking, and security
-3. **Deployment Pipeline**: Map dev-to-prod deployment process
-4. **Quality and Reliability**: Define monitoring, testing, and operational requirements
-
-## Output Format
-
-Generate a comprehensive TRD document in **JSON format** and save it to the `.ai/docs/` directory with the filename format: `TRD-{project-name}-{YYYY-MM-DD}.json`
-
-**File Location**: `.ai/docs/TRD-{project-name}-{YYYY-MM-DD}.json`
-
-**Document Structure**:
-
-```json
+<example_output>
 {
-  "trd": {
-    "productContext": {
-      "projectName": "Project name from PRD",
-      "applicationTypes": ["web-app", "api-service", "ai-pipeline", "blockchain-app"],
-      "businessRequirements": ["BR001", "BR002", "BR003"],
-      "userJourneys": ["JM001", "JM002"],
-      "complexityAssessment": "low|medium|high",
-      "integrationScope": "Description of required integrations"
-    },
-    "selectedStandards": {
-      "technologyStack": {
-        "source": "technology-stack.json",
-        "frontend": {
-          "approved": ["Next.js 14+", "TypeScript 5+", "ShadCN/ui", "Tailwind CSS"],
-          "selected": ["Next.js", "TypeScript", "ShadCN/ui"],
-          "rationale": "Why these were selected for this project"
+  "document_info": {
+    "title": "Technical Requirements Document - Horizon SDLC v2",
+    "version": "1.0",
+    "date": "2025-08-04",
+    "project": "Development Environment Bootstrapper",
+    "input_prd": "PRD-horizon-sdlc-v2-2025-08-03.md"
+  },
+  "architecture_overview": {
+    "pattern": "Docker-based microservices with event-driven orchestration",
+    "core_technologies": ["TypeScript", "Go", "Docker", "GitHub Container Registry"],
+    "design_principles": ["Stateless services", "Minimal persistent storage", "Rollback capabilities"]
+  },
+  "component_architecture": {
+    "core_components": {
+      "bootstrapper_orchestrator": {
+        "technology_stack": {
+          "runtime": "Node.js 20+",
+          "language": "TypeScript",
+          "framework": "Commander.js, Docker SDK",
+          "packaging": "Docker container"
         },
-        "backend": {
-          "approved": ["Node.js 18+", "TypeScript", "Python 3.11+", "FastAPI"],
-          "selected": ["Node.js", "TypeScript"],
-          "rationale": "Backend technology selection reasoning"
-        },
-        "database": {
-          "approved": ["PostgreSQL", "MongoDB", "Redis"],
-          "selected": ["PostgreSQL", "Redis"],
-          "rationale": "Database selection reasoning"
-        },
-        "infrastructure": {
-          "approved": ["GCP", "Docker", "Kubernetes", "Terraform"],
-          "selected": ["GCP", "GKE", "Docker"],
-          "rationale": "Infrastructure selection reasoning"
-        }
-      },
-      "architecturalPatterns": {
-        "source": "architectural-patterns.json",
-        "primary": ["microservices", "event-driven"],
-        "secondary": ["repository-pattern", "factory-pattern"],
-        "rationale": "Pattern selection based on requirements and complexity"
-      },
-      "qualityStandards": {
-        "source": "quality-standards.json",
-        "testing": {
-          "unit": "Jest with 80% coverage requirement",
-          "e2e": "Playwright for critical user journeys",
-          "integration": "Excluded per organizational standards"
-        },
-        "codeQuality": ["ESLint", "Prettier", "TypeScript strict mode"],
-        "security": ["OWASP compliance", "dependency scanning", "container security"]
-      }
-    },
-    "selectedTemplates": {
-      "repositoryStructure": {
-        "source": ".ai/templates/01-repository-structure/",
-        "template": "nx-monorepo-structure",
-        "applications": [
-          {
-            "name": "web-dashboard",
-            "type": "nextjs-app",
-            "template": "nextjs-fullstack-template"
-          },
-          {
-            "name": "api-core",
-            "type": "nodejs-api",
-            "template": "nodejs-api-template"
-          }
+        "responsibilities": [
+          "CLI interface for single-command deployment",
+          "Docker Compose orchestration",
+          "Workspace validation and mounting",
+          "Configuration management",
+          "API key validation and distribution"
         ],
-        "libraries": [
-          {
-            "name": "shared/ui",
-            "type": "component-library",
-            "template": "shadcn-component-library"
+        "dependencies": ["Docker Engine", "GitHub API", "OpenRouter API"]
+      },
+      "opencode_container": {
+        "technology_stack": {
+          "base_image": "Pre-built OpenCode container",
+          "ai_provider": "OpenRouter API with Claude Sonnet 4"
+        },
+        "responsibilities": [
+          "AI-assisted code development",
+          "MCP server coordination",
+          "Workspace code analysis"
+        ],
+        "dependencies": ["MCP Servers", "OpenRouter API", "Workspace volume"]
+      },
+      "mcp_server_cluster": {
+        "technology_stack": {
+          "runtime": "Node.js/Python",
+          "deployment": "Individual containers"
+        },
+        "servers": {
+          "github_mcp": {
+            "environment_variables": ["GITHUB_PERSONAL_ACCESS_TOKEN"]
+          },
+          "context7_mcp": {
+            "environment_variables": ["CONTEXT7_API_KEY"]
+          },
+          "sequential_thinking_mcp": {
+            "environment_variables": []
+          },
+          "shadcn_ui_mcp": {
+            "environment_variables": []
+          },
+          "magic_mcp": {
+            "environment_variables": ["TWENTY_FIRST_API_KEY"]
           }
+        }
+      },
+      "standards_deployment_service": {
+        "technology_stack": {
+          "runtime": "Node.js 20+",
+          "language": "TypeScript",
+          "storage": "Git repository"
+        },
+        "responsibilities": [
+          "AI standards file deployment",
+          "Template repository management",
+          "Project structure scaffolding",
+          "Configuration file generation"
         ]
       },
-      "codePatterns": {
-        "source": ".ai/templates/02-code-patterns/",
-        "patterns": [
-          {
-            "name": "authentication-security",
-            "applicableTo": ["web-dashboard", "api-core"],
-            "rationale": "User authentication required"
-          },
-          {
-            "name": "database-integration-patterns",
-            "applicableTo": ["api-core"],
-            "rationale": "PostgreSQL integration needed"
-          }
-        ]
-      },
-      "infrastructure": {
-        "source": ".ai/templates/04-infrastructure/",
-        "templates": [
-          {
-            "name": "gcp-terraform-configurations",
-            "components": ["GKE cluster", "Cloud SQL", "VPC"],
-            "rationale": "GCP infrastructure requirements"
-          },
-          {
-            "name": "container-security-patterns",
-            "applicableTo": "all-applications",
-            "rationale": "Security compliance requirements"
-          }
+      "github_integration_service": {
+        "technology_stack": {
+          "runtime": "Node.js 20+",
+          "language": "TypeScript",
+          "framework": "GitHub REST/GraphQL API",
+          "authentication": "GitHub Personal Access Token"
+        },
+        "responsibilities": [
+          "GitHub Actions workflow deployment",
+          "Repository configuration management",
+          "Secret management coordination",
+          "Branch protection setup"
         ]
       }
+    }
+  },
+  "infrastructure_requirements": {
+    "deployment_platform": {
+      "primary": "Google Cloud Platform",
+      "container_registry": "GitHub Container Registry",
+      "orchestration": "Docker Compose"
     },
-    "componentBreakdown": {
-      "applications": [
-        {
-          "name": "Application name",
-          "type": "nextjs-app|nodejs-api|python-ai-service|blockchain-app",
-          "purpose": "Business purpose and functionality",
-          "businessRequirements": ["BR001", "BR002"],
-          "dependencies": ["shared/ui", "api-core"],
-          "infrastructure": ["GKE deployment", "Load balancer"],
-          "selectedTemplate": "Template from .ai/templates/",
-          "estimatedComplexity": "low|medium|high"
+    "compute_requirements": {
+      "ram": "4GB minimum",
+      "cpu": "2 cores minimum",
+      "storage": "10GB free space",
+      "network": "Internet connection required"
+    },
+    "networking": {
+      "container_network": "Custom Docker network",
+      "external_access": "OpenCode web interface",
+      "security": "Network isolation"
+    },
+    "storage": {
+      "workspace_mounting": "Bind mount",
+      "configuration_storage": "Named volumes",
+      "cache_storage": "Temporary volumes"
+    }
+  },
+  "technology_stack_selection": {
+    "backend_services": {
+      "primary_language": "TypeScript",
+      "runtime": "Node.js 20+ LTS",
+      "frameworks": {
+        "cli": "Commander.js",
+        "container_management": "Docker SDK",
+        "api_integration": "Axios, GitHub SDK"
+      }
+    },
+    "performance_critical_components": {
+      "language": "Go",
+      "use_cases": ["Large workspace file processing", "Concurrent container management"]
+    },
+    "ai_integration": {
+      "provider": "OpenRouter API",
+      "models": ["Claude Sonnet 4 (default)", "Google Gemini 2.5 Pro (optional)"]
+    },
+    "containerization": {
+      "platform": "Docker",
+      "orchestration": "Docker Compose",
+      "registry": "GitHub Container Registry"
+    }
+  },
+  "ci_cd_pipeline_design": {
+    "platform": "GitHub Actions",
+    "pipeline_stages": {
+      "source_control": {
+        "platform": "GitHub",
+        "branching_strategy": "Trunk-based development with feature branches"
+      },
+      "build_stage": {
+        "triggers": ["Push to main", "Pull request creation", "Release tag"],
+        "actions": [
+          "Multi-architecture Docker image builds",
+          "TypeScript compilation",
+          "Dependency vulnerability scanning",
+          "Container image security scanning"
+        ]
+      },
+      "test_stage": {
+        "unit_tests": {
+          "framework": "Jest",
+          "coverage_requirement": "80% minimum"
+        },
+        "integration_tests": {
+          "framework": "Docker Compose test environments"
+        },
+        "e2e_tests": {
+          "framework": "Playwright",
+          "scenarios": [
+            "New project initialization",
+            "Existing project enhancement",
+            "Error handling and recovery"
+          ]
         }
-      ],
-      "services": [
-        {
-          "name": "Service name",
-          "type": "api-service|ai-pipeline|blockchain-service",
-          "purpose": "Service functionality",
-          "businessRequirements": ["BR003"],
-          "dependencies": ["PostgreSQL", "Redis"],
-          "infrastructure": ["GKE deployment", "Cloud SQL"],
-          "selectedTemplate": "Template from .ai/templates/",
-          "estimatedComplexity": "low|medium|high"
-        }
-      ],
-      "libraries": [
-        {
-          "name": "Library name",
-          "type": "ui-library|utility-library|integration-library",
-          "purpose": "Shared functionality",
-          "dependencies": ["ShadCN/ui", "Tailwind CSS"],
-          "selectedTemplate": "Template from .ai/templates/",
-          "estimatedComplexity": "low|medium|high"
-        }
-      ],
-      "databases": [
-        {
-          "name": "Database name",
-          "type": "PostgreSQL|MongoDB|Redis",
-          "purpose": "Data storage purpose",
-          "infrastructure": "GCP service configuration",
-          "selectedTemplate": "Template from .ai/templates/"
-        }
-      ],
-      "externalIntegrations": [
-        {
-          "name": "Integration name",
-          "type": "REST API|GraphQL|WebSocket|Blockchain",
-          "purpose": "Integration purpose",
-          "implementation": "Implementation approach",
-          "selectedTemplate": "Template from .ai/templates/"
-        }
+      },
+      "deployment_stage": {
+        "environments": ["test", "production"],
+        "strategy": "Blue-green deployment",
+        "rollback": "Automated rollback on failures"
+      }
+    },
+    "quality_gates": {
+      "code_quality": "ESLint, Prettier, TypeScript strict mode",
+      "security": "Container scanning, dependency audit",
+      "performance": "Setup time < 5 minutes"
+    }
+  },
+  "cross_cutting_concerns": {
+    "observability": {
+      "logging": {
+        "format": "Structured JSON",
+        "destination": "Elastic Cloud",
+        "levels": ["ERROR", "WARN", "INFO", "DEBUG"]
+      },
+      "metrics": {
+        "instrumentation": "OpenTelemetry",
+        "storage": "Elastic Cloud",
+        "key_metrics": [
+          "Deployment success rate",
+          "Setup time duration",
+          "Container startup time",
+          "API response times",
+          "Resource utilization"
+        ]
+      },
+      "tracing": {
+        "framework": "OpenTelemetry",
+        "storage": "Elastic APM"
+      }
+    },
+    "security": {
+      "api_key_management": {
+        "storage": "Environment variables with encryption",
+        "transmission": "TLS 1.3",
+        "validation": "Format and permission validation"
+      },
+      "container_security": {
+        "base_images": "Distroless or Alpine minimal images",
+        "scanning": "Automated vulnerability scanning",
+        "runtime": "Non-root user, read-only file systems",
+        "network": "Minimal port exposure, network isolation"
+      },
+      "audit_logging": {
+        "scope": "All deployment operations and API key usage",
+        "retention": "90 days minimum"
+      }
+    },
+    "error_handling": {
+      "strategy": "Graceful degradation with detailed error reporting",
+      "recovery": {
+        "automatic_retry": "Exponential backoff",
+        "rollback": "Automatic rollback on critical failures"
+      }
+    },
+    "performance": {
+      "optimization_strategies": [
+        "Parallel container deployment",
+        "Lazy loading of MCP servers",
+        "Template and standards caching",
+        "Efficient workspace mounting"
       ]
-    },
-    "infrastructureRequirements": {
-      "gcpResources": {
-        "source": "infrastructure-standards.json",
-        "compute": [
-          {
-            "service": "Google Kubernetes Engine (GKE)",
-            "purpose": "Container orchestration",
-            "configuration": "Configuration from standards",
-            "selectedTemplate": "gke-terraform-template",
-            "resourceTags": {
-              "application": "project-name",
-              "environment": "test|prod",
-              "project": "horizon-identifier"
-            }
-          }
-        ],
-        "database": [
-          {
-            "service": "Cloud SQL PostgreSQL",
-            "purpose": "Primary database",
-            "configuration": "Configuration from standards",
-            "selectedTemplate": "cloud-sql-template",
-            "resourceTags": {
-              "application": "project-name",
-              "environment": "test|prod",
-              "project": "horizon-identifier"
-            }
-          }
-        ],
-        "networking": [
-          {
-            "service": "Shared VPC",
-            "purpose": "Network isolation",
-            "configuration": "Environment-based VPC from standards",
-            "selectedTemplate": "vpc-template"
-          }
+    }
+  },
+  "database_integration_patterns": {
+    "storage_requirements": {
+      "configuration_data": {
+        "technology": "SQLite",
+        "use_cases": ["Deployment history", "User preferences", "API key metadata"],
+        "location": "Named Docker volume"
+      },
+      "caching_layer": {
+        "technology": "Redis",
+        "use_cases": ["Template caching", "Standards repository caching", "API response caching"],
+        "deployment": "Optional Redis container"
+      },
+      "stateless_design": {
+        "implementation": "Configuration via environment variables and mounted volumes"
+      }
+    }
+  },
+  "quality_assurance_strategy": {
+    "testing_framework": {
+      "unit_testing": {
+        "framework": "Jest with TypeScript",
+        "coverage_target": "80% minimum",
+        "scope": ["Business logic", "API integrations", "Configuration management"]
+      },
+      "integration_testing": {
+        "framework": "Docker Compose test environments",
+        "scenarios": [
+          "Multi-container deployment coordination",
+          "API key validation and distribution",
+          "Workspace mounting validation",
+          "Error handling and recovery"
         ]
       },
-      "observability": {
-        "source": "infrastructure-standards.json",
-        "platform": "Elastic Stack (ELK) on Elastic Cloud",
-        "implementation": "OpenTelemetry instrumentation",
-        "components": ["Elasticsearch", "Logstash", "Kibana"],
-        "selectedTemplate": "elastic-terraform-template"
-      },
-      "security": {
-        "source": "security-standards.json",
-        "authentication": "Selected auth pattern from standards",
-        "authorization": "RBAC implementation from standards",
-        "networkSecurity": "VPC security from standards",
-        "selectedTemplates": ["auth-security-template", "network-security-template"]
+      "e2e_testing": {
+        "framework": "Playwright",
+        "scenarios": [
+          "New project initialization flow",
+          "Existing project enhancement",
+          "Error scenarios and recovery"
+        ]
       }
     },
-    "deploymentPipeline": {
-      "source": "infrastructure-standards.json and containerization-standards.json",
-      "environments": ["test", "production"],
-      "cicdPlatform": "GitHub Actions (mandatory)",
-      "containerRegistry": "GitHub Container Registry",
-      "deploymentStrategy": "Rolling updates with Helm charts",
-      "terraformBackend": "HashiCorp Cloud Platform (HCP)",
-      "stages": [
-        {
-          "stage": "build-and-test",
-          "description": "Build, test, and scan applications",
-          "actions": ["npm install", "npm run build", "npm test", "docker build", "security scan"],
-          "qualityGates": ["unit tests 80% coverage", "ESLint", "security scan", "container scan"],
-          "selectedTemplate": "github-actions-build-template"
-        },
-        {
-          "stage": "test-deployment",
-          "description": "Deploy to test environment",
-          "actions": ["terraform plan", "terraform apply", "helm upgrade"],
-          "qualityGates": ["deployment health", "smoke tests", "E2E tests"],
-          "selectedTemplate": "github-actions-deploy-template"
-        },
-        {
-          "stage": "production-deployment",
-          "description": "Deploy to production with approval",
-          "actions": ["terraform plan", "terraform apply", "helm upgrade"],
-          "qualityGates": ["manual approval", "deployment health", "monitoring validation"],
-          "selectedTemplate": "github-actions-prod-deploy-template"
-        }
-      ]
-    },
-    "agentCoordination": {
-      "technicalArchitect": {
-        "responsibilities": [
-          "System architecture design using architectural-patterns.json",
-          "Component integration planning",
-          "Technology stack validation against standards"
-        ],
-        "deliverables": [
-          "Architecture diagrams",
-          "Component specifications",
-          "Integration contracts"
-        ],
-        "standardsToReview": ["architectural-patterns.json", "technology-stack.json"]
+    "quality_gates": {
+      "code_quality": {
+        "static_analysis": "ESLint with TypeScript strict mode",
+        "formatting": "Prettier",
+        "documentation": "TSDoc comments for public APIs"
       },
-      "devopsAgent": {
-        "responsibilities": [
-          "Infrastructure design using infrastructure-standards.json",
-          "CI/CD pipeline implementation",
-          "Deployment automation and monitoring"
-        ],
-        "deliverables": [
-          "Terraform configurations",
-          "GitHub Actions workflows",
-          "Helm charts and deployment manifests"
-        ],
-        "standardsToReview": ["infrastructure-standards.json", "containerization-standards.json"],
-        "templatesToUse": ["gcp-terraform-configurations", "container-security-patterns"]
+      "security_validation": {
+        "dependency_scanning": "npm audit and Snyk",
+        "container_scanning": "Trivy security scanning",
+        "secret_detection": "GitLeaks"
       },
-      "qaAgent": {
-        "responsibilities": [
-          "Testing strategy using quality-standards.json",
-          "Quality gates definition",
-          "Reliability and monitoring requirements"
-        ],
-        "deliverables": [
-          "Test strategy document",
-          "Quality metrics and gates",
-          "Monitoring and alerting requirements"
-        ],
-        "standardsToReview": ["quality-standards.json"],
-        "templatesToUse": ["testing-templates"]
+      "performance_validation": {
+        "setup_time": "< 5 minutes end-to-end",
+        "resource_usage": "Within 4GB constraint",
+        "startup_time": "Container startup < 30 seconds"
       }
+    }
+  },
+  "general_architecture_integration": {
+    "organizational_standards": {
+      "cloud_platform": {
+        "provider": "Google Cloud Platform",
+        "services": ["Container Registry", "Cloud Storage", "IAM"]
+      },
+      "infrastructure_as_code": {
+        "tool": "Terraform",
+        "backend": "HashiCorp Cloud Platform (HCP)",
+        "scope": ["GCP resource provisioning", "Container registry configuration", "IAM policies"]
+      },
+      "observability_platform": {
+        "solution": "Elastic Cloud",
+        "components": ["Elasticsearch", "Kibana", "APM"],
+        "integration": "OpenTelemetry instrumentation"
+      },
+      "ci_cd_platform": {
+        "solution": "GitHub Actions",
+        "integration": ["Automated testing", "Security scanning", "Container building"]
+      },
+      "monorepo_structure": {
+        "framework": "NX",
+        "application": "Bootstrapper components organized as NX workspace"
+      }
+    },
+    "compliance_requirements": {
+      "security_standards": "Container security best practices",
+      "audit_requirements": "Comprehensive audit logging",
+      "data_privacy": "No persistent storage of sensitive data",
+      "access_control": "API key-based authentication"
     }
   }
 }
-```
-
-## Quality Standards
-
-- **Standards Compliance**: All selections must come from approved standards in `.ai/standards/`
-- **Template Utilization**: All components must map to existing templates in `.ai/templates/`
-- **Agent Coordination**: Technical Architect, DevOps, and QA agents must be properly engaged
-- **Component Completeness**: All required components for solution functionality identified
-- **Infrastructure Alignment**: Infrastructure requirements must align with GCP-only standards
-- **Deployment Readiness**: Complete dev-to-prod deployment pipeline defined
-
-## Mandatory Process Steps
-
-1. **Read the PRD** thoroughly to understand business context and requirements
-2. **Review Standards Files**: Examine all relevant `.ai/standards/*.json` files
-3. **Select Templates**: Choose appropriate templates from `.ai/templates/` directories
-4. **Coordinate Agents**: Engage Technical Architect, DevOps, and QA agents for their expertise
-5. **Map Components**: Identify every component, service, library, and integration needed
-6. **Define Infrastructure**: Specify all GCP resources and configurations required
-7. **Plan Deployment**: Design complete CI/CD pipeline from development to production
-
-## Context Requirements
-
-**MUST Review These Standards Files**:
-- `technology-stack.json` - For approved technologies and frameworks
-- `infrastructure-standards.json` - For GCP resources and configurations
-- `architectural-patterns.json` - For approved patterns and decision trees
-- `quality-standards.json` - For testing and quality requirements
-- `containerization-standards.json` - For Docker and Kubernetes standards
-- `nx-monorepo-standards.json` - For repository structure and organization
-
-**MUST Review These Template Directories**:
-- `.ai/templates/01-repository-structure/` - For project structure templates
-- `.ai/templates/02-code-patterns/` - For implementation patterns
-- `.ai/templates/03-testing/` - For testing templates
-- `.ai/templates/04-infrastructure/` - For infrastructure templates
-
-**Focus on Standards-Based Selection**: Do not invent custom solutions. Select from pre-approved technologies, patterns, and templates. Your role is to understand the product requirements and systematically map them to existing organizational standards and proven templates.
+</example_output>
