@@ -6,10 +6,10 @@
 Horizon SDLC v2 - Development Environment Bootstrapper
 
 ### Description
-A containerized development environment bootstrapper that automates one-time project setup and deploys OpenCode AI development assistance for ongoing development support. The system acts as a universal deployment tool that can initialize any target project with standardized development environments, AI standards, templates, and CI/CD workflows.
+An enhanced OpenCode container that includes intelligent project detection and auto-initialization capabilities to automate one-time project setup and provide ongoing AI development assistance. The OpenCode container automatically detects missing project structure elements (.ai directory with standards, .github directory with workflows, docker-compose.yml, and .env files) and creates them with pre-configured content. It acts as both the smart project bootstrapper AND the AI development assistant, eliminating manual setup while preserving existing project configurations.
 
 ### Business Objective
-Eliminate manual project setup overhead and provide consistent, AI-assisted development environments across all development projects through automated bootstrapping and standardized tooling deployment.
+Eliminate manual project setup overhead and provide consistent, AI-assisted development environments across all development projects through the OpenCode container's integrated bootstrapping capabilities and standardized tooling deployment.
 
 ### Target Users
 - Software Development Teams
@@ -19,7 +19,7 @@ Eliminate manual project setup overhead and provide consistent, AI-assisted deve
 - Project Managers
 
 ### Value Proposition
-Transforms hours of manual project setup into a single-command deployment that provides immediate access to AI-assisted development environments with pre-configured standards, templates, and automation workflows.
+Transforms hours of manual project setup into a single start-opencode.sh execution that intelligently detects missing project components and automatically creates them, providing immediate access to AI-assisted development environments with pre-configured standards and automation workflows - all from within the same container that provides ongoing development assistance.
 
 ## User Journeys
 
@@ -108,10 +108,12 @@ Transforms hours of manual project setup into a single-command deployment that p
 - **Context**: Beginning of project lifecycle requiring immediate development environment setup
 - **Expected Outcome**: Fully configured development environment with AI assistance, standards, and workflows ready for team use
 - **Success Criteria**:
-  - Complete environment setup in under 5 minutes
-  - All team members can immediately begin development
-  - AI assistance tools are functional and accessible
-  - Standard templates and workflows are deployed
+  - Automatic detection and creation of missing project structure in under 2 minutes
+  - .ai directory created with organizational standards and templates
+  - .github directory created with CI/CD workflows  
+  - docker-compose.yml and .env files created for OpenCode container
+  - AI assistance tools functional after .env file population
+  - No existing project files modified or overwritten
 - **Priority**: High
 - **Business Value**: Accelerates project start time and ensures consistency
 
@@ -122,28 +124,28 @@ Transforms hours of manual project setup into a single-command deployment that p
 - Team onboarding requirements
 
 **Steps**:
-1. **Action**: Execute single bootstrap command with API key
-   - **Touchpoint**: Command line interface
-   - **User Thoughts**: "This should set up everything I need quickly"
-   - **Pain Points**: Need to remember correct command syntax and API key
+1. **Action**: Execute start-opencode.sh script to initialize and start OpenCode container
+   - **Touchpoint**: Command line interface with start-opencode.sh script
+   - **User Thoughts**: "This should automatically detect what's missing and set up everything I need"
+   - **Pain Points**: Need to locate and execute the correct script
    - **Alternatives**: Manual setup (time-consuming fallback)
 
-2. **Action**: Monitor container deployment and initialization
-   - **Touchpoint**: Docker logs and status indicators
-   - **User Thoughts**: "I hope this completes successfully without errors"
-   - **Pain Points**: Unclear progress indicators or error messages
-   - **Alternatives**: Restart process if failures occur
+2. **Action**: Monitor automatic detection and creation of missing project structure
+   - **Touchpoint**: OpenCode container logs showing directory and file creation
+   - **User Thoughts**: "I can see it's automatically creating the .ai, .github directories and docker-compose.yml files I need"
+   - **Pain Points**: Unclear progress indicators or error messages during auto-detection phase
+   - **Alternatives**: Restart container if failures occur
 
-3. **Action**: Verify environment setup and AI tool accessibility
-   - **Touchpoint**: OpenCode interface and verification scripts
-   - **User Thoughts**: "Everything should be working and ready for the team"
-   - **Pain Points**: Complex verification procedures or unclear success indicators
-   - **Alternatives**: Manual verification of individual components
+3. **Action**: Configure .env file with required API keys and verify AI tool accessibility
+   - **Touchpoint**: Generated .env file and OpenCode interface
+   - **User Thoughts**: "I need to populate the .env file with my API keys, then everything should work"
+   - **Pain Points**: Unclear which API keys are required or incorrect .env configuration
+   - **Alternatives**: Manual verification of individual components and API connectivity
 
 **Decision Points**:
-- **Decision**: Choose between quick setup vs. custom configuration
-  - **Options**: Standard setup, Custom configuration
-  - **Consequences**: Speed vs. flexibility trade-off
+- **Decision**: Whether to modify auto-generated configuration files
+  - **Options**: Use defaults, Customize generated templates
+  - **Consequences**: Immediate usability vs. tailored configuration
 
 **Exit Points**:
 - Successful environment ready for development
@@ -181,10 +183,10 @@ Transforms hours of manual project setup into a single-command deployment that p
    - **Pain Points**: Uncertainty about what will be modified
    - **Alternatives**: Create separate branch for testing
 
-2. **Action**: Run bootstrapper on existing project workspace
-   - **Touchpoint**: Command line with workspace mounting
-   - **User Thoughts**: "This should enhance without breaking existing work"
-   - **Pain Points**: Fear of configuration conflicts or data loss
+2. **Action**: Run start-opencode.sh script on existing project workspace
+   - **Touchpoint**: Command line with start-opencode.sh script
+   - **User Thoughts**: "This should detect what's missing and add only what I need without breaking existing work"
+   - **Pain Points**: Fear of configuration conflicts or overwriting existing files during auto-detection
    - **Alternatives**: Manual selective installation of components
 
 **Decision Points**:
@@ -204,40 +206,40 @@ Transforms hours of manual project setup into a single-command deployment that p
 
 ## Business Requirements
 
-### BR001: Single-Command Environment Deployment
-- **Requirement**: Users must be able to deploy complete development environment with single command execution
-- **Rationale**: Eliminates setup complexity and reduces time-to-productivity for development teams
+### BR001: Intelligent Auto-Detection and Initialization
+- **Requirement**: Users must be able to initialize complete development environment with single start-opencode.sh script execution that automatically detects and creates missing project structure
+- **Rationale**: Eliminates setup complexity and configuration decisions by automatically detecting what's missing and creating only necessary components
 - **Priority**: High
 - **Dependencies**:
-  - Docker container infrastructure
-  - API key management system
-  - Workspace mounting capabilities
+  - Enhanced OpenCode container with intelligent detection capabilities
+  - Pre-configured templates for .ai and .github directories
+  - Docker-compose.yml and .env file templates
+  - Non-destructive file creation logic
 
-### BR002: Universal Project Compatibility
-- **Requirement**: System must work with any target project repository without modification to existing codebase
-- **Rationale**: Ensures broad adoption and eliminates barriers to implementation across diverse project types
+### BR002: Non-Destructive Project Enhancement
+- **Requirement**: System must work with any target project repository, only adding missing components without modifying existing files
+- **Rationale**: Ensures broad adoption and eliminates fear of project corruption during enhancement
 - **Priority**: High
 - **Dependencies**:
-  - Workspace-agnostic design
+  - File existence detection logic
   - Non-invasive deployment approach
-  - Flexible configuration system
+  - Safe directory and file creation mechanisms
 
-### BR003: Standardized AI Development Tools
-- **Requirement**: Deploy consistent AI assistance tools (OpenCode, MCP servers) across all initialized projects
-- **Rationale**: Provides uniform development experience and capabilities regardless of project type
+### BR003: Integrated AI Development Tools
+- **Requirement**: Deploy consistent AI assistance tools (OpenCode with integrated MCP servers) across all initialized projects through the container's built-in capabilities
+- **Rationale**: Provides uniform development experience and capabilities regardless of project type through a single unified container
 - **Priority**: High
 - **Dependencies**:
-  - OpenCode container integration
-  - MCP server configuration
-  - API key management
+  - OpenCode container with integrated bootstrapping and MCP servers
+  - Internal MCP server configuration
+  - User-managed .env file configuration for API access
 
-### BR004: Pre-configured Standards and Templates
-- **Requirement**: Automatically deploy organizational development standards, templates, and best practices
+### BR004: Pre-configured Standards
+- **Requirement**: Automatically deploy organizational development standards, and best practices
 - **Rationale**: Ensures consistency and quality across all development projects
 - **Priority**: Medium
 - **Dependencies**:
   - Standards repository maintenance
-  - Template versioning system
   - Configuration management
 
 ### BR005: CI/CD Workflow Integration
@@ -246,16 +248,16 @@ Transforms hours of manual project setup into a single-command deployment that p
 - **Priority**: Medium
 - **Dependencies**:
   - GitHub integration
-  - Workflow template management
+  - Workflow pattern management
   - Secret management system
 
 ## Success Metrics
 
 ### Primary KPIs
-- Environment setup time: < 5 minutes from command execution to ready state
+- Auto-detection and initialization time: < 2 minutes from script execution to project structure ready
 - User adoption rate: > 80% of development teams using the system within 6 months
-- Setup success rate: > 95% successful deployments without manual intervention
-- Time-to-first-commit: < 15 minutes from environment setup to first code commit
+- Setup success rate: > 95% successful auto-initializations without manual intervention
+- Time-to-first-commit: < 10 minutes from script execution to first code commit (including .env configuration)
 
 ### Secondary Metrics
 - Support ticket reduction: 60% decrease in environment-related support requests
@@ -264,10 +266,11 @@ Transforms hours of manual project setup into a single-command deployment that p
 - AI tool utilization: > 70% of developers actively using deployed AI assistance
 
 ### Success Criteria
-- Zero-configuration deployment for standard use cases
-- Seamless integration with existing development workflows
+- Zero-decision auto-initialization for all project types
+- Non-destructive integration with existing development workflows
 - Positive developer experience feedback (> 4.0/5.0 rating)
 - Measurable productivity improvements in development teams
+- Successful detection and creation of missing project components in >95% of cases
 
 ### Validation Methods
 - Automated deployment testing and monitoring
@@ -279,9 +282,10 @@ Transforms hours of manual project setup into a single-command deployment that p
 
 ### Technical Constraints
 - Docker runtime environment required on target systems
-- Minimum 4GB RAM availability for container operations
-- Network connectivity required for initial setup and AI service access
+- Minimum 4GB RAM availability for OpenCode container operations (bootstrapping + AI assistance)
+- Network connectivity required for initial setup and ongoing AI service access
 - Compatible with Windows, macOS, and Linux development environments
+- OpenCode container must support both bootstrap mode and development assistance mode
 
 ### Business Constraints
 - API key costs for AI services (OpenRouter/Anthropic)
@@ -333,15 +337,15 @@ Transforms hours of manual project setup into a single-command deployment that p
 
 ### Integration Points
 - GitHub Actions workflow system
-- OpenCode AI development assistant
-- MCP (Model Context Protocol) server ecosystem
+- OpenCode container with integrated AI development assistant and bootstrapping
+- Built-in MCP (Model Context Protocol) server ecosystem within OpenCode container
 - Container registry and image management
 
 ### Data Requirements
 - API keys for AI services (OpenRouter, GitHub)
-- Organizational standards and template repositories
-- Project workspace access and mounting capabilities
-- Configuration data for MCP servers and AI tools
+- Organizational standards
+- Project workspace access and mounting capabilities for OpenCode container
+- Internal configuration data for integrated MCP servers and AI tools within OpenCode
 
 ## Risk Assessment
 

@@ -87,7 +87,6 @@ horizon-opencode/                 # Main OpenCode container
 ├── config/
 │   ├── auth.json               # Authentication (gitignored)
 │   └── mcp-servers.json        # MCP server configs
-├── templates/                  # Project templates
 ├── prompts/                    # Workflow prompts
 └── standards/                  # Coding standards
 
@@ -150,7 +149,7 @@ docker-compose exec opencode /usr/local/bin/healthcheck.sh
 
 ### Project Structure
 - **Source Code**: `src/` - Bootstrapper implementation logic
-- **Assets**: `assets/` - Deployable templates and standards
+- **Assets**: `assets/` - Deployable standards and configurations
 - **Tests**: `tests/` - Comprehensive testing at all levels
 - **Scripts**: `scripts/` - Build, deployment, and utility automation
 - **Docker**: `docker/` - Container configuration and deployment
@@ -169,7 +168,7 @@ docker-compose exec opencode /usr/local/bin/healthcheck.sh
 - **[Detailed Setup Guide](docs/opencode-container-setup.md)**: Comprehensive setup documentation
 - **[Requirements](docs/requirements.md)**: Project requirements and specifications
 - **[Repository Structure](docs/repository-structure.md)**: Detailed project structure
-- **[Standards Integration](docs/standards-templates-integration.md)**: Standards and templates documentation
+- **[Standards Integration](docs/standards-templates-integration.md)**: Standards and patterns documentation
 
 ## 🔐 Security
 
