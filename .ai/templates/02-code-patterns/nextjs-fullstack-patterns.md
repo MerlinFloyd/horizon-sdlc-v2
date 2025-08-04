@@ -698,30 +698,4 @@ export async function rateLimitMiddleware(request: NextRequest) {
 }
 ```
 
-## Best Practices
-
-### Server vs Client Components
-- **Server Components**: Use for data fetching, static content, and SEO-critical content
-- **Client Components**: Use for interactivity, browser APIs, and state management
-- **Composition**: Compose server and client components effectively
-- **Data Flow**: Pass data from server to client components via props
-
-### Performance Optimization
-- **Streaming**: Use Suspense boundaries for progressive loading
-- **Caching**: Leverage Next.js caching strategies (fetch cache, router cache)
-- **Bundle Splitting**: Optimize client-side JavaScript bundles
-- **Image Optimization**: Use Next.js Image component for optimized images
-
-### State Management Guidelines
-- **Local State**: Use useState for component-specific state
-- **Global State**: Use Zustand for cross-component state
-- **Server State**: Use React Query or SWR for server state management
-- **URL State**: Use searchParams for shareable state
-
-### Security Considerations
-- **Authentication**: Implement proper authentication middleware
-- **Authorization**: Check permissions at both middleware and component levels
-- **CSRF Protection**: Use CSRF tokens for state-changing operations
-- **Input Validation**: Validate all inputs on both client and server
-
 This Next.js full-stack patterns template provides comprehensive guidance for building modern, performant applications within our NX monorepo structure.

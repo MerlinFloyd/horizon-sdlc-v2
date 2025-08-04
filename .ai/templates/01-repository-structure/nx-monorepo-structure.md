@@ -222,48 +222,6 @@ horizon-monorepo/
 └── README.md                       # Project documentation
 ```
 
-## Key Principles
-
-### 1. Domain-Driven Organization
-- **Apps**: Deployable applications grouped by domain
-- **Libs**: Shared libraries organized by scope (shared, web, api, blockchain)
-- **Contracts**: Smart contract source code by blockchain platform
-
-### 2. Clear Boundaries
-- Each project has a single responsibility
-- Dependencies flow from apps → libs, never the other way
-- Public APIs defined through index.ts files
-
-### 3. Scalable Architecture
-- Horizontal scaling through independent applications
-- Vertical scaling through shared libraries
-- Container-ready with Dockerfile in each deployable project
-
-### 4. Consistent Structure
-- Every project includes project.json for NX configuration
-- TypeScript configuration inheritance from tsconfig.base.json
-- Kubernetes manifests co-located with applications
-
-## Project Types
-
-### Applications (apps/)
-- **web-dashboard**: Customer-facing Next.js application
-- **web-marketplace**: Marketplace Next.js application  
-- **api-core**: Core backend services
-- **api-payments**: Payment processing services
-- **blockchain-deployer**: Smart contract deployment and management
-
-### Shared Libraries (libs/shared/)
-- **ui**: ShadCN/ui components and design system
-- **utils**: Common utility functions
-- **types**: TypeScript type definitions
-- **config**: Shared configuration
-
-### Domain Libraries (libs/web/, libs/api/, libs/blockchain/)
-- **web/**: React-specific components, hooks, and state management
-- **api/**: Backend services, database utilities, authentication
-- **blockchain/**: Smart contract interfaces, SDKs, and utilities
-
 ## NX Configuration
 
 ### Workspace Configuration (nx.json)

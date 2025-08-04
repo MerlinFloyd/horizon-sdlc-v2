@@ -255,79 +255,67 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-## Database Migration Dockerfile
+## Python AI Service Dockerfile
 
-### Prisma Migration Runner
+### Production-Optimized Multi-Stage Build
 ```dockerfile
-FROM node:18-alpine AS runner
+# Build stage
+FROM python:3.11-alpine AS builder
 
-# Install curl for health checks
-RUN apk add --no-cache curl
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for building
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    openssl-dev \
+    cargo \
+    rust
+
+# Copy dependency files
+COPY pyproject.toml requirements.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Production stage
+FROM python:3.11-alpine AS runner
 
 # Create non-root user
-RUN addgroup --system --gid 1001 prisma
-RUN adduser --system --uid 1001 migrator
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Install runtime dependencies
+RUN apk add --no-cache \
+    libffi \
+    openssl
 
-# Install dependencies
-RUN npm ci --only=production
+# Copy Python dependencies from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy Prisma schema and migrations
-COPY libs/api/database/prisma ./prisma/
-COPY libs/api/database/src/migrations ./migrations/
-
-# Copy migration scripts
-COPY tools/scripts/migrate.sh ./
-
-# Make script executable
-RUN chmod +x migrate.sh
+# Copy application code
+COPY --chown=appuser:appgroup src/ ./src/
+COPY --chown=appuser:appgroup pyproject.toml requirements.txt ./
 
 # Switch to non-root user
-USER migrator
+USER appuser
 
-# Set environment variables
-ENV NODE_ENV=production
+# Expose port
+EXPOSE 8000
 
-# Run migrations
-CMD ["./migrate.sh"]
-```
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
 
-## Development Dockerfile
-
-### Development Environment with Hot Reload
-```dockerfile
-FROM node:18-alpine
-
-# Install development tools
-RUN apk add --no-cache git curl
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-COPY nx.json ./
-COPY tsconfig.base.json ./
-
-# Install all dependencies (including dev dependencies)
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Expose ports for different services
-EXPOSE 3000 3001 3002 4200 6006
-
-# Set environment variables
-ENV NODE_ENV=development
-
-# Start development server
-CMD ["npm", "run", "dev"]
+# Start application
+CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
 ## Docker Compose Integration
@@ -407,155 +395,7 @@ volumes:
   redis_data:
 ```
 
-## Security Best Practices
-
-### 1. Non-Root User
-- Always create and use non-root users
-- Set appropriate file ownership
-- Use system users with no shell access
-
-### 2. Multi-Stage Builds
-- Separate build and runtime stages
-- Only include production dependencies in final image
-- Minimize attack surface
-
-### 3. Health Checks
-- Include health check endpoints in applications
-- Configure Docker health checks
-- Use appropriate timeouts and retry logic
-
-### 4. Environment Variables
-- Use environment variables for configuration
-- Never hardcode secrets in Dockerfiles
-- Set appropriate defaults
-
-### 5. Image Optimization
-- Use Alpine-based images for smaller size
-- Leverage Docker layer caching
-- Clean up package caches
-
 ## Build Scripts
-
-### Python AI Service Dockerfile
-
-### Production-Optimized Multi-Stage Build
-```dockerfile
-# Build stage
-FROM python:3.11-alpine AS builder
-
-# Set working directory
-WORKDIR /app
-
-# Install system dependencies for building
-RUN apk add --no-cache \
-    gcc \
-    musl-dev \
-    libffi-dev \
-    openssl-dev \
-    cargo \
-    rust
-
-# Copy dependency files
-COPY pyproject.toml requirements.txt ./
-
-# Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Production stage
-FROM python:3.11-alpine AS runner
-
-# Create non-root user
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -S appuser -u 1001 -G appgroup
-
-# Set working directory
-WORKDIR /app
-
-# Install runtime dependencies
-RUN apk add --no-cache \
-    libffi \
-    openssl
-
-# Copy Python dependencies from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy application code
-COPY --chown=appuser:appgroup src/ ./src/
-COPY --chown=appuser:appgroup pyproject.toml requirements.txt ./
-
-# Switch to non-root user
-USER appuser
-
-# Expose port
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
-
-# Start application
-CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-### Development Dockerfile
-```dockerfile
-FROM python:3.11-alpine
-
-# Install system dependencies
-RUN apk add --no-cache \
-    gcc \
-    musl-dev \
-    libffi-dev \
-    openssl-dev
-
-# Set working directory
-WORKDIR /app
-
-# Copy dependency files
-COPY pyproject.toml requirements.txt ./
-
-# Install dependencies including dev dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir pytest pytest-asyncio pytest-cov black isort mypy
-
-# Copy source code
-COPY . .
-
-# Expose port
-EXPOSE 8000
-
-# Start with hot reload for development
-CMD ["python", "-m", "uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
-```
-
-## Build All Images
-```bash
-#!/bin/bash
-# build-images.sh
-
-# Build web applications
-docker build -f apps/web-dashboard/Dockerfile -t horizon/web-dashboard:latest .
-docker build -f apps/web-marketplace/Dockerfile -t horizon/web-marketplace:latest .
-
-# Build API services
-docker build -f apps/api-core/Dockerfile -t horizon/api-core:latest .
-docker build -f apps/api-payments/Dockerfile -t horizon/api-payments:latest .
-
-# Build AI services
-docker build -f apps/ai-agents/Dockerfile -t horizon/ai-agents:latest .
-docker build -f apps/ai-pipeline/Dockerfile -t horizon/ai-pipeline:latest .
-
-# Build blockchain services
-docker build -f apps/blockchain-deployer/Dockerfile -t horizon/blockchain-deployer:latest .
-
-# Build documentation
-docker build -f libs/shared/ui/Dockerfile -t horizon/storybook:latest .
-
-echo "All images built successfully!"
-```
 
 ### Push to Registry
 ```bash

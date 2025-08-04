@@ -986,31 +986,4 @@ export class RateLimitMiddleware {
 }
 ```
 
-### Security Best Practices Summary
-
-#### Authentication Security
-- **Strong Passwords**: Enforce password complexity requirements
-- **Password Hashing**: Use bcrypt with appropriate salt rounds (12+)
-- **Token Security**: Use secure, random tokens with appropriate expiration
-- **Token Revocation**: Implement token blacklisting for logout/security events
-
-#### Authorization Security
-- **Principle of Least Privilege**: Grant minimum necessary permissions
-- **Role-Based Access**: Use RBAC for scalable permission management
-- **Context-Aware Permissions**: Consider resource ownership and conditions
-- **Regular Audits**: Regularly review and audit user permissions
-
-#### Session Security
-- **Secure Storage**: Store sessions in Redis with appropriate TTL
-- **Session Rotation**: Rotate session IDs on privilege changes
-- **Concurrent Sessions**: Limit or track concurrent user sessions
-- **Session Cleanup**: Implement automated cleanup of expired sessions
-
-#### General Security
-- **HTTPS Only**: Enforce HTTPS for all authentication endpoints
-- **Security Headers**: Implement comprehensive security headers
-- **Rate Limiting**: Protect against brute force and DoS attacks
-- **Input Validation**: Validate and sanitize all user inputs
-- **Audit Logging**: Log all authentication and authorization events
-
 This authentication and security patterns template provides a comprehensive foundation for implementing secure authentication and authorization within our NX monorepo structure.

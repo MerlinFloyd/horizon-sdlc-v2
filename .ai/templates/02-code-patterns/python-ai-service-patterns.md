@@ -198,64 +198,6 @@ class BaseAgent:
             raise
 ```
 
-### 3. LangGraph Orchestration Patterns
-
-#### Multi-Agent Workflow
-```python
-from langgraph.graph import StateGraph, START, END
-from langgraph.graph.message import add_messages
-from typing import TypedDict, Annotated, List
-from langchain_core.messages import BaseMessage
-
-class AgentState(TypedDict):
-    """State shared between agents in the workflow."""
-    messages: Annotated[List[BaseMessage], add_messages]
-    current_task: str
-    context: Dict[str, Any]
-    results: Dict[str, Any]
-
-class MultiAgentOrchestrator:
-    """Orchestrates multiple agents using LangGraph."""
-    
-    def __init__(self, agents: Dict[str, BaseAgent]):
-        self.agents = agents
-        self.workflow = self._build_workflow()
-    
-    def _build_workflow(self) -> StateGraph:
-        """Build the agent workflow graph."""
-        workflow = StateGraph(AgentState)
-        
-        # Add agent nodes
-        for agent_name, agent in self.agents.items():
-            workflow.add_node(agent_name, self._create_agent_node(agent))
-        
-        # Define workflow edges
-        workflow.add_edge(START, "research_agent")
-        workflow.add_edge("research_agent", "analysis_agent")
-        workflow.add_edge("analysis_agent", "synthesis_agent")
-        workflow.add_edge("synthesis_agent", END)
-        
-        return workflow.compile()
-    
-    def _create_agent_node(self, agent: BaseAgent):
-        """Create a node function for an agent."""
-        async def agent_node(state: AgentState) -> AgentState:
-            result = await agent.invoke({
-                "input": state["current_task"],
-                "context": state["context"]
-            })
-            
-            # Update state with agent results
-            state["results"][agent.__class__.__name__] = result
-            return state
-        
-        return agent_node
-    
-    async def execute(self, initial_state: AgentState) -> AgentState:
-        """Execute the multi-agent workflow."""
-        return await self.workflow.ainvoke(initial_state)
-```
-
 ### 4. FastAPI Integration
 
 #### Main Application Setup
@@ -419,30 +361,3 @@ def trace_agent_execution(operation_name: str):
         return wrapper
     return decorator
 ```
-
-## Best Practices
-
-### 1. Error Handling
-- Implement comprehensive error handling for LLM API calls
-- Use circuit breaker patterns for external service calls
-- Provide fallback responses for critical operations
-
-### 2. Performance Optimization
-- Implement async/await patterns throughout
-- Use connection pooling for database and external APIs
-- Cache frequently used model responses
-
-### 3. Security
-- Never log sensitive data or API keys
-- Validate all inputs before processing
-- Implement rate limiting for API endpoints
-
-### 4. Monitoring
-- Track token usage and costs
-- Monitor agent execution times
-- Alert on error rates and performance degradation
-
-### 5. Configuration Management
-- Use environment variables for all configuration
-- Implement configuration validation
-- Support different environments (dev, test, prod)

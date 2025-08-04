@@ -783,31 +783,5 @@ output "kubernetes_labels" {
 }
 ```
 
-## Best Practices
-
-### Configuration Management
-- **Environment Separation**: Maintain strict separation between test and production configurations
-- **Secret Rotation**: Implement automated secret rotation policies
-- **Configuration Validation**: Validate all configuration at startup
-- **Default Values**: Provide sensible defaults for non-critical configuration
-
-### Security Considerations
-- **Least Privilege**: Grant minimum necessary permissions for each environment
-- **Secret Encryption**: Encrypt all secrets at rest and in transit
-- **Access Auditing**: Log all access to secrets and configuration
-- **Network Isolation**: Isolate environments using VPCs and network policies
-
-### Deployment Strategies
-- **Blue-Green Deployments**: Use blue-green deployments for zero-downtime updates
-- **Canary Releases**: Implement canary releases for gradual rollouts
-- **Rollback Procedures**: Maintain clear rollback procedures for each environment
-- **Health Checks**: Implement comprehensive health checks for all services
-
-### Resource Management
-- **Cost Optimization**: Right-size resources based on environment needs
-- **Resource Cleanup**: Implement automated cleanup of unused resources
-- **Monitoring**: Monitor resource usage and costs across environments
-- **Tagging Compliance**: Enforce mandatory tagging policies
-
 This environment management patterns template provides comprehensive guidance for managing configurations, secrets, deployments, and resources across different environments within our NX monorepo structure.
 

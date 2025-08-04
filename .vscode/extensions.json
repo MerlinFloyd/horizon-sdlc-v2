@@ -1,0 +1,16 @@
+{
+    "recommendations": [
+        "marxism.ai-token-count",
+        "ms-azuretools.vscode-containers",
+        "bierner.markdown-mermaid",
+        "nrwl.angular-console",
+        "zainchen.json",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "ms-python.python",
+        "golang.go",
+        "mongodb.mongodb-vscode",
+        "kaih2o.worktrees",
+        "hashicorp.terraform"
+    ]
+}
