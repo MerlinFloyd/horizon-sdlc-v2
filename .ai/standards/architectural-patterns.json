@@ -10,10 +10,9 @@
     },
     "overallArchitecture": {
       "pattern": "NX Monorepo with Microservices and Event-Driven Architecture",
-      "rationale": "Unified workspace for multiple applications, shared libraries, independent deployment, and scalable event-driven communication",
       "components": {
         "workspace": "NX monorepo with domain-driven organization",
-        "applications": "Multiple applications (web-dashboard, api-core, blockchain-deployer)",
+        "applications": "Multiple applications (web-dashboard, api-core, blockchain-deployer, etc)",
         "sharedLibraries": "Shared libraries for UI, utilities, and types",
         "infrastructure": "Containerized deployment on Google Kubernetes Engine",
         "messaging": "Event-driven communication via Google Cloud Pub/Sub"
@@ -290,4 +289,5 @@
       }
     }
   }
+}
 }

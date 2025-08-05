@@ -7,8 +7,6 @@
         "zainchen.json",
         "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
-        "ms-python.python",
-        "golang.go",
         "mongodb.mongodb-vscode",
         "kaih2o.worktrees",
         "hashicorp.terraform",
@@ -17,7 +15,12 @@
         "github.vscode-github-actions",
         "github.codespaces",
         "github.copilot",
-        "github.copilot-chat",
-        "github.vscode-pull-request-github"
+        "github.vscode-pull-request-github",
+        "esbenp.prettier-vscode",
+        "rvest.vs-code-prettier-eslint",
+        "dbaeumer.vscode-eslint",
+        "ms-python.pylint",
+        "ms-vscode-remote.remote-containers",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
     ]
 }
