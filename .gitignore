@@ -41,6 +41,9 @@ build/
 pip-log.txt
 pip-delete-this-directory.txt
 
+# Git Worktrees
+.worktrees/
+
 # Java
 *.class
 *.jar
