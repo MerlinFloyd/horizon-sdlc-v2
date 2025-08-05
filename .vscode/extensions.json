@@ -11,6 +11,13 @@
         "golang.go",
         "mongodb.mongodb-vscode",
         "kaih2o.worktrees",
-        "hashicorp.terraform"
+        "hashicorp.terraform",
+        "googlecloudtools.cloudcode",
+        "augment.vscode-augment",
+        "github.vscode-github-actions",
+        "github.codespaces",
+        "github.copilot",
+        "github.copilot-chat",
+        "github.vscode-pull-request-github"
     ]
 }
