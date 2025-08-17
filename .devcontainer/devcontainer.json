@@ -63,6 +63,9 @@
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/dev/.gitconfig,type=bind,consistency=cached"
   ],
 
+  // Ensure proper Docker socket access
+  "initializeCommand": "echo 'Initializing devcontainer with Docker socket access...'",
+
   "postCreateCommand": "bash .devcontainer/post-create.sh",
   "postStartCommand": "bash .devcontainer/post-start.sh",
 

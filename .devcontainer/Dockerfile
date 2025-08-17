@@ -6,8 +6,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_VERSION=20
 
 # Create development user and docker group
+# Note: Docker group GID will be adjusted at runtime to match host socket
 RUN groupadd --gid 1000 dev \
-    && groupadd docker \
+    && groupadd --gid 999 docker \
     && useradd --uid 1000 --gid dev --shell /bin/bash --create-home dev \
     && usermod -aG docker dev
 
