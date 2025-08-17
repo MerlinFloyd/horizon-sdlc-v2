@@ -7,7 +7,7 @@ set -euo pipefail
 # === CONFIGURATION ===
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-COMPOSE_FILE="docker-compose.yml"
+COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
 SERVICE_NAME="opencode"
 DEBUG_MODE=false
 PRINT_LOGS=false
@@ -69,7 +69,7 @@ check_prerequisites() {
 
     # Check .env file only if required (backward compatibility)
     if [[ "$require_env_file" == "true" ]]; then
-        [[ -f ".env" ]] || {
+        [[ -f "$PROJECT_ROOT/.env" ]] || {
             log_error "prerequisites" ".env file required with OPENROUTER_API_KEY. Use --openrouter-api-key to create one."
             exit 1
         }
@@ -308,6 +308,12 @@ parse_args() {
 main() {
     parse_args "$@"
 
+    # Change to project root directory to ensure all relative paths work correctly
+    cd "$PROJECT_ROOT" || {
+        log_error "main" "Failed to change to project root directory: $PROJECT_ROOT"
+        exit 1
+    }
+
     local mode_description=""
     if [[ "$DEBUG_MODE" == "true" && "$PRINT_LOGS" == "true" ]]; then
         mode_description="DEBUG + CONSOLE LOGGING"
@@ -329,7 +335,7 @@ main() {
         need_env_creation=true
         require_existing_env=false
         log_info "main" "API key provided - will create/update .env file"
-    elif [[ ! -f ".env" ]]; then
+    elif [[ ! -f "$PROJECT_ROOT/.env" ]]; then
         log_error "main" "No .env file found and no API key provided. Use --openrouter-api-key or create .env file."
         exit 1
     else

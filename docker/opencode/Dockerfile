@@ -103,7 +103,7 @@ RUN npm install -g @playwright/mcp@latest
 RUN npm install -g @modelcontextprotocol/server-sequential-thinking@latest
 
 # 5. Install ShadCN UI MCP Server
-# RUN npm install -g @jpisnice/shadcn-ui-mcp-server@latest
+RUN npm install -g @jpisnice/shadcn-ui-mcp-server@latest
 
 # 6. Install Magic MCP Server
 RUN npx @21st-dev/magic@latest

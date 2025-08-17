@@ -4,8 +4,9 @@
   "model": "openrouter/anthropic/claude-sonnet-4",
   "share": "disabled",
   "autoupdate": false,
+  "username": "Merlin",
   "permission": {
-    "edit": "ask",
+    "edit": "allow",
     "bash": {
       "terraform apply": "ask",
       "terraform destroy": "ask",
@@ -109,56 +110,6 @@
       "type": "local",
       "command": ["npx", "@21st-dev/magic", "API_KEY={env:TWENTY_FIRST_API_KEY}" ],
       "enabled": true
-    }
-  },
-  "mode": {
-    "prd-generation": {
-      "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/.ai/prompts/prd-generation.md}",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "bash": false,
-        "grep": true,
-        "glob": true
-      }
-    },
-    "trd-creation": {
-      "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/.ai/prompts/trd-creation.md}",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "grep": true,
-        "glob": true
-      }
-    },
-    "feature-breakdown": {
-      "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/.ai/prompts/feature-breakdown.md}",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "grep": true,
-        "glob": true
-      }
-    },
-    "user-stories": {
-      "model": "anthropic/claude-sonnet-4",
-      "prompt": "{file:/.ai/prompts/user-stories.md}",
-      "tools": {
-        "read": true,
-        "write": true,
-        "edit": true,
-        "bash": true,
-        "grep": true,
-        "glob": true
-      }
     }
   },
   "provider": {
