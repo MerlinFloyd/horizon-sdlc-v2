@@ -65,6 +65,7 @@ EOF
 echo "🔐 Setting permissions..."
 sudo chown -R dev:dev /workspace
 chmod -R 755 /workspace
+sudo chown root:docker /var/run/docker.sock
 
 # Grant execute permissions to scripts
 echo "🔐 Setting execute permissions on scripts..."
