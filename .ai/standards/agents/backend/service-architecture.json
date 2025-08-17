@@ -1,0 +1,95 @@
+{
+  "backendServiceArchitectureStandards": {
+    "layeredArchitecture": {
+      "controllers": "Request handling and response formatting",
+      "services": "Business logic and domain operations",
+      "repositories": "Data access and persistence layer",
+      "models": "Data models and domain entities",
+      "middleware": "Cross-cutting concerns (auth, logging, validation)"
+    },
+    "servicePatterns": {
+      "dependency": {
+        "injection": "Dependency injection for loose coupling",
+        "interfaces": "Interface-based programming for testability",
+        "lifecycle": "Proper service lifecycle management",
+        "configuration": "Configuration injection for flexibility"
+      },
+      "errorHandling": {
+        "global": "Global error handling middleware",
+        "typed": "Typed error classes for different error types",
+        "logging": "Comprehensive error logging with context",
+        "recovery": "Graceful error recovery where possible"
+      }
+    },
+    "microservices": {
+      "decomposition": {
+        "domain": "Domain-driven service decomposition",
+        "boundaries": "Clear service boundaries and responsibilities",
+        "communication": "Well-defined service communication patterns",
+        "data": "Service-specific data ownership"
+      },
+      "communication": {
+        "synchronous": "REST APIs for request-response patterns",
+        "asynchronous": "Message queues for event-driven communication",
+        "protocols": "HTTP/gRPC for synchronous, Pub/Sub for asynchronous"
+      },
+      "serviceDiscovery": {
+        "registration": "Services register with discovery system on startup",
+        "resolution": "Dynamic service location lookup",
+        "healthChecks": "Continuous health monitoring and status updates",
+        "loadBalancing": "Client-side load balancing with discovery integration"
+      }
+    },
+    "eventDriven": {
+      "messaging": {
+        "platform": "Google Cloud Pub/Sub for event messaging",
+        "patterns": "Event sourcing and CQRS where appropriate",
+        "reliability": "Message delivery guarantees and retry mechanisms",
+        "ordering": "Message ordering considerations"
+      },
+      "events": {
+        "schema": "Well-defined event schemas and versioning",
+        "publishing": "Event publishing patterns and best practices",
+        "consumption": "Event consumption and processing patterns",
+        "replay": "Event replay capabilities for recovery"
+      }
+    },
+    "resilience": {
+      "circuitBreaker": "Circuit breaker pattern for external dependencies",
+      "retry": "Exponential backoff retry strategies",
+      "timeout": "Appropriate timeout configurations",
+      "bulkhead": "Resource isolation for fault tolerance",
+      "gracefulDegradation": "Graceful degradation strategies"
+    },
+    "observability": {
+      "logging": {
+        "structured": "Structured logging with consistent format",
+        "correlation": "Request correlation IDs for tracing",
+        "levels": "Appropriate log levels and filtering",
+        "centralized": "Centralized log aggregation and analysis"
+      },
+      "metrics": {
+        "business": "Business metrics and KPIs",
+        "technical": "Technical performance metrics",
+        "custom": "Custom metrics for domain-specific monitoring",
+        "alerting": "Proactive alerting on metric thresholds"
+      },
+      "tracing": {
+        "distributed": "Distributed tracing for request flows",
+        "sampling": "Intelligent trace sampling strategies",
+        "analysis": "Trace analysis for performance optimization",
+        "correlation": "Correlation between logs, metrics, and traces"
+      }
+    },
+    "security": {
+      "authentication": "Service-to-service authentication",
+      "authorization": "Fine-grained authorization controls",
+      "encryption": "Data encryption in transit and at rest",
+      "secrets": "Secure secret management and rotation"
+    },
+    "testing": {
+      "unit": "Comprehensive unit testing for business logic",
+      "contract": "Contract testing for API compatibility"
+    }
+  }
+}

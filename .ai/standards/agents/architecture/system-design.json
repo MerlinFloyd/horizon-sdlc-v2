@@ -1,0 +1,45 @@
+{
+  "architectureSystemDesignStandards": {
+    "modularArchitecture": {
+      "businessModules": "Organized around business domains (portfolio, marketplace, dashboard)",
+      "technologyModules": "Provide technical capabilities (authentication, logging, monitoring)",
+      "principles": ["Clear boundaries", "Loose coupling", "Independent deployment"]
+    },
+    "moduleInteraction": {
+      "businessToTechnology": {
+        "pattern": "Business modules consume technology services via APIs",
+        "communication": "REST APIs for real-time, events for background tasks",
+        "examples": ["Portfolio → Authentication", "Marketplace → Logging"]
+      },
+      "businessToBusiness": {
+        "pattern": "Event-driven integration for loose coupling",
+        "communication": "Domain events via event bus",
+        "examples": ["User-management → Portfolio (user created)", "Dashboard ← All modules (data aggregation)"]
+      },
+      "technologyToTechnology": {
+        "pattern": "Service composition for higher-level capabilities",
+        "communication": "Direct service calls",
+        "examples": ["Monitoring → Logging", "AI-agents → Monitoring"]
+      }
+    },
+    "integrationPatterns": {
+      "synchronous": {
+        "restAPI": "Request-response operations, real-time data access",
+        "useCases": ["User authentication", "Data retrieval", "Immediate validation"]
+      },
+      "asynchronous": {
+        "events": "Background operations, loose coupling",
+        "useCases": ["Audit logging", "Cross-module notifications", "Data synchronization"]
+      }
+    },
+    "agentAlignment": {
+      "primary": "Coordinates work across multiple modules",
+      "subAgents": "Provide module-specific guidance and standards"
+    },
+    "examples": {
+      "userRegistration": "User-management → Authentication → Portfolio (event-driven)",
+      "marketplaceTransaction": "Marketplace → Authentication → Payments → Logging",
+      "dashboardAggregation": "Dashboard ← Multiple business modules (API calls)"
+    }
+  }
+}

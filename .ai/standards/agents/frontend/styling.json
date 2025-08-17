@@ -1,0 +1,85 @@
+{
+  "frontendStylingStandards": {
+    "designSystem": {
+      "shadcnImplementation": {
+        "approach": "Copy-paste approach for component customization",
+        "location": "Components in libs/shared/ui with NX library structure",
+        "customization": "Theme customization through design tokens",
+        "maintenance": "Regular updates from ShadCN upstream with local modifications"
+      },
+      "componentStandards": {
+        "mandatory": "All shared UI components must have Storybook stories",
+        "storyTypes": [
+          "Default state story showing basic usage",
+          "Variant stories (sizes, colors, states)",
+          "Interactive stories demonstrating user interactions"
+        ],
+        "documentation": [
+          "Component description and use cases",
+          "Props documentation with types and examples",
+          "Usage recommendations and guidelines"
+        ]
+      }
+    },
+    "tailwindCSS": {
+      "setup": "Shared Tailwind configuration in workspace root",
+      "customization": "Custom design tokens and utility classes",
+      "optimization": "PurgeCSS integration for production builds",
+      "linting": "Tailwind CSS class ordering and consistency linting",
+      "configuration": {
+        "colorSystem": "Semantic color naming with light/dark mode support",
+        "typography": "Consistent typography scale and font loading",
+        "spacing": "Standardized spacing system and layout grid",
+        "customization": "Design token management through CSS custom properties"
+      }
+    },
+    "responsiveDesign": {
+      "breakpoints": {
+        "mobile": "320px - 768px",
+        "tablet": "768px - 1024px",
+        "desktop": "1024px+"
+      },
+      "approach": "Mobile-first responsive design",
+      "testing": "Test on multiple device sizes and orientations",
+      "performance": "Optimize images and assets for different screen densities"
+    },
+    "animations": {
+      "framerMotionIntegration": {
+        "installation": "Framer Motion as shared dependency",
+        "performance": "60fps requirement for all animations",
+        "patterns": "Reusable animation patterns in shared library",
+        "accessibility": "Built-in accessibility considerations for all animations"
+      },
+      "performanceRequirements": {
+        "frameRate": "60fps for all animations",
+        "duration": "Maximum 300ms for micro-interactions, 500ms for page transitions",
+        "optimization": "Use transform and opacity for performance",
+        "accessibility": "Respect prefers-reduced-motion user preferences"
+      },
+      "animationPatterns": {
+        "pageTransitions": "Layout animations for automatic transitions",
+        "microInteractions": "Hover, focus, and click animations",
+        "loadingStates": "Skeleton animations and loading indicators",
+        "gestureHandling": "Touch and gesture-based interactions"
+      }
+    },
+    "interactiveComponents": {
+      "reactFlow": {
+        "approved": "React Flow for node-based editors, flowcharts, and interactive diagrams",
+        "rationale": "Interactive node-based editors, flowcharts, and diagram creation with performance optimization and accessibility support",
+        "useCases": [
+          "Workflow builders and process diagrams",
+          "Data flow visualization and pipeline editors",
+          "Interactive network graphs and mind maps",
+          "Decision trees and organizational charts"
+        ],
+        "integration": {
+          "location": "Components in libs/shared/ui with custom node types",
+          "styling": "Integrate with Tailwind CSS and design tokens",
+          "accessibility": "Built-in keyboard navigation and screen reader support",
+          "performance": "Optimized for large datasets with virtualization"
+        }
+      }
+    }
+  }
+}

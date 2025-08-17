@@ -1,0 +1,99 @@
+{
+  "baseWorkflowStandards": {
+    "versionControl": {
+      "strategy": "Trunk-based development with feature branches",
+      "branches": {
+        "main": "Always deployable main branch, protected branch",
+        "feature/*": "Short-lived feature branches for development"
+      },
+      "commitConventions": {
+        "format": "type(scope): description",
+        "types": ["feat", "fix", "docs", "style", "refactor", "test", "chore"],
+        "examples": [
+          "feat(web-dashboard): add task sharing with animations",
+          "fix(api-core): handle validation errors in API routes",
+          "docs(shared-ui): update component documentation",
+          "style(shared-ui): update ShadCN component styling"
+        ],
+        "automation": "Conventional commits for automated versioning"
+      },
+      "pullRequests": {
+        "reviewProcess": "Repository-wide single review process for all PRs",
+        "automatedApproval": "PR approval conditional on automated checks",
+        "requirements": [
+          "Branch must build successfully",
+          "All unit tests must pass",
+          "Code quality gates must pass",
+          "Automated approval if all checks pass"
+        ],
+        "githubActions": "GitHub Actions run on PR creation and updates"
+      }
+    },
+    "cicdPipeline": {
+      "platform": "GitHub Actions",
+      "triggers": [
+        "Pull request creation/updates",
+        "Pushes to main branch",
+        "Manual deployment triggers"
+      ],
+      "nxIntegration": {
+        "affectedProjectDetection": "nx affected commands in GitHub Actions",
+        "optimization": "Run CI/CD only for projects impacted by changes",
+        "dependencies": "Include dependent projects in affected analysis",
+        "parallelization": "Parallel execution of independent project builds and tests"
+      },
+      "stages": {
+        "build": {
+          "nxBuild": [
+            "Install dependencies (npm install --frozen-lockfile)",
+            "NX affected build (nx affected:build)",
+            "TypeScript type checking across affected projects",
+            "Container image building for affected applications",
+            "Artifact generation and storage"
+          ]
+        },
+        "test": {
+          "sequence": [
+            "Run unit tests (nx affected:test) with coverage report",
+            "E2E testing with Playwright (nx affected:e2e)",
+            "Code quality checks (nx affected:lint)",
+            "Dependency audit and license compliance"
+          ]
+        }
+      }
+    },
+    "developmentProcess": {
+      "phases": {
+        "planning": {
+          "requirements": "Clear requirements documentation",
+          "estimation": "Story point estimation for complexity",
+          "acceptance": "Acceptance criteria definition"
+        },
+        "development": {
+          "standards": "Follow coding standards and conventions",
+          "linting": "Mandatory linting for all code changes",
+          "testing": "Write tests alongside implementation",
+          "documentation": "Update documentation as needed"
+        },
+        "review": {
+          "codeReview": "Peer review of all changes",
+          "linting": "Ensure all linting checks pass",
+          "testing": "Validate functionality and edge cases",
+          "standards": "Ensure compliance with quality standards"
+        }
+      }
+    },
+    "qualityAssurance": {
+      "testingStrategy": {
+        "pyramid": "Unit tests (70%), Integration tests (20%), E2E tests (10%)",
+        "coverage": "Minimum 80% code coverage for critical paths",
+        "automation": "Automated testing in CI/CD pipeline"
+      },
+      "codeQuality": {
+        "linting": "Automated linting with ESLint/Prettier",
+        "typeChecking": "TypeScript compilation without errors",
+        "complexity": "Cyclomatic complexity monitoring"
+      }
+    }
+  }
+}

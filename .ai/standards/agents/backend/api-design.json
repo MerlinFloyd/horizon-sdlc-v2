@@ -1,0 +1,75 @@
+{
+  "backendAPIDesignStandards": {
+    "restfulPatterns": {
+      "conventions": "RESTful API design following OpenAPI 3.0 specification",
+      "versioning": "API versioning abstracted through libraries",
+      "documentation": "OpenAPI documentation for all public APIs",
+      "responseFormat": {
+        "success": { "data": "payload", "message": "optional", "meta": "pagination/metadata" },
+        "error": { "error": "message", "code": "error_code", "details": "validation_errors" }
+      }
+    },
+    "endpointPatterns": {
+      "resourceBased": "Resource-based URL structure (/api/users, /api/tasks)",
+      "httpMethods": "Proper HTTP method usage (GET, POST, PUT, DELETE, PATCH)",
+      "statusCodes": "Appropriate HTTP status codes for all responses",
+      "pagination": "Cursor-based pagination for large datasets",
+      "filtering": "Query parameter-based filtering and sorting",
+      "searching": "Full-text search capabilities where appropriate"
+    },
+    "validation": {
+      "inputValidation": "Comprehensive input validation using Zod or Joi",
+      "sanitization": "Input sanitization to prevent injection attacks",
+      "typeValidation": "TypeScript type validation at runtime",
+      "errorHandling": "Consistent error response format",
+      "schemaValidation": "JSON schema validation for request/response bodies"
+    },
+    "authentication": {
+      "strategy": "JWT tokens for stateless authentication",
+      "implementation": [
+        "Bearer token authentication",
+        "Token expiration and refresh mechanisms",
+        "Secure token storage and transmission",
+        "Role-based access control (RBAC)"
+      ]
+    },
+    "errorHandling": {
+      "standardFormat": {
+        "error": "Human-readable error message",
+        "code": "Machine-readable error code",
+        "details": "Additional error context",
+        "timestamp": "ISO 8601 timestamp",
+        "requestId": "Unique request identifier for tracing"
+      },
+      "httpStatusCodes": {
+        "400": "Bad Request - Invalid input",
+        "401": "Unauthorized - Authentication required",
+        "403": "Forbidden - Insufficient permissions",
+        "404": "Not Found - Resource not found",
+        "422": "Unprocessable Entity - Validation errors",
+        "500": "Internal Server Error - Unexpected server error"
+      }
+    },
+    "rateLimit": {
+      "strategy": "Token bucket algorithm for rate limiting",
+      "limits": {
+        "authenticated": "1000 requests per hour",
+        "unauthenticated": "100 requests per hour",
+        "burst": "10 requests per minute"
+      },
+      "headers": "Rate limit information in response headers"
+    },
+    "cors": {
+      "configuration": "Proper CORS configuration for cross-origin requests",
+      "allowedOrigins": "Whitelist of allowed origins",
+      "allowedMethods": "Specific HTTP methods allowed",
+      "credentials": "Secure handling of credentials in CORS requests"
+    },
+    "documentation": {
+      "openAPI": "OpenAPI 3.0 specification for all endpoints",
+      "examples": "Request and response examples for all endpoints",
+      "errorCodes": "Comprehensive error code documentation",
+      "authentication": "Authentication and authorization documentation"
+    }
+  }
+}

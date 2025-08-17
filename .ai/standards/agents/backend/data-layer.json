@@ -1,0 +1,104 @@
+{
+  "backendDataLayerStandards": {
+    "databases": {
+      "primary": {
+        "postgresql": {
+          "version": "PostgreSQL 15+",
+          "orm": "Prisma ORM for type-safe database access",
+          "rationale": "ACID compliance, excellent TypeScript integration, robust feature set",
+          "patterns": [
+            "Schema-first development with Prisma migrations",
+            "Type-safe queries with Prisma Client",
+            "Connection pooling for performance",
+            "Database indexing for query optimization"
+          ]
+        },
+        "mongodb": {
+          "version": "MongoDB 6+",
+          "odm": "Mongoose ODM for document modeling",
+          "rationale": "Flexible schema, excellent Node.js integration, scalability",
+          "patterns": [
+            "Schema validation with Mongoose",
+            "Aggregation pipelines for complex queries",
+            "Indexing strategies for performance",
+            "Connection management and pooling"
+          ]
+        }
+      },
+      "caching": {
+        "redis": {
+          "version": "Redis 7+",
+          "rationale": "High performance, versatile data structures, excellent ecosystem",
+          "useCases": [
+            "Session storage and management",
+            "API response caching",
+            "Rate limiting counters",
+            "Pub/Sub messaging"
+          ]
+        }
+      }
+    },
+    "dataModeling": {
+      "relational": {
+        "normalization": "Proper database normalization (3NF minimum)",
+        "relationships": "Clear foreign key relationships and constraints",
+        "indexing": "Strategic indexing for query performance",
+        "migrations": "Version-controlled database migrations"
+      },
+      "document": {
+        "schemaDesign": "Flexible but validated document schemas",
+        "embedding": "Strategic document embedding vs referencing",
+        "indexing": "Compound indexes for query optimization",
+        "validation": "Schema validation at application and database level"
+      }
+    },
+    "queryOptimization": {
+      "performance": {
+        "indexing": "Proper indexing strategies for common queries",
+        "queryAnalysis": "Regular query performance analysis",
+        "connectionPooling": "Efficient connection pool management",
+        "caching": "Strategic caching of frequently accessed data"
+      },
+      "patterns": {
+        "pagination": "Cursor-based pagination for large datasets",
+        "filtering": "Efficient filtering with proper indexing",
+        "sorting": "Optimized sorting with database-level operations",
+        "aggregation": "Database-level aggregation when possible"
+      }
+    },
+    "dataAccess": {
+      "repositories": {
+        "pattern": "Repository pattern for data access abstraction",
+        "interfaces": "Clear interfaces for data operations",
+        "testing": "Mockable data access for unit testing",
+        "transactions": "Proper transaction management"
+      },
+      "orm": {
+        "prisma": {
+          "schema": "Prisma schema as single source of truth",
+          "client": "Generated Prisma Client for type safety",
+          "migrations": "Prisma Migrate for schema evolution",
+          "seeding": "Database seeding for development and testing"
+        },
+        "mongoose": {
+          "schemas": "Mongoose schemas with validation",
+          "middleware": "Pre/post hooks for business logic",
+          "virtuals": "Virtual properties for computed fields",
+          "plugins": "Reusable plugins for common functionality"
+        }
+      }
+    },
+    "backup": {
+      "strategy": "Automated backup strategy for all databases",
+      "frequency": "Daily backups with point-in-time recovery",
+      "testing": "Regular backup restoration testing",
+      "retention": "Appropriate backup retention policies"
+    },
+    "monitoring": {
+      "performance": "Database performance monitoring and alerting",
+      "queries": "Slow query identification and optimization",
+      "connections": "Connection pool monitoring",
+      "storage": "Storage usage monitoring and capacity planning"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "frontendUIFrameworkStandards": {
+    "framework": {
+      "approved": "Next.js 14+ with TypeScript",
+      "rationale": "Full-stack React framework with SSR/SSG, built-in optimization, excellent developer experience",
+      "restrictions": ["No jQuery", "No plain JavaScript for new development"]
+    },
+    "react": {
+      "version": "React 18+",
+      "patterns": ["React Server Components", "Client Components", "Custom hooks"],
+      "stateManagement": {
+        "approved": ["React useState/useContext", "Zustand"],
+        "preferred": "React hooks for simple state, Zustand for moderate complexity"
+      },
+      "componentPatterns": {
+        "composition": "Favor composition over inheritance",
+        "props": "Use TypeScript interfaces for all props",
+        "children": "Proper children prop typing and usage",
+        "forwardRef": "Use forwardRef for component library components"
+      }
+    },
+    "typescript": {
+      "version": "TypeScript 4.9+",
+      "configuration": {
+        "strict": true,
+        "noImplicitAny": true,
+        "exactOptionalPropertyTypes": true
+      },
+      "requirements": [
+        "All functions must have explicit return types",
+        "Interface definitions for all data structures",
+        "No 'any' types without justification",
+        "Proper typing for React components and props",
+        "Strong typing for ShadCN component props"
+      ]
+    },
+    "renderingStrategy": {
+      "approved": ["SSG (Static Site Generation)", "CSR (Client-Side Rendering)", "ISR (Incremental Static Regeneration)"],
+      "preferred": "SSG with ISR for dynamic content",
+      "rationale": "Better SEO, faster initial load, optimal for content sharing"
+    },
+    "routing": {
+      "approved": ["Next.js App Router", "Next.js Pages Router"],
+      "preferred": "Next.js App Router",
+      "rationale": "Latest Next.js routing with layouts, loading states, and React Server Components"
+    },
+    "dataFetching": {
+      "serverComponents": "Use React Server Components for data fetching when possible",
+      "clientComponents": "Use SWR or React Query for client-side data fetching",
+      "caching": "Leverage Next.js built-in caching mechanisms",
+      "errorHandling": "Implement proper error boundaries and loading states"
+    }
+  }
+}

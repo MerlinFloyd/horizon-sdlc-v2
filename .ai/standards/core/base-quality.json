@@ -1,0 +1,106 @@
+{
+  "baseQualityStandards": {
+    "codeQuality": {
+      "typeScript": {
+        "configuration": {
+          "strict": true,
+          "noImplicitAny": true,
+          "noImplicitReturns": true,
+          "noUnusedLocals": true,
+          "noUnusedParameters": true,
+          "exactOptionalPropertyTypes": true
+        },
+        "requirements": [
+          "All functions must have explicit return types",
+          "Interface definitions for all data structures",
+          "No 'any' types without justification",
+          "Comprehensive type definitions for API responses",
+          "Shared type definitions in libs/shared/types"
+        ]
+      },
+      "python": {
+        "configuration": {
+          "pythonVersion": "3.11+",
+          "typeChecking": "mypy with strict mode",
+          "formatting": "black with 88 character line length",
+          "linting": "ruff with comprehensive rule set",
+          "importSorting": "isort with black profile"
+        },
+        "requirements": [
+          "All functions must have type hints for parameters and return values",
+          "Pydantic models for all data structures and API schemas",
+          "No 'Any' types without explicit justification",
+          "Shared type definitions in libs/ai/types"
+        ]
+      },
+      "linting": {
+        "universal": {
+          "rules": [
+            "no-console warnings (errors in production)",
+            "prefer-const over let",
+            "no-unused-variables as error",
+            "consistent-return patterns",
+            "proper-error-handling required"
+          ]
+        }
+      }
+    },
+    "testingStandards": {
+      "coverage": {
+        "minimum": {
+          "statements": 80,
+          "branches": 75,
+          "functions": 80,
+          "lines": 80
+        },
+        "critical": {
+          "statements": 95,
+          "branches": 90,
+          "functions": 95,
+          "lines": 95
+        }
+      },
+      "testTypes": {
+        "unit": {
+          "required": true,
+          "framework": "Jest/Vitest for JS/TS, pytest for Python",
+          "coverage": "minimum thresholds required"
+        }
+      }
+    },
+    "qualityGates": {
+      "preCommit": [
+        "TypeScript/Python compilation passes",
+        "Linting passes with zero errors",
+        "Formatting applied",
+        "Unit tests pass",
+        "Minimum coverage thresholds met"
+      ],
+      "preMerge": [
+        "All tests pass (unit tests)",
+        "Code coverage meets minimum thresholds",
+        "Documentation updated"
+      ],
+      "deployment": [
+        "Production build successful",
+        "All quality gates passed",
+        "E2E tests pass in staging"
+      ]
+    },
+    "documentation": {
+      "code": {
+        "requirements": [
+          "Public functions documented with clear descriptions",
+          "Complex business logic explained",
+          "API endpoints documented with examples",
+          "Error handling documented"
+        ]
+      },
+      "maintenance": {
+        "requirements": [
+          "README files for all projects"
+        ]
+      }
+    }
+  }
+}

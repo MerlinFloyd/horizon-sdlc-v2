@@ -1,0 +1,115 @@
+{
+  "baseTechnologyStandards": {
+    "workspaceOrganization": {
+      "monorepo": {
+        "approved": ["NX Workspace"],
+        "preferred": "NX Workspace with domain-driven organization",
+        "rationale": "Unified workspace for multiple applications with shared libraries, build orchestration, and dependency management",
+        "structure": {
+          "apps": "Application projects (web-dashboard, api-core, blockchain-deployer)",
+          "libs": "Shared libraries (shared/ui, shared/utils, shared/types)",
+          "tools": "Build tools, generators, and development utilities"
+        }
+      },
+      "packageManager": {
+        "approved": ["npm", "yarn", "pnpm"],
+        "preferred": "npm",
+        "rationale": "Consistent with NX workspace defaults and Node.js ecosystem compatibility"
+      }
+    },
+    "coreLanguages": {
+      "frontend": {
+        "approved": ["TypeScript 4.9+", "JavaScript ES2022+"],
+        "preferred": "TypeScript",
+        "rationale": "Type safety, better developer experience, compile-time error detection",
+        "restrictions": ["No plain JavaScript for new development"]
+      },
+      "backend": {
+        "approved": ["Node.js 18+", "TypeScript 4.9+", "Python 3.11+"],
+        "preferred": "Node.js with TypeScript for web services, Python for AI middleware",
+        "rationale": "Node.js for web APIs, Python for AI/ML capabilities",
+        "restrictions": ["No CommonJS for new projects", "TypeScript required for Node.js"]
+      }
+    },
+    "buildAndDevelopment": {
+      "buildTools": {
+        "approved": ["Next.js built-in (Webpack + SWC)", "Turbopack", "NX build system"],
+        "preferred": "Next.js built-in with SWC for applications, NX for monorepo orchestration",
+        "rationale": "Fast refresh, built-in optimization, TypeScript support, zero config"
+      },
+      "developmentTools": {
+        "approved": ["ESLint", "Prettier", "TypeScript", "Jest/Vitest"],
+        "preferred": "ESLint + Prettier + TypeScript + Vitest",
+        "rationale": "Code quality, consistency, type safety, fast testing"
+      }
+    },
+    "versionControl": {
+      "strategy": "Git with conventional commits",
+      "branching": "GitHub Flow with feature branches",
+      "commitFormat": "Conventional Commits specification",
+      "requirements": [
+        "Descriptive commit messages",
+        "Feature branches for all changes",
+        "Pull request reviews required",
+        "Automated testing before merge"
+      ]
+    },
+    "environmentManagement": {
+      "environments": ["development", "test", "production"],
+      "configuration": "Environment variables with validation",
+      "secrets": "Google Secret Manager for sensitive data",
+      "deployment": "Containerized deployment with Kubernetes"
+    },
+    "dataStorage": {
+      "relational": {
+        "approved": ["PostgreSQL 15+"],
+        "preferred": "PostgreSQL with Prisma ORM",
+        "rationale": "ACID compliance, excellent TypeScript integration, robust feature set"
+      },
+      "document": {
+        "approved": ["MongoDB 6+"],
+        "preferred": "MongoDB with Mongoose ODM",
+        "rationale": "Flexible schema, excellent Node.js integration, scalability"
+      },
+      "cache": {
+        "approved": ["Redis 7+"],
+        "preferred": "Redis for caching and session storage",
+        "rationale": "High performance, versatile data structures, excellent ecosystem"
+      }
+    },
+    "cloudPlatform": {
+      "primary": {
+        "provider": "Google Cloud Platform (GCP)",
+        "rationale": "Primary platform for backend services, infrastructure, and data storage for consistency and operational simplicity",
+        "useCases": ["Backend APIs", "Databases", "Infrastructure", "AI/ML services", "Messaging"]
+      },
+      "frontend": {
+        "provider": "Vercel",
+        "rationale": "Optimized platform for Next.js frontend deployments with edge functions and global CDN",
+        "useCases": ["Frontend applications", "Static sites", "Edge functions", "Preview deployments"]
+      },
+      "coreServices": {
+        "gcp": [
+          "Google Kubernetes Engine (GKE) for container orchestration",
+          "Cloud SQL for managed PostgreSQL",
+          "Cloud Storage for file storage",
+          "Cloud Pub/Sub for messaging",
+          "Cloud Run for serverless containers"
+        ],
+        "vercel": [
+          "Next.js application hosting",
+          "Edge functions for API routes",
+          "Global CDN for static assets",
+          "Preview deployments for testing"
+        ]
+      },
+      "restrictions": "No other cloud providers to maintain simplicity and consistency"
+    },
+    "infrastructureAsCode": {
+      "provider": "Terraform",
+      "rationale": "Industry-standard infrastructure as code for reproducible and version-controlled infrastructure",
+      "useCases": ["GCP resource provisioning", "Infrastructure state management", "Environment consistency"],
+      "patterns": ["Modular Terraform configurations", "Remote state storage", "Environment-specific variables"]
+    }
+  }
+}

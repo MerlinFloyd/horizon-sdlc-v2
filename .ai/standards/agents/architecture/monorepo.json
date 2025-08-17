@@ -1,0 +1,75 @@
+{
+  "architectureMonorepoStandards": {
+    "modularDesign": {
+      "businessModules": ["portfolio", "administration", "user-management", "marketplace", "dashboard"],
+      "technologyModules": ["logging", "authentication", "ai-agents", "blockchain", "monitoring"],
+      "interaction": {
+        "businessToTechnology": "Business modules consume technology module services",
+        "businessToBusiness": "Business modules integrate via events or APIs",
+        "technologyToTechnology": "Technology modules compose for higher-level capabilities"
+      }
+    },
+    "folderStructure": {
+      "apps/": {
+        "businessModules": {
+          "portfolio/": ["web-portfolio/", "api-portfolio/"],
+          "administration/": ["web-admin/", "api-admin/"],
+          "user-management/": ["web-users/", "api-users/"],
+          "marketplace/": ["web-marketplace/", "api-marketplace/"],
+          "dashboard/": ["web-dashboard/", "api-dashboard/"]
+        },
+        "technologyModules": {
+          "logging/": ["log-aggregator/"],
+          "authentication/": ["auth-service/"],
+          "ai-agents/": ["agent-orchestrator/", "agent-pipeline/"],
+          "blockchain/": ["blockchain-deployer/"],
+          "monitoring/": ["metrics-collector/"]
+        }
+      },
+      "libs/": {
+        "businessModules": {
+          "portfolio/": ["components/", "services/", "types/"],
+          "administration/": ["components/", "services/", "types/"],
+          "user-management/": ["components/", "services/", "types/"],
+          "marketplace/": ["components/", "services/", "types/"],
+          "dashboard/": ["components/", "services/", "types/"]
+        },
+        "technologyModules": {
+          "logging/": ["services/", "types/", "utils/"],
+          "authentication/": ["services/", "types/", "guards/"],
+          "ai-agents/": ["agents/", "models/", "tools/", "memory/"],
+          "blockchain/": ["contracts/", "sdk/", "utils/"],
+          "monitoring/": ["services/", "types/", "collectors/"]
+        },
+        "shared/": ["ui/", "utils/", "types/", "config/"]
+      }
+    },
+    "dependencies": {
+      "businessModules": {
+        "allowed": ["Technology modules", "Shared libraries", "Other business modules via APIs"],
+        "restrictions": ["No direct access to other business module internals"]
+      },
+      "technologyModules": {
+        "allowed": ["Other technology modules", "Shared libraries", "External libraries"],
+        "restrictions": ["No dependencies on business modules"]
+      }
+    },
+    "agentAlignment": {
+      "frontend": "Business module web applications and shared UI",
+      "backend": "Business module APIs and technology services",
+      "infrastructure": "Technology modules and platform services",
+      "architecture": "Module design and inter-module communication"
+    },
+    "applicationMapping": {
+      "existing": {
+        "web-dashboard": "apps/dashboard/web-dashboard/",
+        "api-core": "apps/dashboard/api-dashboard/",
+        "web-marketplace": "apps/marketplace/web-marketplace/",
+        "api-payments": "apps/marketplace/api-payments/",
+        "ai-agents": "apps/ai-agents/agent-orchestrator/",
+        "ai-pipeline": "apps/ai-agents/agent-pipeline/",
+        "blockchain-deployer": "apps/blockchain/blockchain-deployer/"
+      }
+    }
+  }
+}

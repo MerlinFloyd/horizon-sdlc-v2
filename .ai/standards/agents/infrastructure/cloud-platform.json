@@ -1,0 +1,116 @@
+{
+  "infrastructureCloudPlatformStandards": {
+    "providers": {
+      "gcp": {
+        "purpose": "Backend services, infrastructure, and data storage",
+        "rationale": "Primary platform for consistency, cost optimization, and operational simplicity"
+      },
+      "vercel": {
+        "purpose": "Frontend applications and edge functions",
+        "rationale": "Optimized platform for Next.js deployments with global CDN"
+      },
+      "restrictions": "No additional cloud providers to maintain simplicity"
+    },
+    "organizationStructure": {
+      "projects": {
+        "naming": "horizon-{env}-{service-type}",
+        "examples": [
+          "horizon-test-compute",
+          "horizon-prod-compute", 
+          "horizon-test-data",
+          "horizon-prod-data"
+        ]
+      },
+      "folders": "Environment-based folder organization",
+      "billing": "Separate billing accounts for test and production"
+    },
+    "coreServices": {
+      "gcp": {
+        "compute": {
+          "gke": "Google Kubernetes Engine for container orchestration",
+          "cloudRun": "Cloud Run for serverless containers",
+          "computeEngine": "Compute Engine for specialized workloads"
+        },
+        "storage": {
+          "cloudStorage": "Cloud Storage for object storage",
+          "persistentDisks": "Persistent disks for stateful workloads",
+          "filestore": "Filestore for shared file systems"
+        },
+        "databases": {
+          "cloudSQL": "Cloud SQL for managed PostgreSQL",
+          "firestore": "Firestore for NoSQL document storage",
+          "memorystore": "Memorystore for managed Redis"
+        },
+        "networking": {
+          "vpc": "Virtual Private Cloud for network isolation",
+          "loadBalancer": "Cloud Load Balancing for traffic distribution",
+          "cdn": "Cloud CDN for content delivery",
+          "dns": "Cloud DNS for domain management"
+        },
+        "messaging": {
+          "pubsub": "Cloud Pub/Sub for asynchronous messaging",
+          "eventarc": "Eventarc for event-driven architectures"
+        },
+        "ai": {
+          "vertexAI": "Vertex AI for machine learning workloads",
+          "aiPlatform": "AI Platform for model deployment"
+        }
+      },
+      "vercel": {
+        "hosting": "Next.js application hosting with automatic deployments",
+        "edgeFunctions": "Edge functions for API routes and middleware",
+        "cdn": "Global CDN for static assets and edge caching",
+        "previews": "Preview deployments for testing and collaboration"
+      }
+    },
+    "security": {
+      "iam": {
+        "policies": "Fine-grained IAM policies following principle of least privilege",
+        "serviceAccounts": "Dedicated service accounts for application authentication",
+        "keyRotation": "Regular rotation of access keys and credentials",
+        "auditLogging": "Comprehensive audit logging for all access and changes"
+      },
+      "networking": {
+        "vpcDesign": "Secure VPC design with proper subnet segmentation",
+        "firewallRules": "Comprehensive firewall rules with deny-by-default policy",
+        "privateEndpoints": "Private endpoints for internal service communication"
+      },
+      "secrets": {
+        "secretManager": "Google Secret Manager for centralized secrets storage",
+        "encryption": "Encryption at rest for all sensitive data",
+        "access": "Controlled access to secrets with audit trails",
+        "rotation": "Automated secret rotation where possible"
+      }
+    },
+    "monitoring": {
+      "cloudMonitoring": "Cloud Monitoring for metrics and alerting",
+      "cloudLogging": "Cloud Logging for centralized log management",
+      "cloudTrace": "Cloud Trace for distributed tracing",
+      "errorReporting": "Error Reporting for application error tracking"
+    },
+    "costOptimization": {
+      "rightsizing": "Regular rightsizing of compute resources",
+      "scheduling": "Scheduled scaling for predictable workloads",
+      "preemptible": "Preemptible instances for batch workloads",
+      "monitoring": "Cost monitoring and budget alerts"
+    },
+    "cicdIntegration": {
+      "platform": "GitHub Actions for all deployments",
+      "gcp": {
+        "terraform": "Terraform for infrastructure provisioning",
+        "authentication": "Service account authentication with workload identity",
+        "deployment": "Automated deployment to GKE and Cloud Run"
+      },
+      "vercel": {
+        "integration": "Vercel GitHub integration for automatic deployments",
+        "authentication": "Vercel CLI with project tokens",
+        "deployment": "Automatic deployment on push to main branch"
+      },
+      "workflows": {
+        "infrastructure": "Terraform plan/apply for GCP resources",
+        "frontend": "Build and deploy to Vercel",
+        "backend": "Build and deploy to GCP services"
+      }
+    }
+  }
+}
