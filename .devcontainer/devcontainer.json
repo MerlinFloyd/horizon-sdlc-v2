@@ -1,0 +1,73 @@
+{
+  "name": "Horizon SDLC Minimal Development",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-github-actions",
+        "github.vscode-pull-requests",
+        "yzhang.markdown-all-in-one",
+        "bierner.markdown-mermaid",
+        "Augment.vscode-augment",
+        "marxism.ai-token-count"
+      ],
+
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+
+        // Editor settings
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+
+        // File associations
+        "files.associations": {
+          "*.json": "jsonc",
+          "docker-compose*.yml": "dockercompose",
+          "docker-compose*.yaml": "dockercompose"
+        },
+
+        // Language-specific settings
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[yaml]": {
+          "editor.defaultFormatter": "redhat.vscode-yaml"
+        },
+
+        // Docker settings
+        "docker.showStartPage": false,
+
+        // Git settings
+        "git.autofetch": true
+      }
+    }
+  },
+
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/dev/.gitconfig,type=bind,consistency=cached"
+  ],
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+
+  "remoteUser": "dev",
+  "containerUser": "dev",
+
+  "shutdownAction": "stopContainer"
+}
