@@ -44,6 +44,31 @@ setup_environment() {
     [[ -n "${GITHUB_TOKEN:-}" ]] && export GITHUB_PERSONAL_ACCESS_TOKEN="$GITHUB_TOKEN"
 }
 
+# Check workspace .ai directory and subdirectories; no modifications are made
+copy_ai_assets() {
+    local ai_root="/workspace/.ai"
+
+    if [[ ! -d "$ai_root" ]]; then
+        log_info "ai_assets" "Workspace .ai directory not found; skipping checks"
+        return 0
+    fi
+
+    local subdirs=("prompts" "templates" "standards")
+    local present=()
+    local missing=()
+
+    for sd in "${subdirs[@]}"; do
+        if [[ -d "$ai_root/$sd" ]]; then
+            present+=("$sd")
+        else
+            missing+=("$sd")
+        fi
+    done
+
+    [[ ${#present[@]} -gt 0 ]] && log_info "ai_assets" "Found subdirectories in $ai_root: ${present[*]}"
+    [[ ${#missing[@]} -gt 0 ]] && log_debug "ai_assets" "Missing subdirectories in $ai_root: ${missing[*]}"
+}
+
 # OpenCode startup with conditional console logging
 start_opencode() {
     local print_logs="$1"
@@ -84,6 +109,9 @@ main() {
     # Validate workspace and setup environment
     validate_workspace || { log_error "validation" "Workspace validation failed"; exit 1; }
     setup_environment && cd /workspace
+    # Check workspace .ai folder (no modifications)
+    copy_ai_assets
+
 
     # Display startup information
     local version="$(opencode --version 2>/dev/null || echo 'Unknown')"
