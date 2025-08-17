@@ -4,6 +4,13 @@
     "dockerfile": "Dockerfile"
   },
 
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "dockerDashComposeVersion": "v2"
+    }
+  },
+
   "customizations": {
     "vscode": {
       "extensions": [

@@ -1,5 +1,5 @@
 # Minimal Ubuntu-based development container
-FROM ubuntu:22.04
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
