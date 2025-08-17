@@ -66,6 +66,16 @@ echo "🔐 Setting permissions..."
 sudo chown -R dev:dev /workspace
 chmod -R 755 /workspace
 
+# Grant execute permissions to scripts
+echo "🔐 Setting execute permissions on scripts..."
+if [ -d "/workspace/scripts" ]; then
+    chmod +x /workspace/scripts/*.sh 2>/dev/null || true
+    find /workspace/scripts -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null || true
+    echo "✅ Execute permissions granted to scripts"
+else
+    echo "⚠️  Scripts directory not found"
+fi
+
 echo "✅ Minimal setup completed!"
 echo ""
 echo "🎯 Basic development environment ready"

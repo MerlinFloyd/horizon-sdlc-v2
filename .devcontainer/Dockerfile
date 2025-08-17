@@ -5,9 +5,11 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_VERSION=20
 
-# Create development user
+# Create development user and docker group
 RUN groupadd --gid 1000 dev \
-    && useradd --uid 1000 --gid dev --shell /bin/bash --create-home dev
+    && groupadd docker \
+    && useradd --uid 1000 --gid dev --shell /bin/bash --create-home dev \
+    && usermod -aG docker dev
 
 # Install essential system packages
 RUN apt-get update && apt-get install -y \
