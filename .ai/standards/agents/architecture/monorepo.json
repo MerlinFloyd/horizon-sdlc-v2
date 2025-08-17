@@ -42,6 +42,19 @@
           "monitoring/": ["services/", "types/", "collectors/"]
         },
         "shared/": ["ui/", "utils/", "types/", "config/"]
+      },
+      "infrastructure/": {
+        "terraform/": ["environments/", "modules/", "providers/"],
+        "kubernetes/": ["manifests/", "helm-charts/", "operators/"],
+        "docker/": ["base-images/", "build-scripts/", "registry-config/"],
+        "deployment/": ["scripts/", "configs/", "templates/"],
+        "monitoring/": ["prometheus/", "grafana/", "alerting/"],
+        "security/": ["policies/", "secrets/", "certificates/"]
+      },
+      ".github/": {
+        "workflows/": ["ci.yml", "cd.yml", "test.yml", "security.yml"],
+        "actions/": ["custom-actions/", "reusable-workflows/"],
+        "templates/": ["issue-templates/", "pr-templates/"]
       }
     },
     "dependencies": {
@@ -54,10 +67,50 @@
         "restrictions": ["No dependencies on business modules"]
       }
     },
+    "containerization": {
+      "applicationContainers": {
+        "pattern": "Each application directory contains its own container configuration",
+        "structure": {
+          "Dockerfile": "Application-specific container definition",
+          "docker-compose.yml": "Local development orchestration",
+          ".dockerignore": "Container build exclusions",
+          "scripts/": ["build.sh", "run.sh", "deploy.sh"]
+        },
+        "naming": "Container images follow pattern: {module}/{application}:{version}"
+      },
+      "sharedContainers": {
+        "baseImages": "infrastructure/docker/base-images/",
+        "buildScripts": "infrastructure/docker/build-scripts/",
+        "registryConfig": "infrastructure/docker/registry-config/"
+      },
+      "orchestration": {
+        "development": "docker-compose files in each application",
+        "staging": "Kubernetes manifests in infrastructure/kubernetes/",
+        "production": "Helm charts in infrastructure/kubernetes/helm-charts/"
+      }
+    },
+    "infrastructureOrganization": {
+      "centralized": "All infrastructure-as-code components in infrastructure/ directory",
+      "terraform": {
+        "environments": "Environment-specific configurations (dev, staging, prod)",
+        "modules": "Reusable infrastructure components",
+        "providers": "Cloud provider configurations and shared resources"
+      },
+      "deployment": {
+        "cicd": "GitHub Actions workflows in .github/workflows/",
+        "scripts": "Deployment automation in infrastructure/deployment/scripts/",
+        "configs": "Pipeline configurations in infrastructure/deployment/configs/"
+      },
+      "monitoring": {
+        "observability": "Centralized monitoring configurations",
+        "alerting": "Alert rules and notification configurations",
+        "dashboards": "Grafana dashboards and Prometheus rules"
+      }
+    },
     "agentAlignment": {
       "frontend": "Business module web applications and shared UI",
       "backend": "Business module APIs and technology services",
-      "infrastructure": "Technology modules and platform services",
+      "infrastructure": "Technology modules, platform services, and infrastructure/",
       "architecture": "Module design and inter-module communication"
     },
     "applicationMapping": {
@@ -69,6 +122,19 @@
         "ai-agents": "apps/ai-agents/agent-orchestrator/",
         "ai-pipeline": "apps/ai-agents/agent-pipeline/",
         "blockchain-deployer": "apps/blockchain/blockchain-deployer/"
+      },
+      "containerPaths": {
+        "applicationContainers": "Each application directory contains Dockerfile and docker-compose.yml",
+        "sharedImages": "infrastructure/docker/base-images/",
+        "buildScripts": "infrastructure/docker/build-scripts/",
+        "orchestration": "infrastructure/kubernetes/"
+      },
+      "infrastructurePaths": {
+        "terraform": "infrastructure/terraform/",
+        "deployment": "infrastructure/deployment/",
+        "monitoring": "infrastructure/monitoring/",
+        "security": "infrastructure/security/",
+        "cicd": ".github/workflows/"
       }
     }
   }
